@@ -1,9 +1,3 @@
----
-editor_options: 
-  markdown: 
-    wrap: 72
----
-
 # Module 1: Data Quality Assessment (DQA)
 
 ## Background
@@ -15,7 +9,7 @@ attended by a skilled provider. As with any data, quality is an issue.
 Data need to be checked to consider completeness of reporting by health
 facilities, identify extreme outliers, and evaluate internal
 consistency. A standard approach for assessing data quality allows for
-assessment of progress over time.\
+assessment of progress over time.
 The FASTR approach conducts an analysis of monthly data by facility and
 by indicator to assess data quality. Results are presented as annual
 estimates but may comprise a partial year of data given the availability
@@ -30,13 +24,13 @@ reliability of HMIS (Health Management Information System) data by
 examining three key components:
 
 1.  **Detecting Outliers**: Identifies extreme observations that may
-    indicate reporting errors or anomalies.
+	indicate reporting errors or anomalies.
 
 2.  **Assessing Completeness**: Evaluates whether health facilities are
-    consistently reporting data over time.
+	consistently reporting data over time.
 
 3.  **Measuring Consistency** – Checks whether related indicators align
-    with expected patterns.
+	with expected patterns.
 
 Finally, these assessments are integrated to generate a DQA score, which
 reflects the overall data quality. The following sections will provide a
@@ -68,45 +62,45 @@ reported in a given time period. The process consists of four key steps:
 **Step 1: Calculation of Median volume**
 
 -   For each health facility and service indicator, the median service
-    volume is computed using all available data points.
+	volume is computed using all available data points.
 
-**Step 2: Computation of median absolute deviation (MAD) and outlier
-identification**
+\*\*Step 2: Computation of median absolute deviation (MAD) and outlier
+identification\*\*
 
 -   The MAD is calculated for each facility-indicator combination,
-    considering only values equal to or above the median.
+	considering only values equal to or above the median.
 -   The residual between the observed count and the median is divided by
-    the MAD to generate a standardized residual.
+	the MAD to generate a standardized residual.
 -   An observation is flagged as an outlier if its MAD residual exceeds
-    a predefined threshold (`MADS`). The MADS parameter, which
-    determines the number of MADs required for an observation to be
-    classified as an outlier, can be adjusted through the user interface
-    (UI).
+	a predefined threshold (`MADS`). The MADS parameter, which
+	determines the number of MADs required for an observation to be
+	classified as an outlier, can be adjusted through the user interface
+	(UI).
 
-**Step 3: Calculation of proportional contribution and outlier
-flagging**
+\*\*Step 3: Calculation of proportional contribution and outlier
+flagging\*\*
 
 -   The proportional contribution of each facility’s reported count to
-    the total count for a given indicator and year is computed.
+	the total count for a given indicator and year is computed.
 -   Any observation exceeding a predefined proportion threshold
-    (`OUTLIER_PROPORTION_THRESHOLD`, default: 0.8) is flagged as a
-    potential outlier. This threshold can be modified through the UI to
-    fine-tune outlier detection sensitivity.
+	(`OUTLIER_PROPORTION_THRESHOLD`, default: 0.8) is flagged as a
+	potential outlier. This threshold can be modified through the UI to
+	fine-tune outlier detection sensitivity.
 
 **Step 4: Combining outlier flags and preparing data output**
 
 -   The final outlier flag is determined by combining MAD-based and
-    proportional contribution-based outlier flags.
+	proportional contribution-based outlier flags.
 -   An observation is classified as an outlier if it is flagged by
-    either method and its count exceeds a specified threshold
-    (`MINIMUM_COUNT_THRESHOLD`, default: 100). The
-    `MINIMUM_COUNT_THRESHOLD` ensures that only facilities with a
-    sufficiently large volume are considered for outlier detection,
-    avoiding excessive flagging of small counts. This parameter is also
-    adjustable in the UI.
+	either method and its count exceeds a specified threshold
+	(`MINIMUM_COUNT_THRESHOLD`, default: 100). The
+	`MINIMUM_COUNT_THRESHOLD` ensures that only facilities with a
+	sufficiently large volume are considered for outlier detection,
+	avoiding excessive flagging of small counts. This parameter is also
+	adjustable in the UI.
 -   The final dataset is prepared with relevant columns, including
-    facility identifiers, geographic details, indicator IDs, time
-    variables, and outlier-related metrics.
+	facility identifiers, geographic details, indicator IDs, time
+	variables, and outlier-related metrics.
 
 ### Statistical notes
 
@@ -114,13 +108,13 @@ flagging**
 
 -   Compute the median: find the median of the dataset.
 -   Calculate absolute deviations: subtract the median from each data
-    point to get the absolute deviations (i.e., take the absolute value
-    of the difference between each data point and the median).
+	point to get the absolute deviations (i.e., take the absolute value
+	of the difference between each data point and the median).
 -   Find the median of absolute deviations: calculate the median of
-    these absolute deviations.
+	these absolute deviations.
 -   To determine the degree of outlier, calculate the median average
-    absolute deviation residuals:
-    $$\frac{\text{(abs(volume - median volume))}}{\text{MAD}}$$
+	absolute deviation residuals:
+	$$\frac{\text{(abs(volume - median volume))}}{\text{MAD}}$$
 -   If this value is greater than 10, the value is an outlier.
 
 ### Consistency between related indicators
@@ -137,7 +131,7 @@ FASTR assesses the following pairs of indicators to measure internal
 consistency:
 
 | Indicator Pair            | Expected Relationship     |
-|---------------------------|---------------------------|
+| ------------------------- | ------------------------- |
 | ANC 1 / ANC 4             | Ratio ≥ 1                 |
 | Penta1 / Penta 3          | Ratio ≥ 1                 |
 | BCG / Facility Deliveries | Ratio between 0.7 and 1.3 |
@@ -165,33 +159,33 @@ related indicators. The process consists of the following main steps:
 
 **Step 1: Determine the geographic level**
 
-\- The lowest available geographic level is selected dynamically based
+- The lowest available geographic level is selected dynamically based
 on data availability, ensuring the most disaggregated level is used.
 
 **Step 2: Exclude outliers**
 
-\- Data points flagged as outliers (`outlier_flag = 1`) are removed to
+- Data points flagged as outliers (`outlier_flag = 1`) are removed to
 prevent extreme values from skewing the consistency assessment.
 
-**Step 3: Aggregate data at the selected geographic level and reshape to
-wide**
+\*\*Step 3: Aggregate data at the selected geographic level and reshape to
+wide\*\*
 
-\- Service volume data is aggregated at the lowest geographic level for
+- Service volume data is aggregated at the lowest geographic level for
 each indicator (summing values across facilities for each combination of
 geographic area, indicator, year, and month).
 
-\- The aggregated data is then reshaped into a wide format, where each
+- The aggregated data is then reshaped into a wide format, where each
 indicator is represented as a separate column.
 
 **Step 4: Calculate consistency ratios**
 
-\- Predefined pairs of related indicators are extracted from the
+- Predefined pairs of related indicators are extracted from the
 consistency parameters.
 
-\- For each indicator pair, the ratio of the first indicator to the
+- For each indicator pair, the ratio of the first indicator to the
 second indicator is calculated.
 
-\- If the denominator is zero, the consistency ratio is set to NA.
+- If the denominator is zero, the consistency ratio is set to NA.
 
 **Step 5: Apply consistency benchmarks** - Each indicator pair has
 predefined lower and upper bounds for acceptable consistency ratios.
@@ -215,11 +209,11 @@ $$\text{BCG/Delivery Consistency} =
 \end{cases}$$
 
 -   If the computed ratio falls within this range, the pair is marked as
-    consistent (`sconsistency = 1`).
+	consistent (`sconsistency = 1`).
 -   If the ratio is outside the bounds, the pair is flagged as
-    inconsistent (`sconsistency = 0`).
+	inconsistent (`sconsistency = 0`).
 -   If the ratio cannot be computed due to missing values, it remains
-    NA.
+	NA.
 
 **Step 6: Expand results to facility level** - Each facility is assigned
 the consistency results of its corresponding district or ward.
@@ -240,9 +234,9 @@ presented at **national level** as well as **sub-national level**. This
 is generally presented for each indicator of interest and not aggregated
 across indicators.
 
-*illustration example here* *The following colors have been used to
-create a heat map within the visualization: **insert here the color
-scale(s)***
+*illustration example here* \*The following colors have been used to
+create a heat map within the visualization: \*\*insert here the color
+scale(s)\*\*\*
 
 ### Indicator completeness
 
@@ -294,7 +288,7 @@ analysis:
 -   BCG vaccine (BCG)
 
 -   First pentavalent vaccine (Penta 1)
--   
+-  
 -   Third pentavalent vaccine (Penta 3)
 
 Country specific adaptations may include additional indicators of
@@ -311,12 +305,12 @@ follows these key steps:
 **Step 1: Generate full time series per indicator**
 
 -   For each indicator, the reporting time range (first and last
-    reported month) is identified.
+	reported month) is identified.
 -   A complete month-wise facility-indicator grid is generated, ensuring
-    that every facility has a full sequence of months between its first
-    and last reporting period.
+	that every facility has a full sequence of months between its first
+	and last reporting period.
 -   Period and quarter identifiers (`period_id` and `quarter_id`) are
-    created in `YYYYMM` format to facilitate tracking.
+	created in `YYYYMM` format to facilitate tracking.
 
 **Step 2: Merge with existing data** - The generated full time series is
 merged with the actual reported data to retain observed counts. -
@@ -326,44 +320,44 @@ not report service volumes.
 **Step 3: Apply completeness tagging**
 
 -   Each facility's reporting behavior is assessed using the following
-    flags:
-    -   `has_reported`:Indicates whether a facility has reported for a
-        given month.
-    -   `first_report_idx:` Identifies the first month a facility
-        submitted a report.
-    -   `last_report_idx`: Identifies the last month a facility
-        submitted a report.
-    -   `missing_group`: Assigns a unique identifier to each consecutive
-        period of missing months for a facility. When a facility has
-        missing data for multiple months in a row, they are grouped
-        under the same `missing_group_id`. If reporting resumes and then
-        stops again, a new `missing_group_id` is assigned to the next
-        block of missing months. This helps distinguish separate
-        reporting gaps within a facility’s data.
-    -   `missing_count`: Represents the number of consecutive missing
-        months within each `missing_group`.
+	flags:
+	-   `has_reported`:Indicates whether a facility has reported for a
+		given month.
+	-   `first_report_idx:` Identifies the first month a facility
+		submitted a report.
+	-   `last_report_idx`: Identifies the last month a facility
+		submitted a report.
+	-   `missing_group`: Assigns a unique identifier to each consecutive
+		period of missing months for a facility. When a facility has
+		missing data for multiple months in a row, they are grouped
+		under the same `missing_group_id`. If reporting resumes and then
+		stops again, a new `missing_group_id` is assigned to the next
+		block of missing months. This helps distinguish separate
+		reporting gaps within a facility’s data.
+	-   `missing_count`: Represents the number of consecutive missing
+		months within each `missing_group`.
 -   A facility is flagged as **inactive** (`offline_flag = 2)` if:
-    -   It remained inactive (did not report any data) for six or more
-        consecutive months before its first reported month.
-    -   It remained inactive for six or more consecutive months after
-        its last reported month.
+	-   It remained inactive (did not report any data) for six or more
+		consecutive months before its first reported month.
+	-   It remained inactive for six or more consecutive months after
+		its last reported month.
 
 **Step 4: Assign completeness tags**
 
 -   Each facility’s completeness status is classified as follows:
-    -   Complete (`1`): Facility reported data for that period.
-    -   Incomplete (`0`): Facility did not report but was not considered
-        inactive.
-    -   Inactive (`2`): Facility was flagged as inactive based on
-        reporting gaps.
+	-   Complete (`1`): Facility reported data for that period.
+	-   Incomplete (`0`): Facility did not report but was not considered
+		inactive.
+	-   Inactive (`2`): Facility was flagged as inactive based on
+		reporting gaps.
 
 **Step 5: Final data preparation**
 
 -   Rows where a facility is flagged as inactive
-    (`completeness_flag = 2`) are removed to maintain focus on active
-    facilities.
+	(`completeness_flag = 2`) are removed to maintain focus on active
+	facilities.
 -   The final dataset includes completeness flags alongside facility,
-    indicator, time, and geographic details.
+	indicator, time, and geographic details.
 
 ### Data Quality Assessment (DQA)
 
@@ -378,50 +372,50 @@ trends and issues at a glance.
 
 For the FASTR analysis, we defined adequate data quality as:
 
-1\. No missing indicator data for OPD, Penta 1, ANC 1, and family
+1. No missing indicator data for OPD, Penta 1, ANC 1, and family
 planning indicators, where available AND 2. No outliers for OPD, Penta
 1, ANC 1, and family planning indicators, where available AND
 
-3\. Consistent reporting between Penta 1/Penta 3 and ANC 1/ANC 4.
+3. Consistent reporting between Penta 1/Penta 3 and ANC 1/ANC 4.
 
 #### Detailed analysis steps
 
 This analysis evaluates data quality by incorporating completeness,
 outlier detection, and consistency checks. The process generates a DQA
 score at the facility-month level, ensuring that health service data
-meets predefined quality standards. *Two versions of the DQA process are
+meets predefined quality standards. \*Two versions of the DQA process are
 available: one including consistency checks and one excluding them
-(tbd)*. The steps for each are detailed below.
+(tbd)\*. The steps for each are detailed below.
 
 **Step 1: Filter relevant indicators**
 
 -   The indicators used for DQA are defined in the user interface and
-    stored in `DQA_INDICATORS`. A predefined set may include Penta 1,
-    ANC 1 and OPD.
+	stored in `DQA_INDICATORS`. A predefined set may include Penta 1,
+	ANC 1 and OPD.
 -   Only indicators specified in `DQA_INDICATORS` are selected from
-    completeness and outlier datasets and evaluated in the DQA.
+	completeness and outlier datasets and evaluated in the DQA.
 
 **Step 2: Merge completeness and outlier data**
 
 -   Completeness and outlier data are merged at the
-    facility-month-indicator level.
+	facility-month-indicator level.
 -   Missing values (NA) imputed from the completeness analysis are
-    treated as non-outliers.
+	treated as non-outliers.
 -   Completeness and outlier pass flags are assigned:
-    -   `completeness_pass` = 1 if the completeness status matches the
-        required DQA rule.
-    -   `outlier_pass` = 1 if the outlier status matches the required
-        DQA rule.
+	-   `completeness_pass` = 1 if the completeness status matches the
+		required DQA rule.
+	-   `outlier_pass` = 1 if the outlier status matches the required
+		DQA rule.
 
 **Step 3: Aggregate scores at the facility-month level**
 
 -   The total indicator points are calculated as the sum of completeness
-    and outlier pass scores.
+	and outlier pass scores.
 -   The maximum possible score is determined based on the number of
-    indicators.
+	indicators.
 -   A normalized completeness and outlier score
-    `completeness_outlier_score` is also calculated:
-    $$\text{CompletenessAndOutlier Score} = \frac{\text{Total Indicator Points}}{\text{Maximum Possible Points}}$$
+	`completeness_outlier_score` is also calculated:
+	$$\text{CompletenessAndOutlier Score} = \frac{\text{Total Indicator Points}}{\text{Maximum Possible Points}}$$
 
 Example: Suppose a facility is assessed for three indicators. Each
 indicator can score up to 2 points (outlier and completeness), making
@@ -437,7 +431,7 @@ facility passes all checks, otherwise 0).
 -   The consistency dataset is merged at the facility-month level.
 -   Any missing consistency values are filled with 0.
 -   Two consistency ratios are used in the DQA: ANC1/ANC4 and
-    Penta1/Penta3.
+	Penta1/Penta3.
 
 **Step 5: Compute final DQA score**
 
@@ -456,6 +450,6 @@ checks.
 The DQA score in such cases is determined solely based on completeness
 and outlier pass criteria.
 
-------------------------------------------------------------------------
+---- 
 
 Last edit 2025 March 19
