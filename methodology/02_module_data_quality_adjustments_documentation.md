@@ -1,110 +1,220 @@
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
 # Module 2: Data Quality Adjustment
 
 ## Background
-Ensuring high-quality health service data is critical for accurate decision-making and analysis. However, routine health management information system (HMIS) data often contain *outliers* (extreme values due to reporting errors, data entry mistakes, or system issues) and missing values (due to incomplete reporting or data collection gaps). These issues can distort trends, mask true patterns, and significantly impact downstream analyses. The Data Quality Adjustment module addresses these challenges by applying systematic, evidence-based corrections to raw data.
 
-## Overview
-The Data Quality Adjustment module processes facility-level health service data through two key adjustment components:
+Ensuring high-quality health service data is critical for accurate
+decision-making and analysis. However, routine health management
+information system (HMIS) data often contain *outliers* (extreme values
+due to reporting errors, data entry mistakes, or system issues) and
+missing values (due to incomplete reporting or data collection gaps).
+These issues can distort trends, mask true patterns, and significantly
+impact downstream analyses. The Data Quality Adjustment module addresses
+these challenges by applying systematic, evidence-based corrections to
+raw data.
 
-1. **Outlier adjustment**: Replaces flagged outlier values with statistically robust estimates
-2. **Completeness adjustment**: Fills missing values using historical patterns and averages
+## **Overview**
 
-The module applies these adjustments across four different scenarios to provide flexibility in analysis:
-- **None**: No adjustments applied (raw data)
-- **Outliers**: Only outlier adjustment applied
-- **Completeness**: Only completeness adjustment applied  
-- **Both**: Both outlier and completeness adjustments applied
+This module adjusts facility-level service volumes using two methods:
+
+1.  Outlier Adjustment – replaces values flagged as outliers
+    (`outlier_flag == 1`) using valid rolling or fallback averages. Only
+    applied to non-exempt indicators.
+
+2.  Completeness Adjustment – replaces values from months flagged as
+    incomplete (`completeness_flag != 1`) using recent valid
+    (non-outlier, positive) values. Missing values (`NA`) are also
+    adjusted.
+
+Adjustments are applied across four scenarios:
+
+| Scenario       | Outlier Adjustment | Completeness Adjustment |
+|----------------|--------------------|-------------------------|
+| `none`         | No                 | No                      |
+| `outliers`     | Yes                | No                      |
+| `completeness` | No                 | Yes                     |
+| `both`         | Yes                | Yes                     |
+
+Each scenario produces a separate column:`count_final_none`,
+`count_final_outliers`, `count_final_completeness`, `count_final_both`
+
+Adjustments are done at the facility × indicator × month level.
+
+Some indicators including *Under 5 deaths* and *Maternal deaths* are
+excluded from all adjustments.
 
 ### Key Features
-- Dynamic adjustment logic that adapts to data availability
-- Multiple fallback methods to ensure robust replacements
-- Preservation of certain sensitive indicators (deaths) from adjustment
-- Generation of facility, subnational, and national-level outputs
-- Comprehensive tracking of adjustment methods used
+
+-   Dynamic adjustment logic that adapts to data availability
+-   Multiple fallback methods to ensure robust replacements
+-   Preservation of certain sensitive indicators (deaths) from
+    adjustment
+-   Generation of facility, subnational, and national-level outputs
+-   Comprehensive tracking of adjustment methods used
 
 ## Detailed Analysis Steps
 
 ### Step 1: Data Preparation and Setup
-- **Input files**: Raw HMIS data, outlier flags (from Module 1), and completeness data (from Module 1)
-- **Exclusions**: Certain indicators (`u5_deaths`, `maternal_deaths`) are excluded from adjustment to preserve their original values
-- **Working column**: The `count_working` column is initialized with actual service volumes (`count`) and serves as the target for all adjustments
 
-### Step 2: Outlier Adjustment
-The outlier adjustment uses an **enhanced rolling average approach** with intelligent fallback mechanisms:
+-   **Input files**: Raw HMIS data, outlier flags (from Module 1), and
+    completeness data (from Module 1)
+-   **Exclusions**: Certain indicators (`u5_deaths`, `maternal_deaths`)
+    are excluded from adjustment to preserve their original values
+-   **Working column**: The `count_working` column is initialized with
+    actual service volumes (`count`) and serves as the target for all
+    adjustments
 
-#### Primary Method: 6-Month Rolling Average
-The system applies different averaging strategies based on the temporal position of the outlier:
+### **Adjustment Logic and Scenarios**
 
-**For early months (first 6 months of data):**
-- Uses **forward-looking 6-month average** from subsequent valid (non-outlier, \>0) values
-- Method tag: `roll6_forward`
+The adjustment logic is implemented through two functions:
 
-**For recent months (last 6 months of data):**
-- Uses **backward-looking 6-month average** from preceding valid values
-- Method tag: `roll6_backward`
+1.  `apply_adjustments()` defines the **adjustment rules** for replacing
+    outliers and incomplete values.
 
-**For middle months:**
-- Uses **centered 6-month average**: 3 months before + 3 months after the outlier
-- Method tag: `roll6_center`
+2.  `apply_adjustments_scenarios()` runs that logic across four
+    scenarios: none, outliers only, completeness only, and both.
 
-#### Fallback Method: Same Month Previous Year
-If insufficient valid values exist for rolling averages:
-- Replaces outlier with the value from the same month in the previous year
-- Only applied if the previous year value is valid (non-outlier, \>0)
-- Method tag: `same_month_last_year`
-- Includes adjustment note with the reference date
+### **Step 2:** Define Rules for Outlier Adjustment
 
-#### Final Fallback: No Adjustment  
-If no valid replacement can be found:
-- Original outlier value is retained
-- Method tag: `unadjusted`
-- Note: "no valid replacement"
+Outlier adjustment is applied to any facility-month value flagged in
+Module 1 (`outlier_flag == 1`). The goal is to replace these outlier
+values using valid historical data from the same facility and indicator.
 
-### Step 3: Completeness Adjustment
-The completeness adjustment targets missing values using a **hierarchical replacement strategy**:
+A rolling average is used to estimate expected values. A rolling average
+is the mean of a set of months around the target month. Only valid
+values are used—meaning the count must be greater than zero, not
+missing, and not flagged as an outlier.
 
-#### Primary Method: 12-Month Rolling Average
-- Calculates rolling average over 12 months using only valid (non-missing, \>0) values
-- **Minimum threshold**: Requires at least 6 valid values within the 12-month window
-- Uses centered alignment for balanced temporal representation
+The adjustment process follows this order:
 
-#### Fallback Method: Historical Mean
-If rolling average cannot be calculated (insufficient valid values):
-- Uses the overall mean of all valid values for the same facility-indicator combination
-- Provides a stable baseline estimate based on historical performance
+1\. Centered 6-Month Average (`roll6`)
 
-#### Data Quality Safeguards
-- Only positive values are considered valid for averaging
-- Missing values remain missing if no valid replacement can be determined
-- Fast processing using `data.table` operations for efficiency
+-   Uses the three months before and three months after the outlier
+    month
+
+-   Provides a balanced average based on nearby trends
+
+-   Applied when enough valid values exist on both sides of the month
+
+-   Method tag**:** `roll6`
+
+2\. Forward-Looking 6-Month Average (`fwd6`)
+
+-   Used if the centered average can't be calculated (e.g. early in the
+    time series)
+
+-   Takes the average of the next six valid months
+
+-   Method tag: `forward`
+
+3\. Backward-Looking 6-Month Average (`bwd6`)
+
+-   Used if neither `roll6` nor `fwd6` are available
+
+-   Takes the average of the six most recent valid months before the
+    outlier
+
+-   Method tag: `backward`
+
+4\. Same Month from Previous Year
+
+-   If no valid 6-month average exists, the value from the **same
+    calendar month in the previous year** is used (e.g., Jan 2023 for
+    Jan 2024)
+
+-   Only applied if that previous value is valid (not an outlier, and \>
+    0)
+
+-   Method tag: `same_month_last_year`
+
+5\. Median of All Historical Values
+
+-   If all previous methods fail, the median of all valid historical
+    values for that facility-indicator is used
+
+-   Method tag: `fallback`
+
+If no valid replacement can be found from any of these methods, the
+original outlier value is kept.
+
+### **Step 3:** Define Rules for Completeness Adjustment
+
+Completeness adjustment is applied to any facility-month where he month
+is flagged as incomplete (`completeness_flag != 1`) in Module 1. The
+same rolling average logic is used, based only on valid historical
+values from the same facility and indicator.
+
+The replacement follows this order:
+
+1\. Centered 6-Month Average (`roll6`)
+
+-   Uses three valid months before and after the missing or incomplete
+    month
+
+-   Method tag: `roll6`
+
+2\. Forward-Looking 6-Month Average (`fwd6`)
+
+-   Used if the centered average cannot be calculated
+
+-   Method tag: `forward`
+
+3\. Backward-Looking 6-Month Average (`bwd6`)
+
+-   Used if no centered or forward-looking values are available
+
+-   Method tag: `backward`
+
+4\. Mean of All Historical Values
+
+-   If no rolling averages can be calculated, uses the mean of all valid
+    values for that facility-indicator
+
+-   Method tag: `fallback`
+
+**If no valid replacement is found, the value remains missing.**
 
 ### Step 4: Scenario Processing
+
 The module processes all four adjustment scenarios simultaneously:
 
-1. **None scenario**: Original data with no adjustments
-2. **Outliers scenario**: Outlier adjustment only
-3. **Completeness scenario**: Completeness adjustment only  
-4. **Both scenario**: Sequential application of outlier then completeness adjustments
+1.  None scenario: Original data with no adjustments
+2.  Outliers scenario: Outlier adjustment only
+3.  Completeness scenario: Completeness adjustment only
+4.  Both scenario: Sequential application of outlier then completeness
+    adjustments
 
-Each scenario produces a separate `count_final_[scenario]` column in the output.
+Each scenario produces a separate `count_final_[scenario]` column in the
+output.
 
 ### Step 5: Geographic Aggregation
+
 The module generates three levels of geographic aggregation:
 
 #### Facility Level (`M2_adjusted_data.csv`)
-- Individual facility data with all four adjustment scenarios
-- Includes facility metadata and geographic administrative area codes
-- Excludes national-level geographic identifier for schema consistency
 
-#### Subnational Level (`M2_adjusted_data_admin_area.csv`)  
-- Aggregated to subnational administrative areas (excluding national level)
-- Sums facility-level adjusted values by geographic area, indicator, and time period
-- Maintains all four adjustment scenarios
+-   Individual facility data with all four adjustment scenarios
+-   Excludes `admin_area_1` to ensure schema consistency across levels
+
+#### Subnational Level (`M2_adjusted_data_admin_area.csv`)
+
+-   Aggregated to subnational administrative areas (excluding national
+    level)
+-   Sums facility-level adjusted values by geographic area, indicator,
+    and time period
+-   Maintains all four adjustment scenarios
 
 #### National Level (`M2_adjusted_data_national.csv`)
-- Aggregated to national level (admin\_area\_1 only)
-- Provides country-level totals for all indicators and time periods
-- Includes all four adjustment scenarios for comparative analysis
----- 
 
-Last edit 2025 May 19
+-   Aggregated to national level (admin_area_1 only)
+-   Provides country-level totals for all indicators and time periods
+-   Includes all four adjustment scenarios for comparative analysis
+
+\_\_
+
+Last edit 2025 August 6
