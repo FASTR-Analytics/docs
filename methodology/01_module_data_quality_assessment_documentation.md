@@ -18,7 +18,13 @@ Finally, these assessments are integrated to generate a DQA score, which reflect
 
 ### Outlier Detection
 
-For the FASTR analysis, we identify outliers which are suspiciously high values compared to the usual volume of services reported by the facility (e.g., low values are not identified as outliers in the FASTR analysis). Outliers are identified by assessing the within-facility variation in monthly reporting for each indicator. An outlier is defined as: - A value greater than 10 times the Median Absolute Deviation (MAD) from the monthly median value for the indicator in each time period, **OR** a value for which the proportional contribution in volume for a facility, indicator, and time period is greater than 80%, **AND** For which: - The volume is greater than or equal to the median **AND** - The volume is not missing **AND** - The volume is greater than 100.
+In FASTR, outliers are defined as unusually high values based on two criteria:
+
+-   A value greater than 10 times the Median Absolute Deviation (MAD) from the median (computed only on values ≥ median), or
+
+-   A value contributing over 80% of the total volume for that indicator and facility-year.
+
+These criteria are applied only to volumes above 100 and exclude missing values. The MAD threshold (`MADS`) and proportion threshold (`OUTLIER_PROPORTION_THRESHOLD`) can be adjusted in the interface.
 
 #### Detailed analysis steps
 
@@ -28,7 +34,7 @@ This analysis is designed to detect and correct outliers in service volume data 
 
 -   For each health facility and service indicator, the median service volume is computed using all available data points.
 
-\*\*Step 2: Computation of median absolute deviation (MAD) and outlier identification\*\*
+**Step 2: Compute MAD using values equal to or above the median**
 
 -   The MAD is calculated for each facility-indicator combination, considering only values equal to or above the median.
 -   The residual between the observed count and the median is divided by the MAD to generate a standardized residual.
@@ -65,8 +71,8 @@ FASTR assesses the following pairs of indicators to measure internal consistency
 
 | Indicator Pair            | Expected Relationship     |
 |---------------------------|---------------------------|
-| ANC 1 / ANC 4             | Ratio ≥ 1                 |
-| Penta1 / Penta 3          | Ratio ≥ 1                 |
+| ANC1 / ANC 4              | Ratio ≥ 0.95              |
+| Penta1 / Penta 3          | Ratio ≥ 0.95              |
 | BCG / Facility Deliveries | Ratio between 0.7 and 1.3 |
 
 These pairs of indicators have expected relationships. For example, we expect the number of pregnant women receiving a first ANC visit will always be higher than the number of pregnant women receiving a fourth ANC visit. BCG is a birth dose vaccine so we expect that these indicators will be equal. However, we recognize there may be more variability in this predicted relationship thus we set a range of within 30%.
@@ -83,7 +89,7 @@ This analysis identifies inconsistencies in service volume data by comparing rel
 
 -   Data points flagged as outliers (`outlier_flag = 1`) are removed to prevent extreme values from skewing the consistency assessment.
 
-\*\*Step 3: Aggregate data at the selected geographic level and reshape to wide\*\*
+**Step 3: Aggregate data at the selected geographic level and reshape to wide**
 
 -   Service volume data is aggregated at the lowest geographic level for each indicator (summing values across facilities for each combination of geographic area, indicator, year, and month).
 
@@ -99,23 +105,18 @@ This analysis identifies inconsistencies in service volume data by comparing rel
 
 **Step 5: Apply consistency benchmarks** - Each indicator pair has predefined lower and upper bounds for acceptable consistency ratios.
 
-$$\text{ANC Consistency} =
-\begin{cases} 
-1, & \frac{\text{ANC 1 Volume}}{\text{ANC 4 Volume}} > 1 \\ 
-0, & \text{otherwise}
-\end{cases}$$
+$\text{ANC Consistency} =\begin{cases} 1, & \frac{\text{ANC1 Volume}}{\text{ANC 4 Volume}} \geq 0.95 \\ 0, & \text{otherwise}\end{cases}$
 
-$$\text{Penta Consistency} =
-\begin{cases} 
-1, & \frac{\text{ANC 1 Volume}}{\text{ANC 4 Volume}} > 1 \\ 
+$\text{Penta Consistency} =\begin{cases}
+1, & \frac{\text{Penta 1 Volume}}{\text{Penta 3 Volume}} \geq 0.95 \\
 0, & \text{otherwise}
-\end{cases}$$
+\end{cases}$
 
-$$\text{BCG/Delivery Consistency} =
+$\text{BCG/Delivery Consistency} =
 \begin{cases} 
 1, & 0.7 \leq \frac{\text{BCG Volume}}{\text{Delivery Volume}} \leq 1.3 \\ 
 0, & \text{otherwise}
-\end{cases}$$
+\end{cases}$
 
 -   If the computed ratio falls within this range, the pair is marked as consistent (`sconsistency = 1`).
 -   If the ratio is outside the bounds, the pair is flagged as inconsistent (`sconsistency = 0`).
@@ -145,9 +146,11 @@ Indicator completeness measures the extent to which facilities that are supposed
 
 For the FASTR analysis, completeness is defined as the percentage of reporting facilities each month out of the total number of facilities expected to report.
 
-For a given indicator in a given month, $$\text{Percentage of districts that are consistent} = \frac{\text{Number of districts meeting the consistency benchmark}}{\text{Total number of districts}} \times 100$$
+For a given indicator in a given month, $
+\text{Completeness} = \frac{\text{Number of reporting facilities}}{\text{Number of expected facilities}} \times 100
+$
 
-A facility is deemed to be “reporting” if there is a non-missing, non-zero value recorded for the indicator and month. A facility is expected to report if it has reported any volume for each indicator anytime within a year.
+A facility is expected to report for an indicator if it has ever reported for that indicator within the year. A facility is flagged as inactive if it did not report for six or more consecutive months before its first or after its last report.
 
 *Notes on completeness*: A high level of completeness does not necessarily indicate that the HMIS is representative of all service delivery in the country as some services many not be delivered in facilities, or some facilities may not report. For countries where the DHIS2 system does not store zeroes, indicator completeness may be underestimated if there are many low-volume facilities for a given indicator.
 
@@ -157,7 +160,7 @@ Completeness is estimated for the following indicators in the core FASTR analysi
 
 -   Outpatient department visits (OPD)
 
--   First antenatal care visit (ANC 1)
+-   First antenatal care visit (ANC1)
 
 -   Fourth antenatal care visit (ANC 4)
 
@@ -168,8 +171,6 @@ Completeness is estimated for the following indicators in the core FASTR analysi
 -   BCG vaccine (BCG)
 
 -   First pentavalent vaccine (Penta 1)
-
--   
 
 -   Third pentavalent vaccine (Penta 3)
 
@@ -217,19 +218,23 @@ A composite measure of data quality provides an overall view of how well a datas
 
 #### FASTR definition of overall data quality score
 
-For the FASTR analysis, we defined adequate data quality as:
+For the FASTR analysis, a facility is considered to have adequate data quality only if all the following conditions are met for the selected DQA indicators (e.g., Penta 1, ANC1, and family planning indicators, where available):
 
-1.  No missing indicator data for OPD, Penta 1, ANC 1, and family planning indicators, where available AND 2. No outliers for OPD, Penta 1, ANC 1, and family planning indicators, where available AND
+1.  **No missing data** for these indicators (i.e., the facility must report every month it is expected to).
 
-2.  Consistent reporting between Penta 1/Penta 3 and ANC 1/ANC 4.
+2.  **No outliers** detected for these indicators.
+
+3.  **Internal consistency** is achieved between related pairs (e.g., ANC1/ANC4 and Penta1/Penta3).
+
+Only the indicators specified in the configuration (parameter `DQA_INDICATORS`) are subject to these strict rules.
 
 #### Detailed analysis steps
 
-This analysis evaluates data quality by incorporating completeness, outlier detection, and consistency checks. The process generates a DQA score at the facility-month level, ensuring that health service data meets predefined quality standards. \*Two versions of the DQA process are available: one including consistency checks and one excluding them (tbd)\*. The steps for each are detailed below.
+This analysis evaluates data quality by incorporating completeness, outlier detection, and consistency checks. The process generates a DQA score at the facility-month level, ensuring that health service data meets predefined quality standards. The steps for each are detailed below.
 
 **Step 1: Filter relevant indicators**
 
--   The indicators used for DQA are defined in the user interface and stored in `DQA_INDICATORS`. A predefined set may include Penta 1, ANC 1 and OPD.
+-   The indicators used for DQA are defined in the user interface and stored in `DQA_INDICATORS`. A predefined set may include Penta 1, ANC1 and OPD.
 -   Only indicators specified in `DQA_INDICATORS` are selected from completeness and outlier datasets and evaluated in the DQA.
 
 **Step 2: Merge completeness and outlier data**
@@ -255,14 +260,21 @@ A binary DQA completeness-outlier pass flag is assigned (1 if the facility passe
 -   The consistency dataset is merged at the facility-month level.
 -   Any missing consistency values are filled with 0.
 -   Two consistency ratios are used in the DQA: ANC1/ANC4 and Penta1/Penta3.
+-   The total number of consistency checks passed is calculated.
+-   A normalized consistency score is computed as the proportion of indicator pairs that meet the defined consistency threshold.
+-   A binary consistency pass flag (`all_pairs_pass = 1`) is assigned when *all* applicable indicator pairs are consistent.
 
 **Step 5: Compute final DQA score**
 
--   The total number of consistency checks passed is calculated.
--   A normalized consistency score is computed...
--   The final DQA score is a binary measure:
--   1 (pass) if both completeness-outlier and consistency checks pass.
--   0 (fail) otherwise.
+The final DQA score is a binary measure that combines completeness, outlier, and consistency results:
+
+A facility-month receives a DQA score of 1 (pass) only if:
+
+-   All completeness and outlier checks are passed, *and*
+
+-   All applicable consistency checks are passed
+
+Otherwise, the DQA score is 0 (fail).
 
 **Handling cases with missing consistency data**
 
@@ -272,4 +284,4 @@ The DQA score in such cases is determined solely based on completeness and outli
 
 ------------------------------------------------------------------------
 
-Last edit 2025 March 19
+Last edit 2025 August 6
