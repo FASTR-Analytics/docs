@@ -58,7 +58,7 @@ This analysis is designed to detect and correct outliers in service volume data 
 -   Compute the median: find the median of the dataset.
 -   Calculate absolute deviations: subtract the median from each data point to get the absolute deviations (i.e., take the absolute value of the difference between each data point and the median).
 -   Find the median of absolute deviations: calculate the median of these absolute deviations.
--   To determine the degree of outlier, calculate the median average absolute deviation residuals: $$ \frac{(\text{abs(volume - median volume)})}{\text{MAD}} $$
+-   To determine the degree of outlier, calculate the median average absolute deviation residuals: $$ \frac{\text{abs(volume - median volume)}}{\text{MAD}} $$
 -   If this value is greater than 10, the value is an outlier.
 
 ### Consistency between related indicators
@@ -105,24 +105,27 @@ This analysis identifies inconsistencies in service volume data by comparing rel
 
 **Step 5: Apply consistency benchmarks** - Each indicator pair has predefined lower and upper bounds for acceptable consistency ratios.
 
-$
-\text{ANC Consistency} =\begin{cases} 1, & \frac{\text{ANC1 Volume}}{\text{ANC 4 Volume}} \geq 0.95 \\ 0, & \text{otherwise}\end{cases}
-$
+$$
+\text{ANC Consistency} =
+\begin{cases} 1, & \frac{\text{ANC1 Volume}}{\text{ANC 4 Volume}} \geq 0.95 \\ 0, & \text{otherwise}
+\end{cases}
+$$
 
-$
-\text{Penta Consistency} =\begin{cases}
+$$
+\text{Penta Consistency} =
+\begin{cases}
 1, & \frac{\text{Penta 1 Volume}}{\text{Penta 3 Volume}} \geq 0.95 \\
 0, & \text{otherwise}
 \end{cases}
-$
+$$
 
-$
+$$
 \text{BCG/Delivery Consistency} =
 \begin{cases}
 1, & 0.7 \leq \frac{\text{BCG Volume}}{\text{Delivery Volume}} \leq 1.3 \\
 0, & \text{otherwise}
 \end{cases}
-$
+$$
 
 -   If the computed ratio falls within this range, the pair is marked as consistent (`sconsistency = 1`).
 -   If the ratio is outside the bounds, the pair is flagged as inconsistent (`sconsistency = 0`).
