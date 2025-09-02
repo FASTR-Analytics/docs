@@ -113,8 +113,8 @@ $\text{Penta Consistency} =\begin{cases}
 \end{cases}$
 
 $\text{BCG/Delivery Consistency} =
-\begin{cases} 
-1, & 0.7 \leq \frac{\text{BCG Volume}}{\text{Delivery Volume}} \leq 1.3 \\ 
+\begin{cases}
+1, & 0.7 \leq \frac{\text{BCG Volume}}{\text{Delivery Volume}} \leq 1.3 \\
 0, & \text{otherwise}
 \end{cases}$
 
@@ -146,9 +146,7 @@ Indicator completeness measures the extent to which facilities that are supposed
 
 For the FASTR analysis, completeness is defined as the percentage of reporting facilities each month out of the total number of facilities expected to report.
 
-For a given indicator in a given month, $
-\text{Completeness} = \frac{\text{Number of reporting facilities}}{\text{Number of expected facilities}} \times 100
-$
+For a given indicator in a given month, \$ \text{Completeness} = \frac{\text{Number of reporting facilities}}{\text{Number of expected facilities}} \times 100 \$
 
 A facility is expected to report for an indicator if it has ever reported for that indicator within the year. A facility is flagged as inactive if it did not report for six or more consecutive months before its first or after its last report.
 
