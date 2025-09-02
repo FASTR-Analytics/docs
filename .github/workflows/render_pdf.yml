@@ -3,9 +3,9 @@ name: Render Markdown to PDF
 on:
   push:
     branches:
-      - main  # Trigger this workflow on every push to the main branch
+      - main
     paths:
-      - '**/*.md' # Only run when a .md file is changed
+      - '**/*.md'
 
 jobs:
   build:
@@ -20,12 +20,8 @@ jobs:
       with:
         args: >
           --pdf-engine=xelatex
-          -o rendered.pdf
-          README.md
-          --template=template.tex
-      # This example assumes you have a template.tex file in your repo.
-      # It also assumes you want to render a single file, like README.md.
-      # You can modify the 'args' to render multiple files or use a different markdown file.
+          -o methodology/data_quality_assessment_documentation.pdf
+          methodology/01_module_data_quality_assessment_documentation.md
 
     - name: Commit and push changes
       uses: stefanzweifel/git-auto-commit-action@v4
