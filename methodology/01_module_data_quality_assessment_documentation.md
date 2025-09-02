@@ -40,7 +40,7 @@ This analysis is designed to detect and correct outliers in service volume data 
 -   The residual between the observed count and the median is divided by the MAD to generate a standardized residual.
 -   An observation is flagged as an outlier if its MAD residual exceeds a predefined threshold (`MADS`). The MADS parameter, which determines the number of MADs required for an observation to be classified as an outlier, can be adjusted through the user interface (UI).
 
-\*\*Step 3: Calculation of proportional contribution and outlier flagging\*\*
+**Step 3: Calculation of proportional contribution and outlier flagging**
 
 -   The proportional contribution of each facility’s reported count to the total count for a given indicator and year is computed.
 -   Any observation exceeding a predefined proportion threshold (`OUTLIER_PROPORTION_THRESHOLD`, default: 0.8) is flagged as a potential outlier. This threshold can be modified through the UI to fine-tune outlier detection sensitivity.
@@ -58,7 +58,7 @@ This analysis is designed to detect and correct outliers in service volume data 
 -   Compute the median: find the median of the dataset.
 -   Calculate absolute deviations: subtract the median from each data point to get the absolute deviations (i.e., take the absolute value of the difference between each data point and the median).
 -   Find the median of absolute deviations: calculate the median of these absolute deviations.
--   To determine the degree of outlier, calculate the median average absolute deviation residuals: $$\frac{\text{(abs(volume - median volume))}}{\text{MAD}}$$
+-   To determine the degree of outlier, calculate the median average absolute deviation residuals: $$ \frac{(\text{abs(volume - median volume)})}{\text{MAD}} $$
 -   If this value is greater than 10, the value is an outlier.
 
 ### Consistency between related indicators
@@ -69,10 +69,10 @@ Program indicators with a predictable relationship are examined to determine whe
 
 FASTR assesses the following pairs of indicators to measure internal consistency:
 
-| Indicator Pair            | Expected Relationship     |
-|---------------------------|---------------------------|
-| ANC1 / ANC 4              | Ratio ≥ 0.95              |
-| Penta1 / Penta 3          | Ratio ≥ 0.95              |
+| Indicator Pair | Expected Relationship |
+|---|---|
+| ANC1 / ANC 4 | Ratio ≥ 0.95 |
+| Penta1 / Penta 3 | Ratio ≥ 0.95 |
 | BCG / Facility Deliveries | Ratio between 0.7 and 1.3 |
 
 These pairs of indicators have expected relationships. For example, we expect the number of pregnant women receiving a first ANC visit will always be higher than the number of pregnant women receiving a fourth ANC visit. BCG is a birth dose vaccine so we expect that these indicators will be equal. However, we recognize there may be more variability in this predicted relationship thus we set a range of within 30%.
@@ -105,18 +105,24 @@ This analysis identifies inconsistencies in service volume data by comparing rel
 
 **Step 5: Apply consistency benchmarks** - Each indicator pair has predefined lower and upper bounds for acceptable consistency ratios.
 
-$\text{ANC Consistency} =\begin{cases} 1, & \frac{\text{ANC1 Volume}}{\text{ANC 4 Volume}} \geq 0.95 \\ 0, & \text{otherwise}\end{cases}$
+$
+\text{ANC Consistency} =\begin{cases} 1, & \frac{\text{ANC1 Volume}}{\text{ANC 4 Volume}} \geq 0.95 \\ 0, & \text{otherwise}\end{cases}
+$
 
-$\text{Penta Consistency} =\begin{cases}
+$
+\text{Penta Consistency} =\begin{cases}
 1, & \frac{\text{Penta 1 Volume}}{\text{Penta 3 Volume}} \geq 0.95 \\
 0, & \text{otherwise}
-\end{cases}$
+\end{cases}
+$
 
-$\text{BCG/Delivery Consistency} =
+$
+\text{BCG/Delivery Consistency} =
 \begin{cases}
 1, & 0.7 \leq \frac{\text{BCG Volume}}{\text{Delivery Volume}} \leq 1.3 \\
 0, & \text{otherwise}
-\end{cases}$
+\end{cases}
+$
 
 -   If the computed ratio falls within this range, the pair is marked as consistent (`sconsistency = 1`).
 -   If the ratio is outside the bounds, the pair is flagged as inconsistent (`sconsistency = 0`).
@@ -132,7 +138,7 @@ The FASTR analysis generates one main output related to internal consistency: *(
 
 For a given indicator-pair in a given time period (i.e. year),
 
-$$\text{Percentage of districts that are consistent} = \frac{\text{Number of districts meeting consistency benchmark}}{\text{Total number of districts}} \times 100$$
+$$ \text{Percentage of districts that are consistent} = \frac{\text{Number of districts meeting consistency benchmark}}{\text{Total number of districts}} \times 100 $$
 
 The percentage of districts meeting consistency benchmarks can be presented at **national level** as well as **sub-national level**. This is generally presented for each indicator of interest and not aggregated across indicators.
 
@@ -146,7 +152,7 @@ Indicator completeness measures the extent to which facilities that are supposed
 
 For the FASTR analysis, completeness is defined as the percentage of reporting facilities each month out of the total number of facilities expected to report.
 
-For a given indicator in a given month, \$ \text{Completeness} = \frac{\text{Number of reporting facilities}}{\text{Number of expected facilities}} \times 100 \$
+For a given indicator in a given month, $$ \text{Completeness} = \frac{\text{Number of reporting facilities}}{\text{Number of expected facilities}} \times 100 $$
 
 A facility is expected to report for an indicator if it has ever reported for that indicator within the year. A facility is flagged as inactive if it did not report for six or more consecutive months before its first or after its last report.
 
@@ -247,9 +253,9 @@ This analysis evaluates data quality by incorporating completeness, outlier dete
 
 -   The total indicator points are calculated as the sum of completeness and outlier pass scores.
 -   The maximum possible score is determined based on the number of indicators.
--   A normalized completeness and outlier score `completeness_outlier_score` is also calculated: $$\text{CompletenessAndOutlier Score} = \frac{\text{Total Indicator Points}}{\text{Maximum Possible Points}}$$
+-   A normalized completeness and outlier score `completeness_outlier_score` is also calculated: $$ \text{CompletenessAndOutlier Score} = \frac{\text{Total Indicator Points}}{\text{Maximum Possible Points}} $$
 
-Example: Suppose a facility is assessed for three indicators. Each indicator can score up to 2 points (outlier and completeness), making the maximum possible score = 6. If the facility scores 5 points, the completeness-outlier score is: $$\text{CompletenessAndOutlier Score} = \frac{5}{6} = 0.83$$
+Example: Suppose a facility is assessed for three indicators. Each indicator can score up to 2 points (outlier and completeness), making the maximum possible score = 6. If the facility scores 5 points, the completeness-outlier score is: $$ \text{CompletenessAndOutlier Score} = \frac{5}{6} = 0.83 $$
 
 A binary DQA completeness-outlier pass flag is assigned (1 if the facility passes all checks, otherwise 0).
 
@@ -280,8 +286,6 @@ If no indicators required for consistency checks are available in the dataset, t
 
 The DQA score in such cases is determined solely based on completeness and outlier pass criteria.
 
-------------------------------------------------------------------------
+---
 
 Last edit 2025 September 2
-
-testing - render
