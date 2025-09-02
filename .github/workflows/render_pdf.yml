@@ -1,0 +1,34 @@
+name: Render Markdown to PDF
+
+on:
+  push:
+    branches:
+      - main  # Trigger this workflow on every push to the main branch
+    paths:
+      - '**/*.md' # Only run when a .md file is changed
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Render PDF
+      id: render
+      uses: docker://pandoc/latex:2.9
+      with:
+        args: >
+          --pdf-engine=xelatex
+          -o rendered.pdf
+          README.md
+          --template=template.tex
+      # This example assumes you have a template.tex file in your repo.
+      # It also assumes you want to render a single file, like README.md.
+      # You can modify the 'args' to render multiple files or use a different markdown file.
+
+    - name: Commit and push changes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "Auto-rendered PDF"
+        file_pattern: "*.pdf"
