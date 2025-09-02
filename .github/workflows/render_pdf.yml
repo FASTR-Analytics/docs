@@ -19,12 +19,7 @@ jobs:
       - name: Render PDF
         uses: docker://pandoc/latex:2.9
         with:
-          args: |
-            --pdf-engine=xelatex
-            -V mainfont="DejaVu Sans"
-            -V geometry:margin=1in
-            -o methodology/data_quality_assessment_documentation.pdf
-            methodology/01_module_data_quality_assessment_documentation.md
+          args: '--pdf-engine=xelatex -V geometry:margin=1in -o methodology/data_quality_assessment_documentation.pdf methodology/01_module_data_quality_assessment_documentation.md'
             
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v4
