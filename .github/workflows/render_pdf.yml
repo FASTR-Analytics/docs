@@ -24,7 +24,7 @@ jobs:
             --pdf-engine=xelatex
             -o methodology/data_quality_assessment_documentation.pdf
             methodology/01_module_data_quality_assessment_documentation.md
-            -V mainfont="DejaVu Sans"
+            -V mainfont='DejaVu Sans'
 
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v4
