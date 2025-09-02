@@ -2,27 +2,36 @@ name: Render Markdown to PDF
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - '**/*.md'
+    branches: [main]
+    paths: ['**/*.md']
 
 jobs:
-  build:
+  render:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Render PDF
-        uses: docker://pandoc/latex:2.9
+      - uses: actions/checkout@v3
+      
+      - name: Setup Pandoc
+        uses: r-lib/actions/setup-pandoc@v2
         with:
-          args: '--pdf-engine=xelatex -V geometry:margin=1in -o methodology/data_quality_assessment_documentation.pdf methodology/01_module_data_quality_assessment_documentation.md'
-            
-      - name: Commit and push changes
+          pandoc-version: '2.19.2' # Optional: specify version
+      
+      - name: Install LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-xetex texlive-fonts-recommended
+      
+      - name: Convert to PDF
+        run: |
+          pandoc --pdf-engine=xelatex \
+                 -V geometry:margin=1in \
+                 -o methodology/data_quality_assessment_documentation.pdf \
+                 methodology/01_module_data_quality_assessment_documentation.md
+      
+      - name: Commit PDF
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "Auto-rendered PDF"
-          file_pattern: "*.pdf"
+          commit_message: "Auto-generated PDF"
+          file_pattern: "methodology/*.pdf"
