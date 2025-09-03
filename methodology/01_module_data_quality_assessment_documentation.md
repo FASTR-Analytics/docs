@@ -20,7 +20,7 @@ Finally, these assessments are integrated to generate a DQA score, which reflect
 
 In FASTR, outliers are defined as unusually high values based on two criteria:
 
--   A value greater than 10 times the Median Absolute Deviation (MAD) from the median (computed only on values >= median), or
+-   A value greater than 10 times the Median Absolute Deviation (MAD) from the median (computed only on values \>= median), or
 
 -   A value contributing over 80% of the total volume for that indicator and facility-year.
 
@@ -71,8 +71,8 @@ FASTR assesses the following pairs of indicators to measure internal consistency
 
 | Indicator Pair            | Expected Relationship     |
 |---------------------------|---------------------------|
-| ANC1 / ANC 4              | Ratio >= 0.95              |
-| Penta1 / Penta 3          | Ratio >= 0.95              |
+| ANC1 / ANC 4              | Ratio \>= 0.95            |
+| Penta1 / Penta 3          | Ratio \>= 0.95            |
 | BCG / Facility Deliveries | Ratio between 0.7 and 1.3 |
 
 These pairs of indicators have expected relationships. For example, we expect the number of pregnant women receiving a first ANC visit will always be higher than the number of pregnant women receiving a fourth ANC visit. BCG is a birth dose vaccine so we expect that these indicators will be equal. However, we recognize there may be more variability in this predicted relationship thus we set a range of within 30%.
