@@ -288,32 +288,47 @@ The DQA score in such cases is determined solely based on completeness and outli
 
 #### Analysis outputs, data visualization and interpretation
 
+### Data Quality Assessment (DQA) Visual Outputs
+
 The FASTR analysis generates six main visual outputs:
 
 1.  Outliers: Heatmap table with zones as rows and health indicators as columns, color-coded by outlier percentage.
-
+    \begin{figure}[H]
+    \centering
     ![Percentage of facility-months that are outliers.](methodology/images/Default_1._Proportion_of_outliers.png)
+    \end{figure}
 
 2.  Indicator Completeness: Heatmap table with zones as rows and health indicators as columns, color-coded by completeness percentage.
-
+    \begin{figure}[H]
+    \centering
     ![Percentage of facility-months with complete data.](methodology/images/Default_2._Proportion_of_completed_records.png)
+    \end{figure}
 
 3.  Indicator completeness over time: Horizontal timeline charts showing completeness trends for each indicator over the analysis period.
-
+    \begin{figure}[H]
+    \centering
     ![Percentage of facility-months with complete data.](methodology/images/Default_3._Proportion_of_completed_records_over_time.png)
+    \end{figure}
 
 4.  Internal consistency: Heatmap table with zones as rows and consistency benchmark categories as columns, color-coded by performance.
-
+    \begin{figure}[H]
+    \centering
     ![Percentage of sub-national areas meeting consistency benchmarks.](methodology/images/Default_4._Proportion_of_sub-national_areas_meeting_consistency_criteria.png)
+    \end{figure}
 
 5.  Overall DQA score: Heatmap table with zones as rows and time periods as columns, color-coded by DQA score percentage.
-
+    \begin{figure}[H]
+    \centering
     ![Percentage of facility-months with adequate data quality over time.](methodology/images/Default_5._Overall_DQA_score.png)
+    \end{figure}
 
 6.  Mean DQA score: Heatmap table with zones as rows and time periods as columns, color-coded by average DQA score.
-
+    \begin{figure}[H]
+    \centering
     ![Average data quality score across facility-months.](methodology/images/Default_6._Mean_DQA_score.png)
-
+    \end{figure}
+    
+    
 Color Coding:
 
 -   Green: 90% or above (completeness/consistency), Below 1% (outliers)
