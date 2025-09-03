@@ -1,8 +1,10 @@
 name: Render Markdown to PDF
+
 on:
   push:
     branches: [main]
     paths: ['**/*.md']
+
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -16,44 +18,23 @@ jobs:
         with:
           pandoc-version: '2.19.2'
       
-      - name: Install LaTeX
+      - name: Install LaTeX and fonts
         run: |
           sudo apt-get update
           sudo apt-get install -y texlive-xetex texlive-fonts-recommended
       
-      - name: Convert each MD file to separate PDFs
+      - name: Convert MD files to PDFs
         run: |
-          pandoc --pdf-engine=xelatex \
-                 -V geometry:margin=1in \
-                 --number-sections \
-                 -o methodology/00_background_documentation.pdf \
-                 methodology/00_background_documentation.md
-          
-          pandoc --pdf-engine=xelatex \
-                 -V geometry:margin=1in \
-                 --number-sections \
-                 -o methodology/01_module_data_quality_assessment_documentation.pdf \
-                 methodology/01_module_data_quality_assessment_documentation.md
-          
-          pandoc --pdf-engine=xelatex \
-                 -V geometry:margin=1in \
-                 --number-sections \
-                 -o methodology/02_module_data_quality_adjustments_documentation.pdf \
-                 methodology/02_module_data_quality_adjustments_documentation.md
-          
-          pandoc --pdf-engine=xelatex \
-                 -V geometry:margin=1in \
-                 --number-sections \
-                 -o methodology/03_module_service_utilization_documentation.pdf \
-                 methodology/03_module_service_utilization_documentation.md
-          
-          pandoc --pdf-engine=xelatex \
-                 -V geometry:margin=1in \
-                 --number-sections \
-                 -o methodology/04_module_coverage_estimates_documentation.pdf \
-                 methodology/04_module_coverage_estimates_documentation.md
+          for file in methodology/*.md; do
+            filename=$(basename "$file" .md)
+            pandoc --pdf-engine=xelatex \
+                   -V geometry:margin=1in \
+                   --number-sections \
+                   -o "methodology/${filename}.pdf" \
+                   "$file"
+          done
       
-      - name: Commit PDF
+      - name: Commit PDFs
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "Auto-generated PDFs for each methodology file"
