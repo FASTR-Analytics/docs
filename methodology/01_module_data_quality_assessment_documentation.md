@@ -292,27 +292,27 @@ The FASTR analysis generates six main visual outputs:
 
 1.  Outliers: Heatmap table with zones as rows and health indicators as columns, color-coded by outlier percentage.
 
-    ![Percentage of facility-months that are outliers.](images/Default_1._Proportion_of_outliers.png)
+    ![Percentage of facility-months that are outliers.](methodology/images/Default_1._Proportion_of_outliers.png)
 
 2.  Indicator Completeness: Heatmap table with zones as rows and health indicators as columns, color-coded by completeness percentage.
 
-    ![Percentage of facility-months with complete data.](images/Default_2._Proportion_of_completed_records.png)
+    ![Percentage of facility-months with complete data.](methodology/images/Default_2._Proportion_of_completed_records.png)
 
 3.  Indicator completeness over time: Horizontal timeline charts showing completeness trends for each indicator over the analysis period.
 
-    ![Percentage of facility-months with complete data.](images/Default_3._Proportion_of_completed_records_over_time.png)
+    ![Percentage of facility-months with complete data.](methodology/images/Default_3._Proportion_of_completed_records_over_time.png)
 
 4.  Internal consistency: Heatmap table with zones as rows and consistency benchmark categories as columns, color-coded by performance.
 
-    ![Percentage of sub-national areas meeting consistency benchmarks.](images/Default_4._Proportion_of_sub-national_areas_meeting_consistency_criteria.png)
+    ![Percentage of sub-national areas meeting consistency benchmarks.](methodology/images/Default_4._Proportion_of_sub-national_areas_meeting_consistency_criteria.png)
 
 5.  Overall DQA score: Heatmap table with zones as rows and time periods as columns, color-coded by DQA score percentage.
 
-    ![Percentage of facility-months with adequate data quality over time.](images/Default_5._Overall_DQA_score.png)
+    ![Percentage of facility-months with adequate data quality over time.](methodology/images/Default_5._Overall_DQA_score.png)
 
 6.  Mean DQA score: Heatmap table with zones as rows and time periods as columns, color-coded by average DQA score.
 
-    ![Average data quality score across facility-months.](images/Default_6._Mean_DQA_score.png)
+    ![Average data quality score across facility-months.](methodology/images/Default_6._Mean_DQA_score.png)
 
 Color Coding:
 
