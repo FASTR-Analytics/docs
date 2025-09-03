@@ -20,7 +20,7 @@ Finally, these assessments are integrated to generate a DQA score, which reflect
 
 In FASTR, outliers are defined as unusually high values based on two criteria:
 
--   A value greater than 10 times the Median Absolute Deviation (MAD) from the median (computed only on values \>= median), or
+-   A value greater than 10 times the Median Absolute Deviation (MAD) from the median (computed only on values $\geq$ median), or
 
 -   A value contributing over 80% of the total volume for that indicator and facility-year.
 
@@ -58,7 +58,10 @@ This analysis is designed to detect and correct outliers in service volume data 
 -   Compute the median: find the median of the dataset.
 -   Calculate absolute deviations: subtract the median from each data point to get the absolute deviations (i.e., take the absolute value of the difference between each data point and the median).
 -   Find the median of absolute deviations: calculate the median of these absolute deviations.
--   To determine the degree of outlier, calculate the median average absolute deviation residuals: $$ \frac{\text{abs(volume - median volume)}}{\text{MAD}} $$
+-   To determine the degree of outlier, calculate the median average absolute deviation residuals:
+$$
+\frac{\text{abs(volume - median volume)}}{\text{MAD}}
+$$
 -   If this value is greater than 10, the value is an outlier.
 
 ### Consistency between related indicators
@@ -71,8 +74,8 @@ FASTR assesses the following pairs of indicators to measure internal consistency
 
 | Indicator Pair            | Expected Relationship     |
 |---------------------------|---------------------------|
-| ANC1 / ANC 4              | Ratio \>= 0.95            |
-| Penta1 / Penta 3          | Ratio \>= 0.95            |
+| ANC1 / ANC 4              | Ratio $\geq$ 0.95         |
+| Penta1 / Penta 3          | Ratio $\geq$ 0.95         |
 | BCG / Facility Deliveries | Ratio between 0.7 and 1.3 |
 
 These pairs of indicators have expected relationships. For example, we expect the number of pregnant women receiving a first ANC visit will always be higher than the number of pregnant women receiving a fourth ANC visit. BCG is a birth dose vaccine so we expect that these indicators will be equal. However, we recognize there may be more variability in this predicted relationship thus we set a range of within 30%.
@@ -103,7 +106,8 @@ This analysis identifies inconsistencies in service volume data by comparing rel
 
 -   If the denominator is zero, the consistency ratio is set to NA.
 
-**Step 5: Apply consistency benchmarks** - Each indicator pair has predefined lower and upper bounds for acceptable consistency ratios.
+**Step 5: Apply consistency benchmarks**
+-   Each indicator pair has predefined lower and upper bounds for acceptable consistency ratios.
 
 $$
 \text{ANC Consistency} =
@@ -143,7 +147,8 @@ Indicator completeness measures the extent to which facilities that are supposed
 
 For the FASTR analysis, completeness is defined as the percentage of reporting facilities each month out of the total number of facilities expected to report.
 
-For a given indicator in a given month, $$ \text{Completeness} = \frac{\text{Number of reporting facilities}}{\text{Number of expected facilities}} \times 100 $$
+For a given indicator in a given month,
+$$ \text{Completeness} = \frac{\text{Number of reporting facilities}}{\text{Number of expected facilities}} \times 100 $$
 
 A facility is expected to report for an indicator if it has ever reported for that indicator within the year. A facility is flagged as inactive if it did not report for six or more consecutive months before its first or after its last report.
 
@@ -181,17 +186,19 @@ This analysis ensures that all health facilities and indicators have a complete 
 -   A complete month-wise facility-indicator grid is generated, ensuring that every facility has a full sequence of months between its first and last reporting period.
 -   Period and quarter identifiers (`period_id` and `quarter_id`) are created in `YYYYMM` format to facilitate tracking.
 
-**Step 2: Merge with existing data** - The generated full time series is merged with the actual reported data to retain observed counts. - Missing values in the count column indicate periods where a facility did not report service volumes.
+**Step 2: Merge with existing data**
+-   The generated full time series is merged with the actual reported data to retain observed counts.
+-   Missing values in the count column indicate periods where a facility did not report service volumes.
 
 **Step 3: Apply completeness tagging**
 
 -   Each facility's reporting behavior is assessed using the following flags:
-    -   `has_reported`:Indicates whether a facility has reported for a given month.
+    -   `has_reported`: Indicates whether a facility has reported for a given month.
     -   `first_report_idx:` Identifies the first month a facility submitted a report.
     -   `last_report_idx`: Identifies the last month a facility submitted a report.
     -   `missing_group`: Assigns a unique identifier to each consecutive period of missing months for a facility. When a facility has missing data for multiple months in a row, they are grouped under the same `missing_group_id`. If reporting resumes and then stops again, a new `missing_group_id` is assigned to the next block of missing months. This helps distinguish separate reporting gaps within a facility’s data.
     -   `missing_count`: Represents the number of consecutive missing months within each `missing_group`.
--   A facility is flagged as **inactive** (`offline_flag = 2)` if:
+-   A facility is flagged as **inactive** (`offline_flag = 2) if:
     -   It remained inactive (did not report any data) for six or more consecutive months before its first reported month.
     -   It remained inactive for six or more consecutive months after its last reported month.
 
@@ -244,9 +251,11 @@ This analysis evaluates data quality by incorporating completeness, outlier dete
 
 -   The total indicator points are calculated as the sum of completeness and outlier pass scores.
 -   The maximum possible score is determined based on the number of indicators.
--   A normalized completeness and outlier score `completeness_outlier_score` is also calculated: $$ \text{CompletenessAndOutlier Score} = \frac{\text{Total Indicator Points}}{\text{Maximum Possible Points}} $$
+-   A normalized completeness and outlier score `completeness_outlier_score` is also calculated:
+$$ \text{CompletenessAndOutlier Score} = \frac{\text{Total Indicator Points}}{\text{Maximum Possible Points}} $$
 
-Example: Suppose a facility is assessed for three indicators. Each indicator can score up to 2 points (outlier and completeness), making the maximum possible score = 6. If the facility scores 5 points, the completeness-outlier score is: $$ \text{CompletenessAndOutlier Score} = \frac{5}{6} = 0.83 $$
+Example: Suppose a facility is assessed for three indicators. Each indicator can score up to 2 points (outlier and completeness), making the maximum possible score = 6. If the facility scores 5 points, the completeness-outlier score is:
+$$ \text{CompletenessAndOutlier Score} = \frac{5}{6} = 0.83 $$
 
 A binary DQA completeness-outlier pass flag is assigned (1 if the facility passes all checks, otherwise 0).
 
@@ -313,6 +322,6 @@ Color Coding:
 
 -   Red: Below 80% (completeness/consistency), 3% or above (outliers)
 
-------------------------------------------------------------------------
+---
 
 Last edit 2025 September 3
