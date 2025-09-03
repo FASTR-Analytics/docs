@@ -69,10 +69,10 @@ Program indicators with a predictable relationship are examined to determine whe
 
 FASTR assesses the following pairs of indicators to measure internal consistency:
 
-| Indicator Pair | Expected Relationship |
-|---|---|
-| ANC1 / ANC 4 | Ratio ≥ 0.95 |
-| Penta1 / Penta 3 | Ratio ≥ 0.95 |
+| Indicator Pair            | Expected Relationship     |
+|---------------------------|---------------------------|
+| ANC1 / ANC 4              | Ratio ≥ 0.95              |
+| Penta1 / Penta 3          | Ratio ≥ 0.95              |
 | BCG / Facility Deliveries | Ratio between 0.7 and 1.3 |
 
 These pairs of indicators have expected relationships. For example, we expect the number of pregnant women receiving a first ANC visit will always be higher than the number of pregnant women receiving a fourth ANC visit. BCG is a birth dose vaccine so we expect that these indicators will be equal. However, we recognize there may be more variability in this predicted relationship thus we set a range of within 30%.
@@ -131,21 +131,9 @@ $$
 -   If the ratio is outside the bounds, the pair is flagged as inconsistent (`sconsistency = 0`).
 -   If the ratio cannot be computed due to missing values, it remains NA.
 
-**Step 6: Expand results to facility level** - Each facility is assigned the consistency results of its corresponding district or ward.
+**Step 6: Expand results to facility level**
 
-#### Analysis outputs, data visualization and interpretation
-
-The FASTR analysis generates one main output related to internal consistency: *(Insert here image/illustration heat-map)*
-
-*Percent of districts meeting consistency benchmarks*
-
-For a given indicator-pair in a given time period (i.e. year),
-
-$$ \text{Percentage of districts that are consistent} = \frac{\text{Number of districts meeting consistency benchmark}}{\text{Total number of districts}} \times 100 $$
-
-The percentage of districts meeting consistency benchmarks can be presented at **national level** as well as **sub-national level**. This is generally presented for each indicator of interest and not aggregated across indicators.
-
-*illustration example here* \*The following colors have been used to create a heat map within the visualization: \*\*insert here the color scale(s)\*\*\*
+-   Each facility is assigned the consistency results of its corresponding district or ward.
 
 ### Indicator completeness
 
@@ -289,6 +277,42 @@ If no indicators required for consistency checks are available in the dataset, t
 
 The DQA score in such cases is determined solely based on completeness and outlier pass criteria.
 
----
+#### Analysis outputs, data visualization and interpretation
 
-Last edit 2025 September 2 (pandoc test)
+The FASTR analysis generates six main visual outputs:
+
+1.  Outliers: Heatmap table with zones as rows and health indicators as columns, color-coded by outlier percentage.
+
+    ![Percentage of facility-months that are outliers.](images/Default_1._Proportion_of_outliers.png)
+
+2.  Indicator Completeness: Heatmap table with zones as rows and health indicators as columns, color-coded by completeness percentage.
+
+    ![Percentage of facility-months with complete data.](images/Default_2._Proportion_of_completed_records.png)
+
+3.  Indicator completeness over time: Horizontal timeline charts showing completeness trends for each indicator over the analysis period.
+
+    ![Percentage of facility-months with complete data.](images/Default_3._Proportion_of_completed_records_over_time.png)
+
+4.  Internal consistency: Heatmap table with zones as rows and consistency benchmark categories as columns, color-coded by performance.
+
+    ![Percentage of sub-national areas meeting consistency benchmarks.](images/Default_4._Proportion_of_sub-national_areas_meeting_consistency_criteria.png)
+
+5.  Overall DQA score: Heatmap table with zones as rows and time periods as columns, color-coded by DQA score percentage.
+
+    ![Percentage of facility-months with adequate data quality over time.](images/Default_5._Overall_DQA_score.png)
+
+6.  Mean DQA score: Heatmap table with zones as rows and time periods as columns, color-coded by average DQA score.
+
+    ![Average data quality score across facility-months.](images/Default_6._Mean_DQA_score.png)
+
+Color Coding:
+
+-   Green: 90% or above (completeness/consistency), Below 1% (outliers)
+
+-   Yellow: 80% to 89% (completeness), 1% to 2% (outliers)
+
+-   Red: Below 80% (completeness/consistency), 3% or above (outliers)
+
+------------------------------------------------------------------------
+
+Last edit 2025 September 3

@@ -1,9 +1,3 @@
----
-editor_options: 
-  markdown: 
-    wrap: 72
----
-
 # Module 2: Data Quality Adjustment
 
 ## Background
@@ -128,7 +122,8 @@ The adjustment process follows this order:
     Jan 2024)
 
 -   Only applied if that previous value is valid (not an outlier, and \>
-    0)
+
+    0)  
 
 -   Method tag: `same_month_last_year`
 
@@ -217,4 +212,4 @@ The module generates three levels of geographic aggregation:
 
 \_\_
 
-Last edit 2025 August 6
+Last edit 2025 September 3
