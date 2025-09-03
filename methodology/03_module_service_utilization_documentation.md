@@ -266,20 +266,21 @@ Once expected values have been calculated for each level (country, province, dis
 
 For each month and indicator, the pipeline calculates:
 
--   **Absolute and percentage difference** between predicted and actual values: $$\text{diff_percent} = 100 \times \frac{\text{predicted} - \text{actual}}{\text{predicted}}$$
+- **Absolute and percentage difference** between predicted and actual values:
+$$\text{diff_percent} = 100 \times \frac{\text{predicted} - \text{actual}}{\text{predicted}}$$
 
--   A configurable threshold parameter `DIFFPERCENT` (default: `10`) is used to determine when a disruption is significant.
+- A configurable threshold parameter `DIFFPERCENT` (default: `10`) is used to determine when a disruption is significant.
 
-    If the percentage difference exceeds ±10%, the expected (predicted) value is retained and used for plotting and summary statistics. Otherwise, the actual observed value is used.
+  If the percentage difference exceeds ±10%, the expected (predicted) value is retained and used for plotting and summary statistics. Otherwise, the actual observed value is used.
 
-    This ensures that minor fluctuations do not lead to artificial disruptions in the visualization, while meaningful deviations are preserved.
+  This ensures that minor fluctuations do not lead to artificial disruptions in the visualization, while meaningful deviations are preserved.
 
--   The final adjusted value for plotting is stored in a field such as `count_expected_if_above_diff_threshold`.
+- The final adjusted value for plotting is stored in a field such as `count_expected_if_above_diff_threshold`.
 
-    This value reflects either:
+  This value reflects either:
 
-    -   The predicted count (if deviation \> threshold), or
-    -   The actual count (if within acceptable range).
+  - The predicted count (if deviation > threshold), or
+  - The actual count (if within acceptable range).
 
 This logic is applied consistently across admin level 1 (national), admin level 2 (province), and admin level 3 (district).
 
