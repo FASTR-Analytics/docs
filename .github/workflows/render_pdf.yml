@@ -31,7 +31,6 @@ jobs:
                    -V geometry:margin=1in \
                    --number-sections \
                    -V mainfont="Latin Modern Roman" \
-                   --resource-path=methodology/images \
                    -o "methodology/${filename}.pdf" \
                    "$file"
           done
