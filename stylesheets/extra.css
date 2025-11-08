@@ -1,0 +1,182 @@
+/* Custom Styles for FASTR Methodology Documentation */
+
+/* FASTR Brand Colors */
+:root {
+  --md-primary-fg-color: #025b61;
+  --md-primary-fg-color--light: #037278;
+  --md-primary-fg-color--dark: #014449;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #037278;
+  --md-primary-fg-color--light: #048a92;
+  --md-primary-fg-color--dark: #025b61;
+}
+
+/* Improve code block appearance */
+.highlight pre {
+  border-radius: 0.4rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced admonition styling */
+.admonition {
+  border-radius: 0.4rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Better table styling */
+table {
+  border-radius: 0.4rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+table th {
+  font-weight: 600;
+  background-color: var(--md-primary-fg-color--light);
+}
+
+table tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Improve heading spacing */
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+h1 {
+  border-bottom: 2px solid var(--md-primary-fg-color);
+  padding-bottom: 0.3em;
+}
+
+/* Enhanced blockquote styling */
+blockquote {
+  border-left: 4px solid var(--md-accent-fg-color);
+  padding-left: 1em;
+  margin-left: 0;
+  font-style: italic;
+  background-color: rgba(0, 0, 0, 0.02);
+  padding: 0.5em 1em;
+  border-radius: 0 0.4rem 0.4rem 0;
+}
+
+/* Better link styling */
+a {
+  text-decoration: none;
+  border-bottom: 1px dotted transparent;
+  transition: border-bottom-color 0.2s;
+}
+
+a:hover {
+  border-bottom-color: var(--md-accent-fg-color);
+}
+
+/* Improve footnote appearance */
+.footnote {
+  font-size: 0.875em;
+  line-height: 1.6;
+}
+
+/* Enhanced navigation tabs */
+.md-tabs {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Better image styling */
+img {
+  border-radius: 0.4rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  height: auto;
+}
+
+/* Improve definition list styling */
+dt {
+  font-weight: 600;
+  color: var(--md-primary-fg-color);
+  margin-top: 1em;
+}
+
+dd {
+  margin-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+/* Better keyboard key styling */
+kbd {
+  background-color: var(--md-code-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.2rem;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+  padding: 0.1em 0.4em;
+  font-family: var(--md-code-font-family);
+  font-size: 0.85em;
+}
+
+/* Improve horizontal rule */
+hr {
+  border: none;
+  border-top: 2px solid var(--md-default-fg-color--lightest);
+  margin: 2em 0;
+}
+
+/* Enhanced task list styling */
+.task-list-item {
+  list-style: none;
+}
+
+.task-list-control {
+  margin-right: 0.5em;
+}
+
+/* Better spacing for content sections */
+.md-content__inner {
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+/* Improve search highlighting */
+mark {
+  background-color: var(--md-accent-fg-color);
+  color: white;
+  padding: 0.1em 0.2em;
+  border-radius: 0.2rem;
+}
+
+/* Dark mode specific adjustments */
+[data-md-color-scheme="slate"] table tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-md-color-scheme="slate"] blockquote {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-md-color-scheme="slate"] img {
+  opacity: 0.9;
+}
+
+/* Responsive typography improvements */
+@media screen and (max-width: 76.1875em) {
+  .md-content__inner {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Print styling */
+@media print {
+  .md-header,
+  .md-tabs,
+  .md-footer,
+  .md-sidebar {
+    display: none;
+  }
+
+  img {
+    box-shadow: none;
+  }
+}
