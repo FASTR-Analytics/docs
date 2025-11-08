@@ -1,0 +1,14 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
+site/
+methodology/.DS_Store
+methodology/docs/.DS_Store
+methodology/site/
+*.pyc
+*.log
+.venv/
+venv/
+*.Rproj

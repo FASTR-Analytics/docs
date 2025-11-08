@@ -1,0 +1,177 @@
+site_name: FASTR Methodology
+site_description: Documentation for the Background chapter and four FASTR modules.
+site_url: https://FASTR-Analytics.github.io/docs/
+docs_dir: docs
+repo_url: https://github.com/FASTR-Analytics/docs
+repo_name: FASTR-Analytics/docs
+
+# Navigation
+nav:
+  - Overview: index.md
+  - Background: 00_background_documentation.md
+  - Module 1 · Data Quality Assessment: 01_module_data_quality_assessment_documentation.md
+  - Module 2 · Data Quality Adjustments: 02_module_data_quality_adjustments_documentation.md
+  - Module 3 · Service Utilization: 03_module_service_utilization_documentation.md
+  - Module 4 · Coverage Estimates: 04_module_coverage_estimates_documentation.md
+
+# Theme Configuration
+theme:
+  name: material
+  language: en
+
+  # Color Palette
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+  # Typography
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+  # Features
+  features:
+    # Navigation
+    - navigation.instant          # Instant loading
+    - navigation.instant.progress # Progress indicator
+    - navigation.tracking         # Anchor tracking
+    - navigation.tabs             # Tabs navigation
+    - navigation.tabs.sticky      # Sticky tabs
+    - navigation.sections         # Navigation sections
+    - navigation.expand           # Expand navigation by default
+    - navigation.indexes          # Section index pages
+    - navigation.top              # Back to top button
+    - navigation.footer           # Footer navigation
+
+    # Table of Contents
+    - toc.follow                  # TOC follows scrolling
+    - toc.integrate               # TOC integrated into navigation
+
+    # Search
+    - search.suggest              # Search suggestions
+    - search.highlight            # Highlight search terms
+    - search.share                # Share search results
+
+    # Content
+    - content.code.copy           # Copy code button
+    - content.code.annotate       # Code annotations
+    - content.tabs.link           # Link content tabs
+    - content.tooltips            # Improved tooltips
+
+  # Logo and Icons
+  icon:
+    logo: material/book-open-page-variant
+    repo: fontawesome/brands/git-alt
+    admonition:
+      note: fontawesome/solid/note-sticky
+      abstract: fontawesome/solid/book
+      info: fontawesome/solid/circle-info
+      tip: fontawesome/solid/bullhorn
+      success: fontawesome/solid/check
+      question: fontawesome/solid/circle-question
+      warning: fontawesome/solid/triangle-exclamation
+      failure: fontawesome/solid/bomb
+      danger: fontawesome/solid/skull
+      bug: fontawesome/solid/robot
+      example: fontawesome/solid/flask
+      quote: fontawesome/solid/quote-left
+
+# Plugins
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+      lang: en
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+        remove_comments: true
+      cache_safe: true
+
+# Markdown Extensions
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      permalink_title: Anchor link to this section
+      toc_depth: 3
+
+  # Python Markdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+      use_pygments: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Extra Configuration
+extra:
+  # Analytics (optional - add your own tracking ID)
+  # analytics:
+  #   provider: google
+  #   property: G-XXXXXXXXXX
+
+  # Social Links
+  social:
+    - icon: fontawesome/solid/house
+      link: /
+      name: Home
+
+  # Footer
+  generator: false  # Remove "Made with Material for MkDocs" notice
+
+  # Version
+  version:
+    provider: mike
+
+# Additional CSS
+extra_css:
+  - stylesheets/extra.css
+
+# Copyright
+copyright: Copyright &copy; 2025 FASTR Methodology Documentation
