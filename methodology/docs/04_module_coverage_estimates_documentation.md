@@ -818,7 +818,7 @@ Part 2 serves three key purposes:
 Part 2 requires the following inputs from Part 1:
 
 | Input File | Description | Key Columns |
-|-----------|-------------|-------------|
+|------------|-------------|-------------|
 | `M4_combined_results_national.csv` | Combined coverage estimates for all denominators at national level | admin_area_1, year, indicator_common_id, denominator_best_or_survey, value |
 | `M4_combined_results_admin2.csv` | Combined coverage estimates for admin level 2 | admin_area_1, admin_area_2, year, indicator_common_id, denominator_best_or_survey, value |
 | `M4_combined_results_admin3.csv` | Combined coverage estimates for admin level 3 | admin_area_1, admin_area_3, year, indicator_common_id, denominator_best_or_survey, value |
@@ -935,7 +935,7 @@ Data frame with original coverage values plus a `delta` column showing year-over
 **Example Output**:
 
 | admin_area_1 | indicator_common_id | denominator | year | coverage | delta |
-|--------------|-------------------|-------------|------|----------|-------|
+|--------------|---------------------|-------------|------|----------|-------|
 | Country A | penta3 | dpenta1_dpt | 2018 | 75.2 | NA |
 | Country A | penta3 | dpenta1_dpt | 2019 | 78.5 | 3.3 |
 | Country A | penta3 | dpenta1_dpt | 2020 | 80.1 | 1.6 |
@@ -1000,7 +1000,7 @@ Data frame with projected coverage for each year, indicator, denominator, and ge
 **Example Output**:
 
 | admin_area_1 | indicator_common_id | denominator | year | baseline_year | projected |
-|--------------|-------------------|-------------|------|---------------|-----------|
+|--------------|---------------------|-------------|------|---------------|-----------|
 | Country A | penta3 | dpenta1_dpt | 2018 | 2018 | 75.0 |
 | Country A | penta3 | dpenta1_dpt | 2019 | 2018 | 78.3 |
 | Country A | penta3 | dpenta1_dpt | 2020 | 2018 | 79.9 |
@@ -1124,23 +1124,23 @@ Part 2 executes the following workflow for each administrative level (national, 
 
 **Step 2: For Each Admin Level**
 
-   **Sub-step 1: Filter by Denominator Selection**
-   - Apply user's denominator choices using `filter_by_denominator_selection()`
-   - Message: Number of records selected
+**Sub-step 1: Filter by Denominator Selection**
+- Apply user's denominator choices using `filter_by_denominator_selection()`
+- Message: Number of records selected
 
-   **Sub-step 2: Compute Deltas**
-   - Calculate year-over-year coverage changes using `coverage_deltas()`
-   - Creates complete time series with gaps filled
+**Sub-step 2: Compute Deltas**
+- Calculate year-over-year coverage changes using `coverage_deltas()`
+- Creates complete time series with gaps filled
 
-   **Sub-step 3: Project Survey Values**
-   - Use `project_survey_from_deltas()` to extend survey estimates
-   - Baseline is anchored to most recent survey
-   - Projections use cumulative deltas from HMIS trends
+**Sub-step 3: Project Survey Values**
+- Use `project_survey_from_deltas()` to extend survey estimates
+- Baseline is anchored to most recent survey
+- Projections use cumulative deltas from HMIS trends
 
-   **Sub-step 4: Build Final Results**
-   - Combine HMIS coverage, projections, and original surveys
-   - Calculate final projected estimates using additive formula
-   - Preserve all metadata
+**Sub-step 4: Build Final Results**
+- Combine HMIS coverage, projections, and original surveys
+- Calculate final projected estimates using additive formula
+- Preserve all metadata
 
 **Step 3: Standardize and Save Outputs**
 - Define required columns for each admin level

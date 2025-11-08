@@ -345,34 +345,45 @@ These are automatically deleted upon successful completion. If the script crashe
 The disruption analysis uses fixed-effects panel regression models (`fixest::feols()`) at multiple geographic levels.
 
 **Country-wide Model** (Admin Area 1):
+
 ```r
 count ~ date + factor(month) + tagged
 ```
+
 Clustered standard errors at district level (`admin_area_3`)
 
 **Province-level Models** (Admin Area 2):
+
 ```r
 count ~ date + factor(month) + tagged | admin_area_2
 ```
+
 Separate regression for each province, clustered at district level
 
 **District-level Models** (Admin Area 3 - optional):
+
 ```r
 count ~ date + factor(month) + tagged | admin_area_3
 ```
+
 Separate regression for each district, clustered at ward level (`admin_area_4`)
 
 **Ward-level Models** (Admin Area 4 - optional):
+
 ```r
 count ~ date + factor(month) + tagged | admin_area_4
 ```
+
 Separate regression for each ward/finest unit
 
 ### Supporting Functions
 
-**`mem_usage(msg)`**: Tracks and logs memory consumption throughout execution
+**`mem_usage(msg)`**:
+
+Tracks and logs memory consumption throughout execution
 
 **Data Processing**:
+
 - Batch processing with disk-based temporary files for memory efficiency
 - Efficient data.table operations for large datasets
 - Progressive aggregation and merging strategies
@@ -392,7 +403,7 @@ A robust regression model estimates expected service volumes per indicator × ge
 
 Each rule is controlled by user-defined parameters, allowing customization of the sensitivity and behavior of the detection logic:
 
-**Sharp Disruptions**
+**Sharp Disruptions**:
 
 Flags a single month when the standardized residual (residual divided by MAD) exceeds a threshold:
 
@@ -401,15 +412,16 @@ $$ \left| \frac{\text{residual}}{\text{MAD}} \right| \geq \text{MADS_THRESHOLD} 
 - **Parameter:** `MADS_THRESHOLD` (default: `1.5`)
 - Lower values make the detection more sensitive to sudden spikes or dips.
 
-**Sustained Drops**
+**Sustained Drops**:
 
 Flags a sustained drop if:
+
 - Three consecutive months show mild deviations (standardized residual ≥ 1), and
 - The final month also exceeds the `MADS_THRESHOLD`.
 
 This captures slower, compounding declines.
 
-**Sustained Dips**
+**Sustained Dips**:
 
 Flags periods where the actual volume falls consistently below a defined proportion of expected volume (smoothed prediction):
 
@@ -418,7 +430,7 @@ $$ \text{count\_original} < \text{DIP\_THRESHOLD} \times \text{count\_smooth} $$
 - **Parameter:** `DIP_THRESHOLD` (default: `0.90`)
 - Users can adjust this to detect deeper or shallower dips (e.g., `0.80` for a 20% drop).
 
-**Sustained Rises**
+**Sustained Rises**:
 
 Symmetric to dips, flags periods of consistent overperformance:
 
@@ -427,19 +439,22 @@ $$ \text{count\_original} > \text{RISE\_THRESHOLD} \times \text{count\_smooth} $
 - **Parameter:** `RISE_THRESHOLD` (default: `1 / DIP_THRESHOLD`, e.g., `1.11`)
 - Users can adjust this to detect upward surges in volume.
 
-**Missing Data**
+**Missing Data**:
 
 Flags when 2 or more of the past 3 months have missing (`NA`) or zero service volume.
+
 - **Fixed rule**.
 
-**Recent Tail Override**
+**Recent Tail Override**:
 
 Automatically flags all months in the last 6 months of data to ensure recent trends are reviewed, even if model-based tagging is not conclusive.
+
 - **Fixed rule**.
 
-**Final Flag:**
+**Final Flag**:
 
 A month is assigned `tagged = 1` if **any** of the following conditions are met:
+
 - `tag_sharp == 1`
 - `tag_sustained == 1`
 - `tag_sustained_dip == 1`
@@ -449,25 +464,31 @@ A month is assigned `tagged = 1` if **any** of the following conditions are met:
 
 ### Robust Regression Model
 
-**Model fitting:**
+**Model fitting**:
+
 - If ≥12 observations and >12 unique dates:
+
 $$Y_{it} = \beta_0 + \sum \gamma_m \cdot \text{month}_m + \beta_1 \cdot \text{date} + \epsilon_{it}$$
 
 - If only ≥12 observations:
+
 $$Y_{it} = \beta_0 + \beta_1 \cdot \text{date} + \epsilon_{it}$$
 
 - If insufficient data: use the median of observed values.
 
-**Apply rolling median smoothing** to predictions:
+**Apply rolling median smoothing to predictions**:
+
 $$ \text{count\_smooth}_{it} = \text{Median}(\text{count\_predict}_{t-k}, \dots, \text{count\_predict}_t, \dots, \text{count\_predict}_{t+k}) $$
 
 - **Parameter:** `SMOOTH_K` (default: 7, must be odd)
 - Larger `SMOOTH_K` smooths more; smaller retains more variation.
 
-**Calculate residuals:**
+**Calculate residuals**:
+
 $$ \text{residual}_{it} = \text{count\_original}_{it} - \text{count\_smooth}_{it} $$
 
-**Standardize residuals using MAD:**
+**Standardize residuals using MAD**:
+
 $$ \text{robust\_control}_{it} = \text{residual}_{it} / \text{MAD}_i $$
 
 ### Disruption Analysis Regression Models
@@ -539,37 +560,44 @@ Where:
 Each regression level produces the following outputs:
 
 - **Expected values (`expect_admin_area_*`)**: Predicted service volume adjusted for seasonality and trends.
+
 - **Disruption effect (`b_admin_area_*`)**: Estimated relative change during disruptions:
+
 $$ b_{\text{admin\_area\_*}} = -\frac{\text{diff mean}}{\text{predict mean}} $$
 
 - **Trend coefficient (`b_trend_admin_area_*`)**: Reflects long-term trend.
-  - Positive = increasing service use
-  - Negative = declining service use
-  - Near zero = stable trend
+    - Positive = increasing service use
+    - Negative = declining service use
+    - Near zero = stable trend
+
 - **P-value (`p_admin_area_*`)**: Measures statistical significance of the disruption effect.
-  - Lower values = stronger evidence of true disruption
+    - Lower values = stronger evidence of true disruption
 
 ### Statistical Methods Used
 
 **Robust Regression (`MASS::rlm`)**:
+
 - Uses iteratively reweighted least squares (IRLS)
 - Minimizes influence of outliers and extreme values
 - More resistant to model misspecification than ordinary least squares
 - Default: Huber weighting with maximum 100 iterations
 
 **MAD (Median Absolute Deviation)**:
+
 - Robust measure of scale/variability
 - Formula: `MAD = median(|x - median(x)|)`
 - More resistant to outliers than standard deviation
 - Used to standardize residuals for anomaly detection
 
 **Panel Regression (`fixest::feols`)**:
+
 - Fixed-effects estimation with clustered standard errors
 - Accounts for within-group correlation in errors
 - More efficient than traditional panel regression packages
 - Handles unbalanced panels gracefully
 
 **Geographic Clustering**:
+
 - Regressions use clustered standard errors at the lowest available geographic level
 - This accounts for within-area correlation in service delivery patterns
 - Example: Country-wide model clusters by district, province model clusters by district
@@ -661,19 +689,20 @@ Once expected values have been calculated for each level (country, province, dis
 For each month and indicator, the pipeline calculates:
 
 - **Absolute and percentage difference** between predicted and actual values:
+
 $$ \text{diff\_percent} = 100 \times \frac{\text{predicted} - \text{actual}}{\text{predicted}} $$
 
 - A configurable threshold parameter `DIFFPERCENT` (default: `10`) is used to determine when a disruption is significant.
 
-  If the percentage difference exceeds ±10%, the expected (predicted) value is retained and used for plotting and summary statistics. Otherwise, the actual observed value is used.
+    If the percentage difference exceeds ±10%, the expected (predicted) value is retained and used for plotting and summary statistics. Otherwise, the actual observed value is used.
 
-  This ensures that minor fluctuations do not lead to artificial disruptions in the visualization, while meaningful deviations are preserved.
+    This ensures that minor fluctuations do not lead to artificial disruptions in the visualization, while meaningful deviations are preserved.
 
 - The final adjusted value for plotting is stored in a field such as `count_expected_if_above_diff_threshold`.
 
-  This value reflects either:
-  - The predicted count (if deviation > threshold), or
-  - The actual count (if within acceptable range).
+    This value reflects either:
+    - The predicted count (if deviation > threshold), or
+    - The actual count (if within acceptable range).
 
 This logic is applied consistently across all admin levels. These adjusted values are then exported as part of the final output files for each level.
 
@@ -701,6 +730,7 @@ source("03_module_service_utilization.R")
 **Objective**: Quantify disruptions in maternal health services during pandemic
 
 **Configuration**:
+
 ```r
 SELECTEDCOUNT <- "count_final_both"
 MADS_THRESHOLD <- 1.5  # Standard sensitivity
@@ -709,12 +739,14 @@ RUN_DISTRICT_MODEL <- TRUE  # District-level estimates
 ```
 
 **Analysis Approach**:
+
 1. Run control chart to identify disrupted months
 2. Examine `M3_chartout.csv` for temporal patterns
 3. Use `M3_all_indicators_shortfalls_admin_area_1.csv` for national summary
 4. Use `M3_all_indicators_shortfalls_admin_area_3.csv` for district hotspots
 
 **Expected Outputs**:
+
 - Sharp disruptions during lockdown months
 - Sustained dips in antenatal care, deliveries
 - Possible sustained rises in missed appointments
@@ -724,6 +756,7 @@ RUN_DISTRICT_MODEL <- TRUE  # District-level estimates
 **Objective**: Monthly monitoring of all health services for early warning
 
 **Configuration**:
+
 ```r
 SELECTEDCOUNT <- "count_final_completeness"  # Adjust for reporting gaps
 MADS_THRESHOLD <- 1.0  # High sensitivity
@@ -732,12 +765,14 @@ RUN_DISTRICT_MODEL <- FALSE  # Faster runtime for frequent updates
 ```
 
 **Analysis Approach**:
+
 1. Run monthly after new data available
 2. Filter `M3_chartout.csv` for `tagged == 1` in recent months
 3. Investigate flagged indicator-geography combinations
 4. Generate automated alerts for stakeholders
 
 **Expected Outputs**:
+
 - Early detection of emerging disruptions
 - Timely identification of data quality issues
 - Geographic targeting for supportive supervision
@@ -747,6 +782,7 @@ RUN_DISTRICT_MODEL <- FALSE  # Faster runtime for frequent updates
 **Objective**: Assess recovery of health services after conflict ends
 
 **Configuration**:
+
 ```r
 SELECTEDCOUNT <- "count_final_both"
 MADS_THRESHOLD <- 2.0  # Conservative (major disruptions only)
@@ -756,12 +792,14 @@ RUN_DISTRICT_MODEL <- TRUE  # District-level for targeted support
 ```
 
 **Analysis Approach**:
+
 1. Focus on post-conflict period in outputs
 2. Compare `count_sum` to `count_expect_sum` over time
 3. Track `shortfall_percent` trends toward zero (recovery)
 4. Identify districts with persistent disruptions
 
 **Expected Outputs**:
+
 - Quantified service volume gaps during conflict
 - Recovery trajectories by service type
 - Geographic prioritization for rebuilding efforts
@@ -773,9 +811,10 @@ RUN_DISTRICT_MODEL <- TRUE  # District-level for targeted support
 
 ### Common Issues and Solutions
 
-**Issue**: Script crashes with "out of memory" error
+#### Issue: Script crashes with "out of memory" error
 
 **Solutions**:
+
 - Reduce batch sizes (e.g., `BATCH_SIZE_IND <- 3`)
 - Set `RUN_DISTRICT_MODEL <- FALSE`
 - Set `RUN_ADMIN_AREA_4_ANALYSIS <- FALSE`
@@ -784,72 +823,78 @@ RUN_DISTRICT_MODEL <- TRUE  # District-level for targeted support
 
 ---
 
-**Issue**: Warning "model failed to converge"
+#### Issue: Warning "model failed to converge"
 
 **Explanation**: Robust regression didn't fully converge within 100 iterations
 
 **Impact**: Usually minimal - partial convergence often sufficient
 
 **Solutions**:
+
 - Check data quality for that panel
 - Increase `maxit` parameter in `rlm()` call (line 229, 247)
 - Generally safe to ignore if only a few panels affected
 
 ---
 
-**Issue**: Many empty rows in output files
+#### Issue: Many empty rows in output files
 
 **Explanation**: Insufficient data for certain indicator-geography combinations
 
 **Solutions**:
+
 - Expected behavior for sparse indicators
 - Filter outputs to non-missing values
 - Consider aggregating to higher geographic level
 
 ---
 
-**Issue**: All recent months flagged as disruptions
+#### Issue: All recent months flagged as disruptions
 
 **Explanation**: Automatic flagging of last 6 months
 
 **Purpose**: Ensures recent trends reviewed even without strong statistical evidence
 
 **Solutions**:
+
 - Expected behavior, not a bug
 - Review recent months manually
 - Adjust `last_6_months` logic if needed (line 333)
 
 ---
 
-**Issue**: `tagged` variable dropped from regression
+#### Issue: `tagged` variable dropped from regression
 
 **Message**: Variable automatically set to 0
 
 **Explanation**: No variation in `tagged` within that panel (all 0 or all 1)
 
 **Solutions**:
+
 - Expected in panels with no disruptions or constant disruption
 - Not an error - disruption effect correctly set to 0
 
 ---
 
-**Issue**: Temporary files remain after run
+#### Issue: Temporary files remain after run
 
 **Cause**: Script crashed before cleanup
 
 **Solutions**:
+
 - Delete manually: `M3_temp_*.csv`
 - Or re-run script (automatic cleanup at start)
 
 ---
 
-**Issue**: Very different results at different geographic levels
+#### Issue: Very different results at different geographic levels
 
 **Explanation**: Different geographic aggregation captures different patterns
 
 **Example**: National trend may be stable while some districts have large disruptions
 
 **Solutions**:
+
 - Expected behavior - not a bug
 - Use appropriate level for your research question
 - Cross-check patterns across levels for robustness
@@ -862,15 +907,18 @@ RUN_DISTRICT_MODEL <- TRUE  # District-level for targeted support
 ### Interpretation Guidelines
 
 **Disruption Effects (b_admin_area_*)**:
+
 - Negative values indicate service volume shortfalls during disrupted periods
 - Positive values indicate service volume surpluses during disrupted periods
 - Values closer to zero indicate smaller disruption impacts
 
 **P-values (p_admin_area_*)**:
+
 - Values < 0.05 suggest statistically significant disruptions
 - Values > 0.05 may indicate normal variation rather than true disruptions
 
 **Trend Coefficients (b_trend_admin_area_*)**:
+
 - Positive values indicate increasing service utilization over time
 - Negative values indicate declining service utilization over time
 - Values near zero indicate stable utilization patterns
@@ -878,17 +926,20 @@ RUN_DISTRICT_MODEL <- TRUE  # District-level for targeted support
 ### Performance Considerations
 
 **Runtime Factors**:
+
 - **Number of indicators**: Linear scaling
 - **Number of geographic units**: Linear scaling within each level
 - **Time series length**: Minimal impact (efficient regression)
 - **Geographic detail**: Exponential scaling (many more units at finer levels)
 
 **Estimated Runtimes** (example dataset: 50 indicators, 100 districts):
+
 - Country-wide + Province models: ~5-10 minutes
 - Add District models: ~30-60 minutes
 - Add Ward models: Several hours (depends on number of wards)
 
 **Optimization Strategies**:
+
 - Set `RUN_DISTRICT_MODEL = FALSE` for faster execution (skips district level)
 - Set `RUN_ADMIN_AREA_4_ANALYSIS = FALSE` (default) to avoid ward-level analysis
 - Reduce `SMOOTH_K` for faster rolling median calculation
@@ -897,12 +948,14 @@ RUN_DISTRICT_MODEL <- TRUE  # District-level for targeted support
 ### Data Processing Details
 
 **Memory Management**:
+
 - Uses `data.table` for efficient operations on large datasets
 - Batch processing: Results saved to disk periodically
 - Progressive cleanup: Objects deleted when no longer needed
 - Temporary files enable processing datasets larger than RAM
 
 **Batch Sizes** (tunable for memory constraints):
+
 - Control chart: 100 panels per batch
 - Indicators: 5 indicators per batch
 - Provinces: 20 results per batch
@@ -910,6 +963,7 @@ RUN_DISTRICT_MODEL <- TRUE  # District-level for targeted support
 - Admin area 4: 10 results per batch
 
 **Missing Data Handling**:
+
 1. Missing months filled via `tidyr::complete()`
 2. Forward/backward fill for metadata
 3. Linear interpolation (`zoo::na.approx`) for count values
@@ -920,24 +974,31 @@ RUN_DISTRICT_MODEL <- TRUE  # District-level for targeted support
 The control chart analysis uses adaptive model selection based on data availability:
 
 **Full Model** (requires ≥12 obs AND >12 unique dates):
+
 ```r
 count ~ month_factor + as.numeric(date)
 ```
+
 Accounts for both seasonality and linear trend
 
 **Trend-Only Model** (requires ≥12 obs):
+
 ```r
 count ~ as.numeric(date)
 ```
+
 Accounts for linear trend only (insufficient data for seasonality)
 
 **Median Fallback** (<12 observations):
+
 ```r
 count_predict = median(count)
 ```
+
 Uses global median when insufficient data for regression
 
 **Convergence Checks**:
+
 - Models checked for convergence status
 - Warnings issued for non-convergent models
 - Non-convergent models still used (partial convergence often sufficient)
@@ -945,20 +1006,24 @@ Uses global median when insufficient data for regression
 ### Quality Assurance
 
 **Data Cleaning**:
+
 - Outliers removed prior to control chart analysis (based on Module 1 flags)
 - Low-volume months (<50% of mean) excluded to improve model stability
 - Predictions bounded at zero (counts cannot be negative)
 
 **Automatic Flagging**:
+
 - Recent months (last 6 months) automatically flagged to ensure current disruptions captured
 - Prevents missing ongoing disruptions due to insufficient deviation from trend
 
 **Robustness Checks**:
+
 - Model coefficients checked for `NA` values before use
 - If `tagged` variable dropped from model (no variation), disruption effect set to 0
 - P-values calculated only when valid standard errors available
 
 **Edge Case Handling**:
+
 - Single-cluster panels: No clustering applied (would fail)
 - Insufficient data: Skip analysis for that panel/level
 - Missing predictions: Filled with original values where possible
@@ -968,17 +1033,20 @@ Uses global median when insufficient data for regression
 This module is **Module 3** in the FASTR analytical pipeline:
 
 **Prerequisites**:
+
 1. **Module 0**: Data preparation and harmonization
 2. **Module 1**: Data Quality Assessment (generates `M1_output_outliers.csv`)
 3. **Module 2**: Data Quality Adjustments (generates `M2_adjusted_data.csv`)
 
 **Downstream Modules**:
+
 4. **Module 4**: Coverage Estimates (may use disruption flags)
 5. **Module 5**: Visualization and reporting (uses all M3 outputs)
 
 ### Dependencies
 
 **R Packages Required**:
+
 - `data.table`: Efficient data manipulation
 - `lubridate`: Date handling
 - `zoo`: Rolling statistics and interpolation
@@ -993,18 +1061,22 @@ This module is **Module 3** in the FASTR analytical pipeline:
 <summary><strong>References and Further Reading</strong></summary>
 
 **Statistical Process Control**:
+
 - Montgomery, D. C. (2009). *Introduction to Statistical Quality Control*. Wiley.
 - Shewhart, W. A. (1931). *Economic Control of Quality of Manufactured Product*. Van Nostrand.
 
 **Robust Regression**:
+
 - Huber, P. J. (1981). *Robust Statistics*. Wiley.
 - Maronna, R. A., Martin, R. D., & Yohai, V. J. (2006). *Robust Statistics: Theory and Methods*. Wiley.
 
 **Panel Data Methods**:
+
 - Wooldridge, J. M. (2010). *Econometric Analysis of Cross Section and Panel Data*. MIT Press.
 - Cameron, A. C., & Miller, D. L. (2015). "A Practitioner's Guide to Cluster-Robust Inference." *Journal of Human Resources*, 50(2), 317-372.
 
 **Health Service Disruptions**:
+
 - WHO (2020). *Pulse survey on continuity of essential health services during the COVID-19 pandemic*.
 - Arsenault, C., et al. (2022). "COVID-19 and resilience of healthcare systems in ten countries." *Nature Medicine*, 28, 1314-1324.
 

@@ -237,6 +237,7 @@ The ranges reflect programmatic expectations. For example, ANC1 should always be
 - `admin_area_1` through `admin_area_8` (character): Geographic/administrative area columns
 
 **Format Example:**
+
 ```csv
 facility_id,period_id,indicator_common_id,count,admin_area_1,admin_area_2,admin_area_3
 FAC001,202401,penta1,45,Country_A,Province_A,District_A
@@ -402,6 +403,7 @@ FAC001,202402,penta1,52,Country_A,Province_A,District_A
    - This composite is used for malaria consistency checks
 
 **Example:**
+
 ```r
 inputs <- load_and_preprocess_data("hmis_ISO3.csv")
 data <- inputs$data
@@ -430,6 +432,7 @@ geo_cols <- inputs$geo_cols
 4. Returns empty list if no valid pairs remain
 
 **Example Output:**
+
 ```
 Warning: Skipping pair_delivery - indicator 'delivery' not found in data
 Warning: Skipping pair_malaria - indicator 'rdt_positive_plus_micro' not found in data
@@ -533,6 +536,7 @@ Remaining consistency pairs: pair_penta, pair_anc
 6. Applies inactive detection algorithm
 
 **Inactive Detection Algorithm:**
+
 ```r
 # A facility is flagged inactive (offline_flag = 2) if:
 # 1. Missing 6+ consecutive months BEFORE first report, OR
@@ -546,6 +550,7 @@ offline_flag := fifelse(
 ```
 
 **Example Timeline:**
+
 ```
 Facility A reporting pattern for indicator "penta1":
 Period:  202001 202002 202003 202004 202005 202006 202007 202008 202009 202010
@@ -592,6 +597,7 @@ Explanation:
 - `sconsistency`: Binary flag (1 = consistent, 0 = inconsistent, NA = cannot calculate)
 
 **Example Output:**
+
 ```
 admin_area_2  admin_area_3  period_id  ratio_type    consistency_ratio  sconsistency
 District_A    Ward_1        202401     pair_penta    1.05               1
@@ -641,6 +647,7 @@ District_A    Ward_2        202401     pair_penta    0.97               1
 - `dqa_rules`: List specifying required values for each dimension
 
 **DQA Rules Configuration:**
+
 ```r
 dqa_rules <- list(
   completeness = 1,   # Must be complete (flag = 1)
@@ -676,6 +683,7 @@ The function intelligently handles cases where some consistency indicators are m
 - This prevents penalizing facilities for indicators they don't provide
 
 **Example Calculation:**
+
 ```
 Facility X in period 202401:
 - DQA Indicators: penta1, anc1, opd (3 indicators)
@@ -718,6 +726,7 @@ Final scores:
 - `dqa_score` = 1 if all completeness and outlier checks pass, 0 otherwise
 
 **Output Structure:**
+
 ```r
 dqa_results <- data.frame(
   facility_id,
@@ -747,6 +756,7 @@ The MAD is a robust measure of variability that is less sensitive to outliers th
 The module calculates MAD using only values at or above the median, making it more sensitive to high outliers while avoiding bias from facilities with many low-volume months.
 
 **Outlier Degree Calculation:**
+
 $$
 \text{MAD Residual} = \frac{|\text{volume} - \text{median volume}|}{\text{MAD}}
 $$
@@ -755,6 +765,7 @@ $$
 - If MAD Residual > 10 (configurable via `MADS` parameter), the value is flagged as a statistical outlier
 
 **Example:**
+
 ```
 Facility ABC, Indicator: penta1
 Monthly counts: 20, 25, 22, 28, 24, 26, 150, 23, 27, 25, 21, 24
@@ -783,6 +794,7 @@ This method identifies months where a single observation represents an unusually
 A facility reporting 80% of its annual volume in a single month likely indicates a data entry error (e.g., cumulative reporting instead of monthly, extra digit entered).
 
 **Example:**
+
 ```
 Facility XYZ, Indicator: anc1, Year: 2024
 Monthly counts: 15, 18, 12, 16, 890, 14, 17, 13, 16, 15, 14, 12
@@ -801,6 +813,7 @@ pc = 890 / 1052 = 0.846
 The module applies programmatically defined benchmarks for indicator pairs:
 
 **ANC Consistency:**
+
 $$
 \text{ANC Consistency} =
 \begin{cases}
@@ -812,6 +825,7 @@ $$
 **Interpretation**: More women should start antenatal care (ANC1) than complete four visits (ANC4). The ratio is expected to be ≥ 0.95, allowing up to 5% tolerance for data variations.
 
 **Penta Consistency:**
+
 $$
 \text{Penta Consistency} =
 \begin{cases}
@@ -823,6 +837,7 @@ $$
 **Interpretation**: More children should receive the first pentavalent dose (Penta1) than complete the three-dose series (Penta3).
 
 **BCG/Delivery Consistency:**
+
 $$
 \text{BCG/Delivery Consistency} =
 \begin{cases}
@@ -854,6 +869,7 @@ A facility is expected to report for an indicator if it has ever reported for th
 A facility is flagged as inactive for periods where it did not report for six or more consecutive months before its first report or after its last report.
 
 **Example:**
+
 ```
 District has 20 facilities that have ever reported penta1 data in 2024
 In March 2024:
@@ -875,21 +891,25 @@ The DQA score combines three quality dimensions for a defined set of core indica
 **Component Scores:**
 
 **1. Completeness-Outlier Score:**
+
 $$
 \text{Completeness-Outlier Score} = \frac{\sum (\text{completeness pass} + \text{outlier pass})}{2 \times \text{number of DQA indicators}}
 $$
 
 **2. Consistency Score:**
+
 $$
 \text{Consistency Score} = \frac{\text{Number of pairs passing benchmarks}}{\text{Number of available pairs}}
 $$
 
 **3. Mean DQA Score:**
+
 $$
 \text{DQA Mean} = \frac{\text{Completeness-Outlier Score} + \text{Consistency Score}}{2}
 $$
 
 **4. Binary DQA Score:**
+
 $$
 \text{DQA Score} =
 \begin{cases}
@@ -904,6 +924,7 @@ $$
 - ALL available consistency pairs must pass benchmarks (sconsistency = 1)
 
 **Example Calculation:**
+
 ```
 Facility 123, Period 202403
 DQA Indicators: penta1, anc1, opd
@@ -1062,6 +1083,7 @@ poor_quality_facilities <- dqa_results %>%
 
 **Diagnosis:**
 Check that both indicators in each pair exist in your dataset:
+
 ```r
 # Load your data
 data <- read.csv("hmis_[COUNTRY].csv")
@@ -1093,17 +1115,21 @@ print(unique(data$indicator_common_id))
 Your thresholds may be too sensitive for your data context.
 
 **Solutions:**
+
 1. Increase MAD threshold:
+
 ```r
 MADS <- 15  # Increase from default 10
 ```
 
 2. Increase proportion threshold:
+
 ```r
 OUTLIER_PROPORTION_THRESHOLD <- 0.9  # Increase from 0.8
 ```
 
 3. Increase minimum count threshold (focus on larger facilities):
+
 ```r
 MINIMUM_COUNT_THRESHOLD <- 200  # Increase from 100
 ```
@@ -1124,6 +1150,7 @@ None of the indicators specified in `DQA_INDICATORS` exist in your dataset.
 
 **Solution:**
 Check which DQA indicators are missing:
+
 ```r
 # Load data
 data <- read.csv("hmis_[COUNTRY].csv")
@@ -1139,6 +1166,7 @@ print(paste("Available DQA indicators:", paste(available_dqa, collapse=", ")))
 ```
 
 Then update `DQA_INDICATORS` to include only available indicators:
+
 ```r
 DQA_INDICATORS <- c("penta1", "anc1")  # Only use what's available
 ```
@@ -1156,6 +1184,7 @@ DQA_INDICATORS <- c("penta1", "anc1")  # Only use what's available
 The geographic aggregation level may be inappropriate for your data.
 
 **Investigation:**
+
 ```r
 # Load geographic consistency results
 geo_cons <- read.csv("M1_output_consistency_geo.csv")
@@ -1175,7 +1204,9 @@ summary(geo_summary$n_facilities)
 ```
 
 **Solutions:**
+
 1. If geographic areas have very few facilities (1-2), use higher level:
+
 ```r
 GEOLEVEL <- "admin_area_2"  # Use district instead of sub-district
 ```
@@ -1183,6 +1214,7 @@ GEOLEVEL <- "admin_area_2"  # Use district instead of sub-district
 2. If ratios are generally below 0.95 for ANC/Penta pairs, this may indicate genuine programmatic issues (high dropout) rather than data quality problems
 
 3. Review the consistency benchmark ranges - they may need adjustment for your context:
+
 ```r
 # Example: Allow higher dropout (lower ratio) for Penta
 all_consistency_ranges$pair_penta <- c(lower = 0.85, upper = Inf)
@@ -1200,6 +1232,7 @@ all_consistency_ranges$pair_penta <- c(lower = 0.85, upper = Inf)
 This could be legitimate (poor reporting) or an artifact of how your DHIS2 stores zero values.
 
 **Investigation:**
+
 ```r
 # Load completeness data
 completeness <- read.csv("M1_output_completeness.csv")
@@ -1233,7 +1266,9 @@ print(comp_by_indicator)
 - Module crashes during data loading
 
 **Solutions:**
+
 1. Check file path and working directory:
+
 ```r
 getwd()  # Verify working directory
 list.files()  # Check if HMIS file is present
@@ -1244,6 +1279,7 @@ list.files()  # Check if HMIS file is present
 3. Check file format (CSV, proper encoding, comma-separated)
 
 4. Ensure required columns exist:
+
 ```r
 # After loading
 names(data)  # Should include: facility_id, period_id, indicator_common_id, count
@@ -1263,6 +1299,7 @@ The module accepts `period_id` in multiple formats:
 - Numeric: `202401.0`
 
 All formats are internally converted to Date objects for correct chronological ordering:
+
 ```r
 # Internal conversion
 as.Date(sprintf("%04d-%02d-01", year, month))
@@ -1376,6 +1413,7 @@ completeness_data <- rbindlist(completeness_list)
 The module intelligently adapts to available data:
 
 **Delivery Indicator Selection:**
+
 ```r
 # Automatically chooses between "delivery" and "sba" for BCG consistency pair
 if ("delivery" %in% available_indicators) {
@@ -1388,6 +1426,7 @@ if ("delivery" %in% available_indicators) {
 ```
 
 **DQA Indicator Validation:**
+
 ```r
 # Only use DQA indicators that exist in the dataset
 dqa_indicators_to_use <- intersect(DQA_INDICATORS, unique(data$indicator_common_id))
@@ -1456,20 +1495,20 @@ The module includes robust error handling:
 
 ### Data Quality Metrics Summary
 
-| Metric | Type | Range | Interpretation |
-|--------|------|-------|----------------|
-| outlier_flag | Binary | 0 or 1 | 1 = Outlier detected by either method and count > threshold |
-| outlier_mad | Binary | 0 or 1 | 1 = Statistical outlier (MAD-based) |
-| outlier_pc | Binary | 0 or 1 | 1 = Proportional outlier (>80% of annual volume) |
-| mad_residual | Continuous | 0 to ∞ | Standardized deviation from median (higher = more extreme) |
-| pc | Continuous | 0 to 1 | Proportion of annual volume (closer to 1 = more concentrated) |
-| completeness_flag | Categorical | 0, 1, 2 | 0=Incomplete (missing), 1=Complete (reported), 2=Inactive (removed) |
-| sconsistency | Binary | 0, 1, NA | 1=Consistent (passes benchmark), 0=Inconsistent, NA=Cannot calculate |
-| consistency_ratio | Continuous | 0 to ∞ | Ratio of paired indicators (interpretation depends on pair) |
-| completeness_outlier_score | Continuous | 0 to 1 | Proportion of DQA indicators passing completeness & outlier checks |
-| consistency_score | Continuous | 0 to 1 | Proportion of consistency pairs passing benchmarks |
-| dqa_mean | Continuous | 0 to 1 | Average of component scores (overall quality measure) |
-| dqa_score | Binary | 0 or 1 | 1 = All checks passed (high quality), 0 = Any check failed |
+| Metric                        | Type        | Range      | Interpretation                                                            |
+|-------------------------------|-------------|------------|---------------------------------------------------------------------------|
+| outlier_flag                  | Binary      | 0 or 1     | 1 = Outlier detected by either method and count > threshold              |
+| outlier_mad                   | Binary      | 0 or 1     | 1 = Statistical outlier (MAD-based)                                       |
+| outlier_pc                    | Binary      | 0 or 1     | 1 = Proportional outlier (>80% of annual volume)                          |
+| mad_residual                  | Continuous  | 0 to ∞     | Standardized deviation from median (higher = more extreme)                |
+| pc                            | Continuous  | 0 to 1     | Proportion of annual volume (closer to 1 = more concentrated)             |
+| completeness_flag             | Categorical | 0, 1, 2    | 0=Incomplete (missing), 1=Complete (reported), 2=Inactive (removed)      |
+| sconsistency                  | Binary      | 0, 1, NA   | 1=Consistent (passes benchmark), 0=Inconsistent, NA=Cannot calculate     |
+| consistency_ratio             | Continuous  | 0 to ∞     | Ratio of paired indicators (interpretation depends on pair)               |
+| completeness_outlier_score    | Continuous  | 0 to 1     | Proportion of DQA indicators passing completeness & outlier checks        |
+| consistency_score             | Continuous  | 0 to 1     | Proportion of consistency pairs passing benchmarks                        |
+| dqa_mean                      | Continuous  | 0 to 1     | Average of component scores (overall quality measure)                     |
+| dqa_score                     | Binary      | 0 or 1     | 1 = All checks passed (high quality), 0 = Any check failed               |
 
 ### Analysis Outputs and Visualization
 

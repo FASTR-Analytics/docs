@@ -212,6 +212,7 @@ EXCLUDED_FROM_ADJUSTMENT <- c("u5_deaths", "maternal_deaths", "neonatal_deaths")
 Indicators are also automatically excluded from **outlier adjustment** if they have zero observations above 100 across the entire dataset. This prevents meaningless outlier detection on indicators with consistently low counts.
 
 **Exclusion Logic**:
+
 ```r
 volume_check <- raw_data[, .(
   above_100 = sum(count > 100, na.rm = TRUE),
@@ -228,12 +229,14 @@ This information is saved to `M2_low_volume_exclusions.csv` for transparency.
 The module uses a **6-month window** for all rolling averages. This choice balances:
 
 **Advantages**:
+
 - Captures medium-term trends
 - Reduces impact of short-term fluctuations
 - Sufficient data points for stable averages
 - Works well for both stable and seasonal indicators
 
 **Trade-offs**:
+
 - May not capture rapid changes in service delivery
 - Could over-smooth in cases of genuine programmatic shifts
 - Requires at least 6 valid observations for optimal centered average
@@ -256,7 +259,8 @@ The module requires three input files from previous processing steps:
 ### Input Data Structure
 
 **Raw HMIS Data (`hmis_ISO3.csv`)**:
-```
+
+```text
 facility_id | admin_area_1 | admin_area_2 | admin_area_3 | period_id | indicator_common_id | count
 ------------|--------------|--------------|--------------|-----------|---------------------|-------
 FAC001      | ISO3         | Province_A   | District_A   | 202301    | anc1                | 145
@@ -265,7 +269,8 @@ FAC001      | ISO3         | Province_A   | District_A   | 202303    | anc1     
 ```
 
 **Outlier Flags (`M1_output_outliers.csv`)**:
-```
+
+```text
 facility_id | indicator_common_id | period_id | outlier_flag
 ------------|---------------------|-----------|-------------
 FAC001      | anc1                | 202301    | 0
@@ -274,7 +279,8 @@ FAC001      | anc1                | 202303    | 1           # Flagged as outlier
 ```
 
 **Completeness Flags (`M1_output_completeness.csv`)**:
-```
+
+```text
 facility_id | indicator_common_id | period_id | completeness_flag
 ------------|---------------------|-----------|------------------
 FAC001      | anc1                | 202301    | 1             # Complete
@@ -296,7 +302,8 @@ The module generates four output files:
 ### Output Data Structure
 
 **Facility-Level Output** (`M2_adjusted_data.csv`):
-```
+
+```text
 facility_id | admin_area_2 | admin_area_3 | period_id | indicator_common_id | count_final_none | count_final_outliers | count_final_completeness | count_final_both
 ------------|--------------|--------------|-----------|---------------------|------------------|----------------------|--------------------------|------------------
 FAC001      | Province_A   | District_A   | 202301    | anc1                | 145              | 145                  | 145                      | 145
@@ -305,6 +312,7 @@ FAC001      | Province_A   | District_A   | 202303    | anc1                | 89
 ```
 
 Each `count_final_*` column represents a different adjustment scenario:
+
 - `count_final_none`: No adjustments applied (original values)
 - `count_final_outliers`: Only outlier adjustment applied
 - `count_final_completeness`: Only completeness adjustment applied
@@ -330,6 +338,7 @@ Core function that implements the adjustment logic for a single scenario.
 **Purpose**: Replaces outlier and/or incomplete values using rolling averages and historical patterns.
 
 **Parameters**:
+
 - `raw_data` (data.table): Original HMIS data with service counts
 - `completeness_data` (data.table): Completeness flags from Module 1
 - `outlier_data` (data.table): Outlier flags from Module 1
@@ -339,6 +348,7 @@ Core function that implements the adjustment logic for a single scenario.
 **Returns**: data.table with adjusted values in `count_working` column and adjustment metadata
 
 **Key Operations**:
+
 1. Merges input datasets by `facility_id`, `indicator_common_id`, and `period_id`
 2. Converts `period_id` to dates for temporal ordering
 3. Calculates rolling averages (centered, forward, backward) for valid values
@@ -352,6 +362,7 @@ Wrapper function that runs adjustments across all four scenarios.
 **Purpose**: Applies the adjustment logic under different combinations of outlier and completeness adjustments.
 
 **Parameters**:
+
 - `raw_data` (data.table): Original HMIS data
 - `completeness_data` (data.table): Completeness flags
 - `outlier_data` (data.table): Outlier flags
@@ -359,12 +370,14 @@ Wrapper function that runs adjustments across all four scenarios.
 **Returns**: data.table with four `count_final_*` columns, one per scenario
 
 **Scenarios Processed**:
+
 1. `none`: No adjustments (baseline)
 2. `outliers`: Outlier adjustment only
 3. `completeness`: Completeness adjustment only
 4. `both`: Sequential outlier then completeness adjustment
 
 **Processing Logic**:
+
 - Calls `apply_adjustments()` once per scenario
 - Preserves original values for excluded indicators (deaths)
 - Merges all scenario results into a single wide-format table
@@ -381,11 +394,13 @@ Outlier adjustment is applied to any facility-month value flagged in Module 1 (`
 **Statistical Approach**: Rolling averages are used to estimate expected values. A rolling average (also called moving average) is the mean of a set of time periods surrounding the target period. This technique smooths short-term fluctuations and highlights longer-term trends.
 
 **Valid Values Definition**: Only values meeting ALL of the following criteria are used in calculations:
+
 - `count > 0` (positive non-zero values)
 - `!is.na(count)` (non-missing)
 - `outlier_flag == 0` (not flagged as outlier)
 
 **Implementation**: The module uses `frollmean()` from the `zoo` package for efficient rolling calculations:
+
 ```r
 data_adj[, valid_count := fifelse(outlier_flag == 0L & !is.na(count), count, NA_real_)]
 data_adj[, `:=`(
@@ -422,6 +437,7 @@ The adjustment process follows this **hierarchical order** (stopping at the firs
     -   Particularly useful for seasonal indicators (e.g., malaria, respiratory infections)
     -   Method tag: `same_month_last_year`
     -   **Implementation**:
+
     ```r
     data_adj[, `:=`(mm = month(date), yy = year(date))]
     data_adj <- data_adj[, {
@@ -453,14 +469,17 @@ Completeness adjustment is applied to any facility-month where:
 **Statistical Approach**: The same rolling average methodology is applied, but the definition of "valid values" differs slightly:
 
 **Valid Values for Completeness Adjustment**:
+
 - `!is.na(count_working)` (non-missing, possibly already adjusted for outliers)
 - `outlier_flag == 0` (not flagged as outlier in original data)
 
 **Key Difference from Outlier Adjustment**:
+
 - Completeness adjustment can use values that were already adjusted for outliers (when scenarios include both adjustments)
 - No same-month-last-year method is used (only rolling averages and fallback)
 
 **Implementation**:
+
 ```r
 data_adj[, valid_count := fifelse(!is.na(count_working) & outlier_flag == 0L, count_working, NA_real_)]
 data_adj[, `:=`(
@@ -523,11 +542,13 @@ The module processes all four adjustment scenarios simultaneously using the `app
 - Use case: When both data quality issues are prevalent
 
 **Processing Order for "Both" Scenario**:
+
 1. Outlier adjustment creates `count_working` with outliers replaced
 2. Completeness adjustment then operates on `count_working`, using the already-adjusted values
 3. This ensures completeness imputation uses cleaned (non-outlier) values when available
 
 **Important**: After scenario-specific adjustments, excluded indicators (deaths) are reset to their original values:
+
 ```r
 dat[indicator_common_id %in% EXCLUDED_FROM_ADJUSTMENT, count_working := count]
 ```
@@ -541,6 +562,7 @@ sum(count_final_both, na.rm = TRUE)
 ```
 
 **Rationale**:
+
 - Service volumes are additive (e.g., total deliveries = sum of facility deliveries)
 - Missing values (`NA`) are treated as zero in aggregation
 - Consistent with standard HMIS reporting practices
@@ -567,7 +589,8 @@ frollmean(valid_count, 6, na.rm = TRUE, align = "center")
 **Scenario**: A facility reports an unusually high ANC1 visit count in March 2023.
 
 **Data**:
-```
+
+```text
 period_id | count | outlier_flag | Surrounding valid values
 ----------|-------|--------------|-------------------------
 202301    | 145   | 0            | valid
@@ -579,6 +602,7 @@ period_id | count | outlier_flag | Surrounding valid values
 ```
 
 **Adjustment Calculation** (centered 6-month average):
+
 - Valid values: [145, 152, 148, 155, 147] (excludes outlier 890)
 - Average: (145 + 152 + 148 + 155 + 147) / 5 = 149.4
 - **Adjusted value**: 149.4
@@ -590,7 +614,8 @@ period_id | count | outlier_flag | Surrounding valid values
 **Scenario**: A facility fails to report malaria tests in February 2023.
 
 **Data**:
-```
+
+```text
 period_id | count | completeness_flag | Surrounding valid values
 ----------|-------|-------------------|-------------------------
 202301    | 45    | 1                 | valid
@@ -601,6 +626,7 @@ period_id | count | completeness_flag | Surrounding valid values
 ```
 
 **Adjustment Calculation** (centered 6-month average):
+
 - Valid values: [45, 48, 52, 50, ...]
 - Average: 48.75 (using available surrounding months)
 - **Imputed value**: 48.75
@@ -612,7 +638,8 @@ period_id | count | completeness_flag | Surrounding valid values
 **Scenario**: Malaria cases show strong seasonality, and a June 2023 outlier needs adjustment.
 
 **Data**:
-```
+
+```text
 period_id | count | outlier_flag | Notes
 ----------|-------|--------------|-------
 202206    | 234   | 0            | June 2022 (valid)
@@ -620,6 +647,7 @@ period_id | count | outlier_flag | Notes
 ```
 
 **Adjustment Logic**:
+
 1. Centered, forward, and backward rolling averages unavailable (insufficient data)
 2. Same-month-last-year method activated
 3. June 2022 value = 234 (valid)
@@ -634,7 +662,8 @@ period_id | count | outlier_flag | Notes
 **Period**: Q1 2023
 
 **Original Data**:
-```
+
+```text
 Month    | Count | Outlier? | Complete?
 ---------|-------|----------|----------
 Jan 2023 | 78    | No       | Yes
@@ -654,6 +683,7 @@ Mar 2023 | NA    | -        | No        # Incomplete
 **Imputed using rolling average
 
 **Interpretation**:
+
 - **None**: Raw data with obvious issues
 - **Outliers**: February corrected, but March remains missing
 - **Completeness**: March filled in, but February outlier retained
@@ -662,6 +692,7 @@ Mar 2023 | NA    | -        | No        # Incomplete
 ### Example 5: Geographic Aggregation
 
 **Subnational Aggregation Code**:
+
 ```r
 adjusted_data_admin_area_final <- adjusted_data_export[
   ,
@@ -676,6 +707,7 @@ adjusted_data_admin_area_final <- adjusted_data_export[
 ```
 
 **National Aggregation Code**:
+
 ```r
 adjusted_data_national_final <- adjusted_data_export[
   ,
@@ -697,41 +729,45 @@ adjusted_data_national_final <- adjusted_data_export[
 ### Common Issues
 
 **Issue 1: All values remain unadjusted**
+
 - **Possible causes**:
-  - Indicator is in the excluded list (deaths)
-  - Indicator flagged as low-volume
-  - No outlier or completeness flags in input data
+    - Indicator is in the excluded list (deaths)
+    - Indicator flagged as low-volume
+    - No outlier or completeness flags in input data
 - **Solution**: Check `M2_low_volume_exclusions.csv` and verify Module 1 outputs contain flags
 
 **Issue 2: Adjusted values seem unreasonable**
+
 - **Possible causes**:
-  - Insufficient valid historical data for rolling averages
-  - Genuine program changes being smoothed out
-  - Seasonal patterns not captured by 6-month window
+    - Insufficient valid historical data for rolling averages
+    - Genuine program changes being smoothed out
+    - Seasonal patterns not captured by 6-month window
 - **Solution**:
-  - Review facility-specific time series plots
-  - Consider using "outliers only" scenario if completeness is good
-  - Validate against program implementation records
+    - Review facility-specific time series plots
+    - Consider using "outliers only" scenario if completeness is good
+    - Validate against program implementation records
 
 **Issue 3: Many NA values after adjustment**
+
 - **Possible causes**:
-  - Facility has very sparse data
-  - No valid values available for any adjustment method
-  - Early months in time series lack historical data
+    - Facility has very sparse data
+    - No valid values available for any adjustment method
+    - Early months in time series lack historical data
 - **Solution**:
-  - Expected for facilities with limited reporting history
-  - Consider facility-level data quality filtering
-  - National/subnational aggregates will sum available values
+    - Expected for facilities with limited reporting history
+    - Consider facility-level data quality filtering
+    - National/subnational aggregates will sum available values
 
 **Issue 4: Subnational/national totals don't match expectations**
+
 - **Possible causes**:
-  - NA values treated as zero in aggregation
-  - Different scenarios produce different totals
-  - Low reporting completeness overall
+    - NA values treated as zero in aggregation
+    - Different scenarios produce different totals
+    - Low reporting completeness overall
 - **Solution**:
-  - Compare `count_final_none` vs `count_final_both` to assess adjustment impact
-  - Review Module 1 completeness statistics
-  - Consider data quality threshold for inclusion
+    - Compare `count_final_none` vs `count_final_both` to assess adjustment impact
+    - Review Module 1 completeness statistics
+    - Consider data quality threshold for inclusion
 
 ### Quality Assurance Checks
 
@@ -743,7 +779,8 @@ The module includes several quality checks:
 4. **Console Logging**: Provides detailed progress and summary statistics
 
 **Example Console Output**:
-```
+
+```text
 Running adjustments...
  -> Adjusting outliers...
      Roll6 adjusted: 1,245
