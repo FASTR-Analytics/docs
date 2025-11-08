@@ -121,7 +121,7 @@ An observation is flagged as an outlier if it meets EITHER of two criteria AND t
 Patients often visit different facilities within their local district for different services. A woman might get her first antenatal visit at one health center but deliver at a district hospital. Measuring consistency at the district level accounts for this patient movement and provides a more accurate picture of service utilization patterns.
 
 **What happens when required indicators are missing?**
-The module adapts to available data. If consistency pairs cannot be evaluated (e.g., ANC4 data doesn't exist), the DQA score is calculated using only completeness and outlier checks. The analysis continues with the dimensions that can be assessed.
+The module adapts to available data. If consistency pairs cannot be evaluated, the DQA score is calculated using only completeness and outlier checks. The analysis continues with the dimensions that can be assessed.
 
 **How are inactive facilities handled?**
 If a facility doesn't report for 6 or more consecutive months at the start or end of their reporting period, those months are flagged as "inactive" rather than "incomplete." This prevents penalizing facilities that haven't yet started reporting or have permanently closed.
