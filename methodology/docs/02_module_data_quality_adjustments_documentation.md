@@ -23,12 +23,11 @@ By systematically addressing these data quality issues before analysis, this mod
 
 ### Quick Summary
 
-| **Aspect** | **Details** |
-|------------|-------------|
-| **Purpose** | Replace outlier values and fill missing data using facility-specific historical patterns |
-| **Key Inputs** | Raw HMIS data (`hmis_AFG.csv`)<br>Outlier flags from Module 1 (`M1_output_outliers.csv`)<br>Completeness flags from Module 1 (`M1_output_completeness.csv`) |
-| **Key Outputs** | Facility-level adjusted data (`M2_adjusted_data.csv`)<br>Subnational aggregated data (`M2_adjusted_data_admin_area.csv`)<br>National aggregated data (`M2_adjusted_data_national.csv`)<br>Exclusion metadata (`M2_low_volume_exclusions.csv`) |
-| **Scenarios Produced** | None (original data), Outliers only, Completeness only, Both adjustments |
+| Component | Details |
+|-----------|---------|
+| **Inputs** | Raw HMIS data (`hmis_ISO3.csv`)<br>Outlier flags from Module 1 (`M1_output_outliers.csv`)<br>Completeness flags from Module 1 (`M1_output_completeness.csv`) |
+| **Outputs** | Facility-level adjusted data (`M2_adjusted_data.csv`)<br>Subnational aggregated data (`M2_adjusted_data_admin_area.csv`)<br>National aggregated data (`M2_adjusted_data_national.csv`)<br>Exclusion metadata (`M2_low_volume_exclusions.csv`) |
+| **Purpose** | Replace outlier values and fill missing data using facility-specific historical patterns; produces four adjustment scenarios (none, outliers only, completeness only, both) |
 
 ---
 
@@ -250,19 +249,19 @@ The module requires three input files from previous processing steps:
 
 | File | Source | Description | Key Variables |
 |------|--------|-------------|---------------|
-| `hmis_AFG.csv` | Raw HMIS data | Facility-level service volumes | `facility_id`, `indicator_common_id`, `period_id`, `count`, admin area columns |
+| `hmis_ISO3.csv` | Raw HMIS data | Facility-level service volumes | `facility_id`, `indicator_common_id`, `period_id`, `count`, admin area columns |
 | `M1_output_outliers.csv` | Module 1 | Outlier flags for each facility-month-indicator | `facility_id`, `indicator_common_id`, `period_id`, `outlier_flag` |
 | `M1_output_completeness.csv` | Module 1 | Completeness flags for each facility-month-indicator | `facility_id`, `indicator_common_id`, `period_id`, `completeness_flag` |
 
 ### Input Data Structure
 
-**Raw HMIS Data (`hmis_AFG.csv`)**:
+**Raw HMIS Data (`hmis_ISO3.csv`)**:
 ```
 facility_id | admin_area_1 | admin_area_2 | admin_area_3 | period_id | indicator_common_id | count
 ------------|--------------|--------------|--------------|-----------|---------------------|-------
-FAC001      | AFG          | Kabul        | District_A   | 202301    | anc1                | 145
-FAC001      | AFG          | Kabul        | District_A   | 202302    | anc1                | 152
-FAC001      | AFG          | Kabul        | District_A   | 202303    | anc1                | 890  # Outlier
+FAC001      | ISO3         | Province_A   | District_A   | 202301    | anc1                | 145
+FAC001      | ISO3         | Province_A   | District_A   | 202302    | anc1                | 152
+FAC001      | ISO3         | Province_A   | District_A   | 202303    | anc1                | 890  # Outlier
 ```
 
 **Outlier Flags (`M1_output_outliers.csv`)**:
@@ -300,9 +299,9 @@ The module generates four output files:
 ```
 facility_id | admin_area_2 | admin_area_3 | period_id | indicator_common_id | count_final_none | count_final_outliers | count_final_completeness | count_final_both
 ------------|--------------|--------------|-----------|---------------------|------------------|----------------------|--------------------------|------------------
-FAC001      | Kabul        | District_A   | 202301    | anc1                | 145              | 145                  | 145                      | 145
-FAC001      | Kabul        | District_A   | 202302    | anc1                | 152              | 152                  | 148                      | 148
-FAC001      | Kabul        | District_A   | 202303    | anc1                | 890              | 148                  | 890                      | 148
+FAC001      | Province_A   | District_A   | 202301    | anc1                | 145              | 145                  | 145                      | 145
+FAC001      | Province_A   | District_A   | 202302    | anc1                | 152              | 152                  | 148                      | 148
+FAC001      | Province_A   | District_A   | 202303    | anc1                | 890              | 148                  | 890                      | 148
 ```
 
 Each `count_final_*` column represents a different adjustment scenario:

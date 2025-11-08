@@ -18,7 +18,7 @@ Data quality directly impacts the reliability of health indicators and coverage 
 
 | Component | Details |
 |-----------|---------|
-| **Inputs** | - `hmis_[COUNTRY].csv` containing facility service volumes by month and indicator<br>- Geographic/administrative area identifiers<br>- Standardized indicator names |
+| **Inputs** | Raw HMIS data (`hmis_ISO3.csv`) containing facility service volumes by month and indicator<br>Geographic/administrative area identifiers<br>Standardized indicator names |
 | **Outputs** | - Outlier flags and lists<br>- Completeness status by facility-indicator-month<br>- Consistency results at geographic level<br>- Overall DQA scores |
 | **Purpose** | Evaluate HMIS data reliability through outlier detection, completeness assessment, and consistency checking to ensure trustworthy inputs for coverage estimation |
 
@@ -239,9 +239,9 @@ The ranges reflect programmatic expectations. For example, ANC1 should always be
 **Format Example:**
 ```csv
 facility_id,period_id,indicator_common_id,count,admin_area_1,admin_area_2,admin_area_3
-FAC001,202401,penta1,45,Guinea,Conakry,Ratoma
-FAC001,202401,anc1,67,Guinea,Conakry,Ratoma
-FAC001,202402,penta1,52,Guinea,Conakry,Ratoma
+FAC001,202401,penta1,45,Country_A,Province_A,District_A
+FAC001,202401,anc1,67,Country_A,Province_A,District_A
+FAC001,202402,penta1,52,Country_A,Province_A,District_A
 ```
 
 **Data Requirements:**
@@ -403,7 +403,7 @@ FAC001,202402,penta1,52,Guinea,Conakry,Ratoma
 
 **Example:**
 ```r
-inputs <- load_and_preprocess_data("hmis_GIN.csv")
+inputs <- load_and_preprocess_data("hmis_ISO3.csv")
 data <- inputs$data
 geo_cols <- inputs$geo_cols
 ```
@@ -940,7 +940,7 @@ library(tidyr)
 library(data.table)
 
 # The module will automatically:
-# 1. Load hmis_GIN.csv
+# 1. Load hmis_ISO3.csv
 # 2. Run all analyses with default parameters
 # 3. Generate output CSV files in the working directory
 
@@ -1002,12 +1002,12 @@ source("01_module_data_quality_assessment.R")
 <summary><strong>Example 5: Running for Different Country</strong></summary>
 
 ```r
-# Configure for Rwanda
-COUNTRY_ISO3 <- "RWA"
-PROJECT_DATA_HMIS <- "hmis_RWA.csv"
+# Configure for your country
+COUNTRY_ISO3 <- "ISO3"  # Replace with your country code
+PROJECT_DATA_HMIS <- "hmis_ISO3.csv"
 GEOLEVEL <- "admin_area_3"
 
-# Adjust for Rwanda-specific indicators if needed
+# Adjust for country-specific indicators if needed
 DQA_INDICATORS <- c("penta1", "anc1", "opd", "fp_new")
 
 source("01_module_data_quality_assessment.R")

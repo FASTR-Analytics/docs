@@ -18,14 +18,11 @@ This module provides objective, data-driven identification of service delivery p
 
 ### Quick Summary
 
-| **Aspect** | **Details** |
-|------------|-------------|
-| **Inputs** | `hmis_SLE.csv` (raw service data), `M1_output_outliers.csv` (outlier flags), `M2_adjusted_data.csv` (adjusted counts) |
-| **Outputs** | `M3_chartout.csv` (disruption flags), `M3_disruptions_analysis_*.csv` (quantified impacts), `M3_all_indicators_shortfalls_*.csv` (shortfall/surplus summaries) |
-| **Purpose** | Detect and quantify service delivery disruptions to support evidence-based health system monitoring and resource allocation |
-| **Analysis Method** | Two-stage: (1) Control charts detect disruptions, (2) Panel regression quantifies impacts |
-| **Geographic Levels** | National, Province, District, Ward (configurable) |
-| **Runtime** | 5-60 minutes depending on configuration |
+| Component | Details |
+|-----------|---------|
+| **Inputs** | Raw HMIS data (`hmis_ISO3.csv`)<br>Outlier flags from Module 1 (`M1_output_outliers.csv`)<br>Adjusted service volumes from Module 2 (`M2_adjusted_data.csv`) |
+| **Outputs** | Disruption flags (`M3_chartout.csv`)<br>Quantified impacts by geographic level (`M3_disruptions_analysis_*.csv`)<br>Shortfall/surplus summaries (`M3_all_indicators_shortfalls_*.csv`) |
+| **Purpose** | Detect and quantify service delivery disruptions through two-stage analysis: control charts identify when disruptions occur, panel regression quantifies their magnitude |
 
 ---
 
@@ -151,7 +148,7 @@ The module operates in two sequential stages, each with a distinct purpose:
 
 | Parameter | Default | Type | Description | Tuning Guidance |
 |-----------|---------|------|-------------|-----------------|
-| `COUNTRY_ISO3` | "SLE" | String | Three-letter country code | Set to your country code |
+| `COUNTRY_ISO3` | "ISO3" | String | Three-letter country code | Set to your country code (e.g., "RWA", "UGA", "ZMB") |
 | `SELECTEDCOUNT` | "count_final_both" | String | Data column used for analysis | Options: `count_final_none`, `count_final_completeness`, `count_final_both` |
 | `VISUALIZATIONCOUNT` | "count_final_both" | String | Data column used for visualization | Should match or complement `SELECTEDCOUNT` |
 
@@ -178,7 +175,7 @@ The module operates in two sequential stages, each with a distinct purpose:
 
 | Parameter | Default | Type | Description |
 |-----------|---------|------|-------------|
-| `PROJECT_DATA_HMIS` | "hmis_SLE.csv" | String | Filename for raw HMIS data |
+| `PROJECT_DATA_HMIS` | "hmis_ISO3.csv" | String | Filename for raw HMIS data |
 
 ### Parameter Selection Guide
 
@@ -206,7 +203,7 @@ The module operates in two sequential stages, each with a distinct purpose:
 
 #### Primary Inputs
 
-1. **`hmis_SLE.csv`** (or country-specific HMIS file)
+1. **`hmis_ISO3.csv`** (country-specific HMIS file where ISO3 is the 3-letter country code)
    - Raw HMIS service utilization data
    - Required columns: `facility_id`, `admin_area_1`, `admin_area_2`, `admin_area_3`, `admin_area_4`, `indicator_common_id`, `period_id`, service count columns
 

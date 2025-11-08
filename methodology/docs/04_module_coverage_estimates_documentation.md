@@ -255,7 +255,7 @@ The transformation flow:
 The module begins with several configurable parameters that control the analysis:
 
 ```r
-COUNTRY_ISO3 <- "AFG"                          # ISO3 country code
+COUNTRY_ISO3 <- "ISO3"                         # ISO3 country code (e.g., "RWA", "UGA", "ZMB")
 SELECTED_COUNT_VARIABLE <- "count_final_both"  # Which adjusted count to use
 ANALYSIS_LEVEL <- "NATIONAL_PLUS_AA2"          # Geographic scope
 ```
@@ -341,8 +341,8 @@ The Demographic and Health Surveys (DHS), conducted by USAID, provide survey dat
 **Example Structure**:
 ```
 admin_area_1  admin_area_2  year  countanc1  countdelivery  ...  nummonth
-Afghanistan   Kabul         2020  12500      10200          ...  12
-Afghanistan   Kabul         2021  13000      10500          ...  11
+Country_Name  Province_A    2020  12500      10200          ...  12
+Country_Name  Province_A    2021  13000      10500          ...  11
 ```
 
 #### 2. `process_survey_data()`
@@ -523,10 +523,10 @@ denominator_adjusted = denominator × (nummonth / 12)
 **Output Structure**:
 ```
 admin_area_1  year  indicator_common_id  denominator_best_or_survey  value
-Afghanistan   2020  anc1                 best                        85.3
-Afghanistan   2020  anc1                 survey                      84.2
-Afghanistan   2020  anc1                 danc1_pregnancy             85.3
-Afghanistan   2020  anc1                 dwpp_pregnancy              82.1
+Country_Name  2020  anc1                 best                        85.3
+Country_Name  2020  anc1                 survey                      84.2
+Country_Name  2020  anc1                 danc1_pregnancy             85.3
+Country_Name  2020  anc1                 dwpp_pregnancy              82.1
 ```
 
 **Denominator Categories**:
@@ -721,7 +721,7 @@ Part 1 includes multiple validation checks:
    - Subnational → National if no local survey data
    - SBA → Delivery if SBA missing
    - PNC1_mother → PNC1 if missing
-4. **Edge Case Handling**: Detects when admin_area_3 should be used as admin_area_2 (e.g., Afghanistan districts)
+4. **Edge Case Handling**: Detects when admin_area_3 should be used as admin_area_2 in certain country contexts
 5. **Empty Data Handling**: Creates empty CSVs with correct structure when data unavailable
 6. **Error Handling**: Wraps survey processing in `tryCatch` to handle mismatches gracefully
 
