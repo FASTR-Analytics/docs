@@ -209,6 +209,7 @@ EXCLUDED_FROM_ADJUSTMENT <- c("u5_deaths", "maternal_deaths", "neonatal_deaths")
 
 ### Low Volume Exclusions
 
+
 Indicators are also automatically excluded from **outlier adjustment** if they have zero observations above 100 across the entire dataset. This prevents meaningless outlier detection on indicators with consistently low counts.
 
 **Exclusion Logic**:
@@ -416,22 +417,26 @@ data_adj[, `:=`(
 The adjustment process follows this **hierarchical order** (stopping at the first available method):
 
 1.  **Centered 6-Month Average (`roll6`)**
+
     -   Uses the three months before and three months after the outlier month
     -   Provides a balanced average based on nearby trends
     -   Applied when enough valid values exist on both sides of the month
     -   Method tag: `roll6`
 
 2.  **Forward-Looking 6-Month Average (`fwd6`)**
+
     -   Used if the centered average can't be calculated (e.g. early in the time series)
     -   Takes the average of the next six valid months
     -   Method tag: `forward`
 
 3.  **Backward-Looking 6-Month Average (`bwd6`)**
+
     -   Used if neither `roll6` nor `fwd6` are available
     -   Takes the average of the six most recent valid months before the outlier
     -   Method tag: `backward`
 
 4.  **Same Month from Previous Year**
+
     -   If no valid 6-month average exists, the value from the **same calendar month in the previous year** is used (e.g., Jan 2023 for Jan 2024)
     -   Only applied if that previous value is valid (not an outlier, and > 0)
     -   Particularly useful for seasonal indicators (e.g., malaria, respiratory infections)
@@ -454,6 +459,7 @@ The adjustment process follows this **hierarchical order** (stopping at the firs
     ```
 
 5.  **Mean of All Historical Values (Fallback)**
+
     -   If all previous methods fail, the mean of all valid historical values for that facility-indicator is used
     -   Provides a facility-specific baseline when no temporal pattern is available
     -   Method tag: `fallback`
@@ -463,6 +469,7 @@ The adjustment process follows this **hierarchical order** (stopping at the firs
 ### Completeness Adjustment Methodology
 
 Completeness adjustment is applied to any facility-month where:
+
 - The month is flagged as incomplete (`completeness_flag != 1`) in Module 1, OR
 - The value is missing (`is.na(count_working)`)
 
@@ -495,19 +502,23 @@ data_adj[, `:=`(
 The replacement follows this **hierarchical order**:
 
 1.  **Centered 6-Month Average (`roll6`)**
+
     -   Uses three valid months before and after the missing or incomplete month
     -   Preferred method when sufficient surrounding data exists
     -   Method tag: `roll6`
 
 2.  **Forward-Looking 6-Month Average (`fwd6`)**
+
     -   Used if the centered average cannot be calculated (e.g., at start of time series)
     -   Method tag: `forward`
 
 3.  **Backward-Looking 6-Month Average (`bwd6`)**
+
     -   Used if no centered or forward-looking values are available (e.g., at end of time series)
     -   Method tag: `backward`
 
 4.  **Mean of All Historical Values (Fallback)**
+
     -   If no rolling averages can be calculated, uses the mean of all valid values for that facility-indicator
     -   Provides a facility-specific baseline
     -   Method tag: `fallback`
@@ -519,6 +530,7 @@ The replacement follows this **hierarchical order**:
 The module processes all four adjustment scenarios simultaneously using the `apply_adjustments_scenarios()` function:
 
 **Scenario 1: None** (`count_final_none`)
+
 - `adjust_outliers = FALSE`, `adjust_completeness = FALSE`
 - Original raw data with no modifications
 - Serves as baseline for comparison
@@ -530,12 +542,14 @@ The module processes all four adjustment scenarios simultaneously using the `app
 - Use case: When completeness is high but outliers are a concern
 
 **Scenario 3: Completeness** (`count_final_completeness`)
+
 - `adjust_outliers = FALSE`, `adjust_completeness = TRUE`
 - Only missing/incomplete values are imputed
 - Outliers are retained in the data
 - Use case: When data quality is good but reporting is sporadic
 
 **Scenario 4: Both** (`count_final_both`)
+
 - `adjust_outliers = TRUE`, `adjust_completeness = TRUE`
 - **Sequential processing**: Outliers adjusted first, then completeness
 - Most comprehensive adjustment
@@ -730,42 +744,53 @@ adjusted_data_national_final <- adjusted_data_export[
 
 **Issue 1: All values remain unadjusted**
 
-- **Possible causes**:
-    - Indicator is in the excluded list (deaths)
+**Possible causes**:
+
+- Indicator is in the excluded list (deaths)
     - Indicator flagged as low-volume
     - No outlier or completeness flags in input data
-- **Solution**: Check `M2_low_volume_exclusions.csv` and verify Module 1 outputs contain flags
+
+**Solution**: Check `M2_low_volume_exclusions.csv` and verify Module 1 outputs contain flags
 
 **Issue 2: Adjusted values seem unreasonable**
 
-- **Possible causes**:
-    - Insufficient valid historical data for rolling averages
+**Possible causes**:
+
+- Insufficient valid historical data for rolling averages
     - Genuine program changes being smoothed out
     - Seasonal patterns not captured by 6-month window
-- **Solution**:
-    - Review facility-specific time series plots
+
+**Solution**:
+
+- Review facility-specific time series plots
     - Consider using "outliers only" scenario if completeness is good
     - Validate against program implementation records
 
 **Issue 3: Many NA values after adjustment**
 
-- **Possible causes**:
-    - Facility has very sparse data
+**Possible causes**:
+
+- Facility has very sparse data
     - No valid values available for any adjustment method
     - Early months in time series lack historical data
-- **Solution**:
-    - Expected for facilities with limited reporting history
+
+**Solution**:
+
+- Expected for facilities with limited reporting history
     - Consider facility-level data quality filtering
     - National/subnational aggregates will sum available values
 
 **Issue 4: Subnational/national totals don't match expectations**
 
-- **Possible causes**:
-    - NA values treated as zero in aggregation
+**Possible causes**:
+
+- NA values treated as zero in aggregation
     - Different scenarios produce different totals
     - Low reporting completeness overall
-- **Solution**:
-    - Compare `count_final_none` vs `count_final_both` to assess adjustment impact
+
+**Solution**:
+
+- Compare `count_final_none` vs `count_final_both` to assess adjustment impact
     - Review Module 1 completeness statistics
     - Consider data quality threshold for inclusion
 
@@ -824,6 +849,7 @@ After running this module, consider:
 
 1. **Rolling windows assume stability**: Adjustments work best when service delivery is relatively stable. Genuine program changes (e.g., new campaigns) may be incorrectly smoothed.
 
+
 2. **No adjustment uncertainty**: The module provides point estimates without confidence intervals. Adjusted values should be treated as estimates.
 
 3. **Facility-specific adjustments**: No cross-facility borrowing of information. Facilities with very sparse data may have unstable adjustments.
@@ -835,6 +861,7 @@ After running this module, consider:
 ### Best Practices
 
 1. **Always produce all four scenarios**: Even if you plan to use only one, having all scenarios allows for sensitivity analysis and validation
+
 
 2. **Document your scenario choice**: When using adjusted data for analysis, clearly document which scenario was used and why
 

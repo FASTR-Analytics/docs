@@ -229,8 +229,13 @@ The module operates in two sequential stages, each with a distinct purpose:
 #### 1. Control Chart Results
 
 **`M3_chartout.csv`**
-- **Purpose**: Contains flagged disruptions from the control chart analysis
-- **Columns**:
+
+**Purpose**:
+
+Contains flagged disruptions from the control chart analysis
+
+**Columns**:
+
   - `admin_area_*`: Geographic identifier (level depends on `CONTROL_CHART_LEVEL`)
   - `indicator_common_id`: Health service indicator code
   - `period_id`: Time period in YYYYMM format
@@ -241,21 +246,41 @@ The module operates in two sequential stages, each with a distinct purpose:
   - `residual`: Deviation from expected
   - `robust_control`: Standardized residual
   - `tag_sharp`, `tag_sustained`, `tag_sustained_dip`, `tag_sustained_rise`, `tag_missing`: Individual disruption flags
-- **Use**: Identifies which months require further investigation for each indicator-geography combination
+
+**Use**:
+
+Identifies which months require further investigation for each indicator-geography combination
 
 **`M3_service_utilization.csv`**
-- **Purpose**: Pass-through copy of adjusted data for visualization
-- **Source**: Direct copy of `M2_adjusted_data.csv`
-- **Use**: Provides baseline data for plotting actual service volumes
+
+**Purpose**:
+
+Pass-through copy of adjusted data for visualization
+
+**Source**:
+
+Direct copy of `M2_adjusted_data.csv`
+
+**Use**:
+
+Provides baseline data for plotting actual service volumes
 
 **`M3_memory_log.txt`**
-- **Purpose**: Tracks memory usage throughout execution
-- **Use**: Diagnostics for performance optimization and troubleshooting
+
+**Purpose**:
+
+Tracks memory usage throughout execution
+
+**Use**:
+
+Diagnostics for performance optimization and troubleshooting
 
 #### 2. Disruption Analysis Results
 
 **`M3_disruptions_analysis_admin_area_1.csv`** (National level - always generated)
-- **Columns**:
+
+**Columns**:
+
   - `admin_area_1`: Country name
   - `indicator_common_id`: Health service indicator
   - `period_id`: Time period (YYYYMM)
@@ -264,25 +289,53 @@ The module operates in two sequential stages, each with a distinct purpose:
   - `count_expected_if_above_diff_threshold`: Value for plotting (expected if |difference| > DIFFPERCENT, otherwise actual)
 
 **`M3_disruptions_analysis_admin_area_2.csv`** (Province level - always generated)
-- **Additional column**: `admin_area_2` (province/region name)
-- **Same structure** as admin_area_1 file but disaggregated by province
+
+**Additional column**:
+
+`admin_area_2` (province/region name)
+
+**Same structure**:
+
+As admin_area_1 file but disaggregated by province
 
 **`M3_disruptions_analysis_admin_area_3.csv`** (District level - conditional)
-- **Generated when**: `RUN_DISTRICT_MODEL = TRUE`
-- **Additional columns**: `admin_area_2`, `admin_area_3`
-- **Same structure** as above but disaggregated by district
+
+**Generated when**:
+
+`RUN_DISTRICT_MODEL = TRUE`
+
+**Additional columns**:
+
+`admin_area_2`, `admin_area_3`
+
+**Same structure**:
+
+As above but disaggregated by district
 
 **`M3_disruptions_analysis_admin_area_4.csv`** (Ward level - conditional)
-- **Generated when**: `RUN_ADMIN_AREA_4_ANALYSIS = TRUE`
-- **Additional columns**: `admin_area_2`, `admin_area_3`, `admin_area_4`
-- **Warning**: Very large file size for countries with many wards
+
+**Generated when**:
+
+`RUN_ADMIN_AREA_4_ANALYSIS = TRUE`
+
+**Additional columns**:
+
+`admin_area_2`, `admin_area_3`, `admin_area_4`
+
+**Warning**:
+
+Very large file size for countries with many wards
 
 #### 3. Shortfall/Surplus Summary Files
 
 **`M3_all_indicators_shortfalls_admin_area_*.csv`** (one for each geographic level)
 
-- **Purpose**: Pre-calculated shortfall and surplus metrics for reporting
-- **Common columns**:
+**Purpose**:
+
+Pre-calculated shortfall and surplus metrics for reporting
+
+**Common columns**:
+
   - Geographic identifier(s): `admin_area_*`
   - `indicator_common_id`: Health service indicator
   - `period_id`: Time period (YYYYMM)
@@ -293,7 +346,9 @@ The module operates in two sequential stages, each with a distinct purpose:
   - `surplus_absolute`: Absolute number of excess services (if positive disruption)
   - `surplus_percent`: Percentage surplus relative to expected
 
-**Note**: If optional geographic levels are disabled, empty placeholder files are created for compatibility with downstream processes.
+**Note**:
+
+If optional geographic levels are disabled, empty placeholder files are created for compatibility with downstream processes.
 
 #### Temporary Files (Automatically Cleaned)
 

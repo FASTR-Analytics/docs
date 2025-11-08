@@ -322,18 +322,23 @@ The Demographic and Health Surveys (DHS), conducted by USAID, provide survey dat
 
 #### 1. `process_hmis_adjusted_volume()`
 
-**Purpose**: Prepares HMIS data for denominator calculation
+**Purpose**:
+
+Prepares HMIS data for denominator calculation
 
 **Input**:
+
 - Adjusted volume data from Module 2
 - Selected count variable (e.g., `count_final_both`)
 
 **Processing**:
+
 - Aggregates monthly data to annual totals
 - Counts number of reporting months per year
 - Pivots data to wide format (one column per indicator)
 
 **Output**:
+
 - `annual_hmis`: Annual service counts by area and year
 - `hmis_countries`: List of countries in dataset
 - `hmis_iso3`: ISO3 code(s) present
@@ -347,9 +352,12 @@ Country_Name  Province_A    2021  13000      10500          ...  11
 
 #### 2. `process_survey_data()`
 
-**Purpose**: Harmonizes and extends survey data for use as coverage benchmarks
+**Purpose**:
+
+Harmonizes and extends survey data for use as coverage benchmarks
 
 **Input**:
+
 - Survey data (DHS/MICS)
 - HMIS country names and ISO3 codes
 - Optional national reference (for subnational fallback)
@@ -377,19 +385,24 @@ Country_Name  Province_A    2021  13000      10500          ...  11
    - Creates "carry" columns (e.g., `anc1carry`, `bcgcarry`)
 
 **Output**:
+
 - `carried`: Extended survey data with forward-filled values
 - `raw`: Raw survey observations (wide format)
 - `raw_long`: Raw survey observations (long format) with source details
 
 #### 3. `process_national_population_data()`
 
-**Purpose**: Prepares UN WPP population estimates for denominator calculation
+**Purpose**:
+
+Prepares UN WPP population estimates for denominator calculation
 
 **Input**:
+
 - Population estimates (UN WPP)
 - HMIS country identifiers
 
 **Processing**:
+
 - Filters to national level and target country
 - Extracts key population indicators:
   - `crudebr_unwpp`: Crude birth rate
@@ -397,16 +410,20 @@ Country_Name  Province_A    2021  13000      10500          ...  11
   - `totu1pop_unwpp`: Under-1 population
 
 **Output**:
+
 - `wide`: Population indicators in wide format
 - `raw_long`: Population data in long format with source tracking
 
 #### 4. `calculate_denominators()`
 
-**Purpose**: Calculates all possible denominators from HMIS and population data
+**Purpose**:
+
+Calculates all possible denominators from HMIS and population data
 
 This is the core function that generates multiple denominator estimates.
 
 **Input**:
+
 - `hmis_data`: Annual service counts
 - `survey_data`: Survey reference values (carried forward)
 - `population_data`: UN WPP estimates (national only)
@@ -416,6 +433,7 @@ This is the core function that generates multiple denominator estimates.
 **A. Service-Based Denominators** (using HMIS numerator ÷ survey coverage):
 
 1. **From ANC1**:
+
    - `danc1_pregnancy`: Estimated pregnancies
    - `danc1_delivery`: Estimated deliveries
    - `danc1_birth`: Estimated births (live + stillbirths)
@@ -425,18 +443,22 @@ This is the core function that generates multiple denominator estimates.
    - `danc1_measles2`: Eligible for MCV2
 
 2. **From Delivery**:
+
    - `ddelivery_livebirth`, `ddelivery_birth`, `ddelivery_pregnancy`
    - `ddelivery_dpt`, `ddelivery_measles1`, `ddelivery_measles2`
 
 3. **From SBA** (Skilled Birth Attendance):
+
    - Same structure as delivery denominators
    - `dsba_livebirth`, `dsba_birth`, `dsba_pregnancy`
    - `dsba_dpt`, `dsba_measles1`, `dsba_measles2`
 
 4. **From BCG** (national only):
+
    - `dbcg_pregnancy`, `dbcg_livebirth`, `dbcg_dpt`
 
 5. **From Penta1**:
+
    - `dpenta1_dpt`, `dpenta1_measles1`, `dpenta1_measles2`
 
 **B. Population-Based Denominators** (national only):
@@ -450,33 +472,45 @@ This is the core function that generates multiple denominator estimates.
 **C. Vitamin A and Full Immunization**:
 
 For each livebirth denominator, additional denominators are automatically created:
+
 - `d*_vitaminA`: Livebirth × (1 - U5MR) × 4.5 (children 6-59 months)
 - `d*_fully_immunized`: Livebirth × (1 - IMR)
 
 **Adjustment for Incomplete Reporting**:
+
 When `nummonth < 12`, population-based denominators are scaled:
 ```
 denominator_adjusted = denominator × (nummonth / 12)
 ```
 
-**Output**: Data frame with all calculated denominators plus original HMIS and survey data
+**Output**:
+
+Data frame with all calculated denominators plus original HMIS and survey data
 
 #### 5. `classify_source_type()`
 
-**Purpose**: Categorizes denominators to prevent circular references
+**Purpose**:
+
+Categorizes denominators to prevent circular references
 
 **Logic**:
+
 - `reference_based`: Denominator calculated from same indicator (e.g., `danc1_pregnancy` for ANC1)
 - `unwpp_based`: Denominator from UN WPP population data
 - `independent`: Denominator from a different service indicator
 
-**Importance**: This classification ensures that when selecting "best" denominators, we avoid using reference-based denominators (which would artificially show 100% coverage equal to the survey value).
+**Importance**:
+
+This classification ensures that when selecting "best" denominators, we avoid using reference-based denominators (which would artificially show 100% coverage equal to the survey value).
 
 #### 6. `compare_coverage_to_survey()`
 
-**Purpose**: Selects the best-performing denominator for each indicator
+**Purpose**:
+
+Selects the best-performing denominator for each indicator
 
 **Input**:
+
 - Coverage estimates from all denominators
 - Survey reference values (forward-filled)
 
@@ -503,9 +537,12 @@ denominator_adjusted = denominator × (nummonth / 12)
 
 5. **Geographic Consistency**: Best denominator selected per geographic area × indicator (not per year)
 
-**Output**: Coverage data filtered to only the best-performing denominator for each indicator, with ranking
+**Output**:
+
+Coverage data filtered to only the best-performing denominator for each indicator, with ranking
 
 **Key Design Decision**:
+
 - UNWPP denominators excluded from "best" selection by default
 - Prevents over-reliance on population projections
 - Ensures HMIS data drives coverage when available
@@ -513,9 +550,12 @@ denominator_adjusted = denominator × (nummonth / 12)
 
 #### 7. `create_combined_results_table()`
 
-**Purpose**: Merges coverage estimates and survey observations into unified output
+**Purpose**:
+
+Merges coverage estimates and survey observations into unified output
 
 **Input**:
+
 - Coverage comparison results (best denominator selected)
 - Raw survey observations
 - All coverage data (optional, includes all denominators)
@@ -530,6 +570,7 @@ Country_Name  2020  anc1                 dwpp_pregnancy              82.1
 ```
 
 **Denominator Categories**:
+
 - `best`: Selected optimal denominator
 - `survey`: Actual survey observation
 - `d*_*`: Individual denominator results (all options)
