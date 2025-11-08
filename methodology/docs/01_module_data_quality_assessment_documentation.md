@@ -259,6 +259,7 @@ FAC001,202402,penta1,52,Country_A,Province_A,District_A
 **Purpose**: Quick reference list of only the observations flagged as outliers
 
 **Columns:**
+
 - `facility_id`: Facility identifier
 - `admin_area_[2-8]`: Geographic areas (dynamically included based on data)
 - `indicator_common_id`: Health indicator name
@@ -285,6 +286,7 @@ FAC001,202402,penta1,52,Country_A,Province_A,District_A
 **Columns**: Same as outlier_list.csv but includes all observations
 
 **Use Case**:
+
 - Input for Module 2 (Data Quality Adjustments)
 - Statistical analysis of outlier patterns
 - Generating visualizations of outlier prevalence
@@ -297,6 +299,7 @@ FAC001,202402,penta1,52,Country_A,Province_A,District_A
 **Purpose**: Completeness flags for all facility-indicator-period combinations, including explicitly created records for missing months
 
 **Columns:**
+
 - `facility_id`: Facility identifier
 - `admin_area_[2-8]`: Geographic areas
 - `indicator_common_id`: Health indicator name
@@ -306,11 +309,13 @@ FAC001,202402,penta1,52,Country_A,Province_A,District_A
 - `completeness_flag`: 0=Incomplete, 1=Complete, 2=Inactive (removed from output)
 
 **Special Features**:
+
 - Contains explicit rows for non-reporting months
 - Inactive periods (6+ months at start/end) excluded
 - Full time series for each facility-indicator combination
 
 **Use Case**:
+
 - Calculating completeness percentages
 - Identifying reporting gaps
 - Trend analysis of reporting behavior
@@ -323,6 +328,7 @@ FAC001,202402,penta1,52,Country_A,Province_A,District_A
 **Purpose**: Consistency ratios calculated at the specified geographic level (e.g., district)
 
 **Columns:**
+
 - `admin_area_1` through `admin_area_[X]`: Geographic identifiers up to specified GEOLEVEL
 - `period_id`: Time period (YYYYMM)
 - `ratio_type`: Name of consistency pair (e.g., "pair_penta", "pair_anc")
@@ -332,6 +338,7 @@ FAC001,202402,penta1,52,Country_A,Province_A,District_A
 **Format**: Long format with one row per geographic area-period-ratio type
 
 **Use Case**:
+
 - Understanding district-level service delivery patterns
 - Identifying geographic areas with consistency issues
 - Creating consistency heatmaps by zone
@@ -344,6 +351,7 @@ FAC001,202402,penta1,52,Country_A,Province_A,District_A
 **Purpose**: Geographic consistency results expanded to facility level, pivoted to wide format
 
 **Columns:**
+
 - `facility_id`: Facility identifier
 - `period_id`: Time period
 - `pair_[X]`: One column per consistency pair with flag values
@@ -351,6 +359,7 @@ FAC001,202402,penta1,52,Country_A,Province_A,District_A
 **Format**: Wide format with one row per facility-period
 
 **Use Case**:
+
 - Input for DQA scoring
 - Merging consistency flags with facility-level analyses
 - Facility-specific quality reports
@@ -363,6 +372,7 @@ FAC001,202402,penta1,52,Country_A,Province_A,District_A
 **Purpose**: Composite data quality scores by facility and time period
 
 **Columns:**
+
 - `facility_id`: Facility identifier
 - `admin_area_[2-8]`: Geographic areas
 - `period_id`: Time period (YYYYMM)
@@ -372,6 +382,7 @@ FAC001,202402,penta1,52,Country_A,Province_A,District_A
 - `dqa_score`: Binary overall pass/fail (1 = all checks passed, 0 = any check failed)
 
 **Use Case**:
+
 - Filtering data for subsequent modules (e.g., only use facility-months with dqa_score=1)
 - Tracking data quality trends over time
 - Identifying facilities needing data quality improvement support
@@ -388,9 +399,11 @@ FAC001,202402,penta1,52,Country_A,Province_A,District_A
 **Purpose**: Loads HMIS data and prepares it for analysis by creating necessary date fields and composite indicators
 
 **Parameters:**
+
 - `file_path` (character): Path to HMIS CSV file
 
 **Returns**: List containing:
+
 - `data`: Preprocessed dataframe with date field added
 - `geo_cols`: Vector of detected geographic column names
 
@@ -420,6 +433,7 @@ geo_cols <- inputs$geo_cols
 **Purpose**: Validates that required indicator pairs exist in the dataset before running consistency analysis
 
 **Parameters:**
+
 - `consistency_params`: List containing consistency_pairs and consistency_ranges
 - `data`: The HMIS dataset
 
@@ -449,6 +463,7 @@ Remaining consistency pairs: pair_penta, pair_anc
 **Purpose**: Identifies statistical outliers in facility service volumes using dual detection methods
 
 **Parameters:**
+
 - `data`: HMIS data with facility_id, indicator_common_id, period_id, count
 - `geo_cols`: Vector of geographic column names
 - `outlier_params`: List containing:
@@ -458,6 +473,7 @@ Remaining consistency pairs: pair_penta, pair_anc
 **Returns**: Dataframe with outlier flags and diagnostic metrics for each facility-indicator-period
 
 **Calculated Fields:**
+
 - `median_volume`: Median count by facility-indicator
 - `mad_volume`: MAD calculated on values >= median
 - `mad_residual`: Standardized residual (|count - median| / MAD)
@@ -494,11 +510,13 @@ Remaining consistency pairs: pair_penta, pair_anc
 **Purpose**: Main orchestration function that generates complete time series and assigns completeness flags for all indicators
 
 **Parameters:**
+
 - `outlier_data_main`: Outlier analysis results (contains all facility-indicator-period combinations with counts)
 
 **Returns**: Long format dataset with completeness flags for all facility-indicator-period combinations
 
 **Process:**
+
 1. Identifies first and last reporting period for each indicator globally
 2. Calls `generate_full_series_per_indicator()` for each indicator
 3. Applies completeness tagging logic (complete/incomplete/inactive)
@@ -507,6 +525,7 @@ Remaining consistency pairs: pair_penta, pair_anc
 6. Removes inactive periods (completeness_flag = 2)
 
 **Output Structure:**
+
 - Explicit rows for both reported and non-reported periods
 - Completeness flag: 0 (incomplete), 1 (complete), 2 (inactive - removed)
 - Full time series from first to last reporting period per indicator
@@ -521,6 +540,7 @@ Remaining consistency pairs: pair_penta, pair_anc
 **Purpose**: Creates a complete monthly time series for a specific indicator, filling in gaps where facilities did not report
 
 **Parameters:**
+
 - `outlier_data`: data.table with outlier results
 - `indicator_id`: Specific indicator to process (e.g., "penta1")
 - `timeframe`: Data table with first_pid and last_pid for each indicator
@@ -528,6 +548,7 @@ Remaining consistency pairs: pair_penta, pair_anc
 **Returns**: Complete time series with explicit rows for both reported and non-reported periods
 
 **Process:**
+
 1. Subsets data to specific indicator
 2. Generates monthly sequence from first to last period_id for that indicator
 3. Creates complete facility-period grid (all facilities × all months) using `CJ()` cross join
@@ -575,6 +596,7 @@ Explanation:
 **Purpose**: Calculates consistency ratios at the geographic level to account for patients seeking services across multiple facilities within a district/ward
 
 **Parameters:**
+
 - `data`: Outlier data (with outliers already flagged)
 - `geo_cols`: Vector of geographic column names
 - `geo_level`: Geographic level for aggregation (e.g., "admin_area_3")
@@ -583,6 +605,7 @@ Explanation:
 **Returns**: Long format dataframe with geographic-level consistency results
 
 **Process:**
+
 1. Excludes outliers (sets count to NA where outlier_flag = 1)
 2. Aggregates data to specified geographic level by period (sums across facilities)
 3. Reshapes to wide format (one column per indicator)
@@ -590,6 +613,7 @@ Explanation:
 5. Flags consistency based on predefined ranges
 
 **Output Columns:**
+
 - Geographic identifiers (up to specified level)
 - `period_id`: Time period
 - `ratio_type`: Name of the consistency pair (e.g., "pair_penta")
@@ -617,6 +641,7 @@ District_A    Ward_2        202401     pair_penta    0.97               1
 **Purpose**: Assigns geographic-level consistency results to individual facilities
 
 **Parameters:**
+
 - `facility_metadata`: Facility list with geographic assignments
 - `geo_consistency_results`: Output from geo_consistency_analysis()
 - `geo_level`: Geographic level used in consistency analysis
@@ -624,6 +649,7 @@ District_A    Ward_2        202401     pair_penta    0.97               1
 **Returns**: Facility-level dataset with consistency flags
 
 **Process:**
+
 - Extracts facility list with their geographic assignments
 - Performs left join to replicate geo-level consistency scores to all facilities in that area
 - Uses many-to-many relationship to handle multiple periods and ratio types
@@ -640,6 +666,7 @@ District_A    Ward_2        202401     pair_penta    0.97               1
 **Purpose**: Calculates comprehensive DQA scores including consistency checks when consistency pairs are available
 
 **Parameters:**
+
 - `completeness_data`: Output from process_completeness()
 - `consistency_data`: Wide-format facility consistency results
 - `outlier_data`: Output from outlier_analysis()
@@ -716,11 +743,13 @@ Final scores:
 **Purpose**: Calculates DQA scores using only completeness and outlier checks when consistency data is unavailable or no valid consistency pairs exist
 
 **When Used:**
+
 - No consistency pairs defined in configuration
 - All consistency pairs have missing indicators
 - Dataset doesn't contain paired indicators
 
 **Scoring:**
+
 - Uses only completeness and outlier components
 - `dqa_mean` = `completeness_outlier_score`
 - `dqa_score` = 1 if all completeness and outlier checks pass, 0 otherwise
@@ -1557,7 +1586,7 @@ Heatmap table with zones as rows and time periods as columns, color-coded by ave
 
 ### Execution Workflow
 
-The module follows this carefully orchestrated sequence:
+The module follows this sequence:
 
 ```
 1. DATA LOADING & PREPROCESSING
