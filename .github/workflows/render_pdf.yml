@@ -1,10 +1,10 @@
-name: Render Markdown to PDF
-
+name: Render Methodology Markdown to PDF
 on:
   push:
     branches: [main]
-    paths: ['**/*.md']
-
+    paths:
+      - 'methodology/*.md'
+      - '!methodology/M3_documentation_enhancement_summary.md'
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -12,31 +12,51 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Pandoc
         uses: r-lib/actions/setup-pandoc@v2
         with:
           pandoc-version: '2.19.2'
-      
-      - name: Install LaTeX and fonts
+
+      - name: Install LaTeX
         run: |
           sudo apt-get update
-          sudo apt-get install -y texlive-xetex texlive-fonts-recommended
-      
-      - name: Convert MD files to PDFs
+          sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-latex-extra
+
+      - name: Convert methodology MD files to PDFs
         run: |
-          for file in methodology/*.md; do
-            filename=$(basename "$file" .md)
-            pandoc --pdf-engine=xelatex \
-                   -V geometry:margin=1in \
-                   --number-sections \
-                   -V mainfont="Latin Modern Roman" \
-                   -o "methodology/${filename}.pdf" \
-                   "$file"
-          done
-      
-      - name: Commit PDFs
+          pandoc --pdf-engine=xelatex \
+                 -V geometry:margin=1in \
+                 --number-sections \
+                 -o methodology/00_background_documentation.pdf \
+                 methodology/00_background_documentation.md
+
+          pandoc --pdf-engine=xelatex \
+                 -V geometry:margin=1in \
+                 --number-sections \
+                 -o methodology/01_module_data_quality_assessment_documentation.pdf \
+                 methodology/01_module_data_quality_assessment_documentation.md
+
+          pandoc --pdf-engine=xelatex \
+                 -V geometry:margin=1in \
+                 --number-sections \
+                 -o methodology/02_module_data_quality_adjustments_documentation.pdf \
+                 methodology/02_module_data_quality_adjustments_documentation.md
+
+          pandoc --pdf-engine=xelatex \
+                 -V geometry:margin=1in \
+                 --number-sections \
+                 -o methodology/03_module_service_utilization_documentation.pdf \
+                 methodology/03_module_service_utilization_documentation.md
+
+          pandoc --pdf-engine=xelatex \
+                 -V geometry:margin=1in \
+                 --number-sections \
+                 -o methodology/04_module_coverage_estimates_documentation.pdf \
+                 methodology/04_module_coverage_estimates_documentation.md
+
+      - name: Commit PDF
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "Auto-generated PDFs for each methodology file"
+          commit_message: "Auto-generated PDFs for methodology files"
           file_pattern: "methodology/*.pdf"
