@@ -180,7 +180,6 @@ MINIMUM_COUNT_THRESHOLD <- 100  # Only flag outliers with count >= 100
 # Number of Median Absolute Deviations for statistical outlier detection
 MADS <- 10  # Flag if value > 10 MADs from median
 ```
-</details>
 
 **Tuning Guidance:**
 - **More sensitive detection**: Lower `OUTLIER_PROPORTION_THRESHOLD` to 0.6-0.7, reduce `MADS` to 8
@@ -188,7 +187,7 @@ MADS <- 10  # Flag if value > 10 MADs from median
 - **Small facilities**: Lower `MINIMUM_COUNT_THRESHOLD` to 50
 - **Large facilities only**: Increase `MINIMUM_COUNT_THRESHOLD` to 200+
 
-
+</details>
 
 <details>
 <summary><strong>DQA Indicator Selection</strong></summary>
