@@ -64,8 +64,8 @@ The module saves four CSV files: one for facility-level data, one for subnationa
 ┌─────────────────────────────────────────────────────────────┐
 │ INPUTS                                                      │
 │                                                             │
-│  Raw HMIS Data          Outlier Flags      Completeness    │
-│  (service volumes)      (from Module 1)    Flags           │
+│  Raw HMIS Data          Outlier Flags      Completeness     │
+│  (service volumes)      (from Module 1)    Flags            │
 │                                            (from Module 1)  │
 └──────────────┬──────────────────────────────────────────────┘
                │
@@ -102,10 +102,10 @@ The module saves four CSV files: one for facility-level data, one for subnationa
 ┌─────────────────────────────────────────────────────────────┐
 │ STEP 4: Create Four Scenarios                               │
 │                                                             │
-│  ┌─────────────┐  ┌──────────────┐  ┌─────────────────┐   │
-│  │   None      │  │   Outliers   │  │  Completeness   │   │
-│  │ (original)  │  │   Only       │  │     Only        │   │
-│  └─────────────┘  └──────────────┘  └─────────────────┘   │
+│  ┌─────────────┐  ┌──────────────┐  ┌─────────────────┐     │
+│  │   None      │  │   Outliers   │  │  Completeness   │     │
+│  │ (original)  │  │   Only       │  │     Only        │     │
+│  └─────────────┘  └──────────────┘  └─────────────────┘     │
 │                                                             │
 │                   ┌──────────────┐                          │
 │                   │     Both     │                          │
@@ -129,9 +129,9 @@ The module saves four CSV files: one for facility-level data, one for subnationa
 │ OUTPUTS                                                     │
 │                                                             │
 │  M2_adjusted_data.csv           (facility level)            │
-│  M2_adjusted_data_admin_area.csv (subnational)             │
-│  M2_adjusted_data_national.csv  (national)                 │
-│  M2_low_volume_exclusions.csv   (metadata)                 │
+│  M2_adjusted_data_admin_area.csv (subnational)              │
+│  M2_adjusted_data_national.csv  (national)                  │
+│  M2_low_volume_exclusions.csv   (metadata)                  │
 └─────────────────────────────────────────────────────────────┘
 ```
 

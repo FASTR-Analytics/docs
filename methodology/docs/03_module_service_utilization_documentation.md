@@ -63,23 +63,23 @@ The module operates in two sequential stages, each with a distinct purpose:
 │                     (Identifies WHEN disruptions occur)                 │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
-│  Load Data → Remove Outliers → Aggregate by Geography                  │
+│  Load Data → Remove Outliers → Aggregate by Geography                   │
 │       │                                                                 │
 │       ▼                                                                 │
-│  Fill Missing Months → Filter Low-Volume Periods                       │
+│  Fill Missing Months → Filter Low-Volume Periods                        │
 │       │                                                                 │
 │       ▼                                                                 │
-│  For each indicator × geographic area:                                 │
-│   ┌──────────────────────────────────────────────────────────┐         │
-│   │ 1. Fit robust model: count ~ seasonality + time trend   │         │
-│   │ 2. Smooth predictions to reduce noise                   │         │
-│   │ 3. Calculate how far actual values deviate from expected│         │
-│   │ 4. Apply detection rules (sharp, sustained, missing)    │         │
-│   │ 5. Flag disrupted months                                │         │
-│   └──────────────────────────────────────────────────────────┘         │
+│  For each indicator × geographic area:                                  │
+│   ┌──────────────────────────────────────────────────────────┐          │
+│   │ 1. Fit robust model: count ~ seasonality + time trend    │          │
+│   │ 2. Smooth predictions to reduce noise                    │          │
+│   │ 3. Calculate how far actual values deviate from expected │          │
+│   │ 4. Apply detection rules (sharp, sustained, missing)     │          │
+│   │ 5. Flag disrupted months                                 │          │
+│   └──────────────────────────────────────────────────────────┘          │
 │       │                                                                 │
 │       ▼                                                                 │
-│  OUTPUT: M3_chartout.csv (disruption flags by month/area/indicator)    │
+│  OUTPUT: M3_chartout.csv (disruption flags by month/area/indicator)     │
 │                                                                         │
 └────────────────────┬────────────────────────────────────────────────────┘
                      │
@@ -89,32 +89,32 @@ The module operates in two sequential stages, each with a distinct purpose:
 │                    (Quantifies HOW MUCH impact occurred)                │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
-│  Join disruption flags to facility-level data                          │
+│  Join disruption flags to facility-level data                           │
 │       │                                                                 │
 │       ▼                                                                 │
-│  Run panel regressions at multiple levels:                             │
-│   ┌──────────────────────────────────────────────────────────┐         │
-│   │ National Level: Overall country impact                  │         │
-│   │ Province Level: Regional variation in impacts           │         │
-│   │ District Level: Local hotspots (optional)               │         │
-│   │ Ward Level: Finest geographic detail (optional)         │         │
-│   │                                                          │         │
-│   │ Each model estimates:                                   │         │
-│   │  • Expected service volume (adjusting for trends)       │         │
-│   │  • Effect of disruption periods                         │         │
-│   │  • Statistical significance                             │         │
-│   └──────────────────────────────────────────────────────────┘         │
+│  Run panel regressions at multiple levels:                              │
+│   ┌──────────────────────────────────────────────────────────┐          │
+│   │ National Level: Overall country impact                   │          │
+│   │ Province Level: Regional variation in impacts            │          │
+│   │ District Level: Local hotspots (optional)                │          │
+│   │ Ward Level: Finest geographic detail (optional)          │          │
+│   │                                                          │          │
+│   │ Each model estimates:                                    │          │
+│   │  • Expected service volume (adjusting for trends)        │          │
+│   │  • Effect of disruption periods                          │          │
+│   │  • Statistical significance                              │          │
+│   └──────────────────────────────────────────────────────────┘          │
 │       │                                                                 │
 │       ▼                                                                 │
-│  Calculate shortfalls and surpluses:                                   │
-│   • Absolute difference (number of services)                           │
-│   • Percentage difference (% change from expected)                     │
+│  Calculate shortfalls and surpluses:                                    │
+│   • Absolute difference (number of services)                            │
+│   • Percentage difference (% change from expected)                      │
 │       │                                                                 │
 │       ▼                                                                 │
-│  OUTPUTS:                                                              │
-│   • M3_disruptions_analysis_*.csv (4 geographic levels)                │
-│   • M3_all_indicators_shortfalls_*.csv (summary statistics)            │
-│   • M3_service_utilization.csv (data for visualization)                │
+│  OUTPUTS:                                                               │
+│   • M3_disruptions_analysis_*.csv (4 geographic levels)                 │
+│   • M3_all_indicators_shortfalls_*.csv (summary statistics)             │
+│   • M3_service_utilization.csv (data for visualization)                 │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
