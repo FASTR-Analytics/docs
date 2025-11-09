@@ -182,9 +182,13 @@ MADS <- 10  # Flag if value > 10 MADs from median
 ```
 
 **Tuning Guidance:**
+
 - **More sensitive detection**: Lower `OUTLIER_PROPORTION_THRESHOLD` to 0.6-0.7, reduce `MADS` to 8
+
 - **Less sensitive detection**: Increase `OUTLIER_PROPORTION_THRESHOLD` to 0.9, increase `MADS` to 12-15
+
 - **Small facilities**: Lower `MINIMUM_COUNT_THRESHOLD` to 50
+
 - **Large facilities only**: Increase `MINIMUM_COUNT_THRESHOLD` to 200+
 
 </details>
