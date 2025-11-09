@@ -336,7 +336,9 @@ The module depends on the following R packages:
 
 Core function that implements the adjustment logic for a single scenario.
 
-**Purpose**: Replaces outlier and/or incomplete values using rolling averages and historical patterns.
+**Purpose**:
+
+Replaces outlier and/or incomplete values using rolling averages and historical patterns.
 
 **Parameters**:
 
@@ -346,7 +348,9 @@ Core function that implements the adjustment logic for a single scenario.
 - `adjust_outliers` (logical): Whether to apply outlier adjustment
 - `adjust_completeness` (logical): Whether to apply completeness adjustment
 
-**Returns**: data.table with adjusted values in `count_working` column and adjustment metadata
+**Returns**:
+
+data.table with adjusted values in `count_working` column and adjustment metadata
 
 **Key Operations**:
 
@@ -360,7 +364,9 @@ Core function that implements the adjustment logic for a single scenario.
 
 Wrapper function that runs adjustments across all four scenarios.
 
-**Purpose**: Applies the adjustment logic under different combinations of outlier and completeness adjustments.
+**Purpose**:
+
+Applies the adjustment logic under different combinations of outlier and completeness adjustments.
 
 **Parameters**:
 
@@ -368,7 +374,9 @@ Wrapper function that runs adjustments across all four scenarios.
 - `completeness_data` (data.table): Completeness flags
 - `outlier_data` (data.table): Outlier flags
 
-**Returns**: data.table with four `count_final_*` columns, one per scenario
+**Returns**:
+
+data.table with four `count_final_*` columns, one per scenario
 
 **Scenarios Processed**:
 
@@ -392,15 +400,21 @@ Wrapper function that runs adjustments across all four scenarios.
 
 Outlier adjustment is applied to any facility-month value flagged in Module 1 (`outlier_flag == 1`). The goal is to replace these outlier values using valid historical data from the same facility and indicator.
 
-**Statistical Approach**: Rolling averages are used to estimate expected values. A rolling average (also called moving average) is the mean of a set of time periods surrounding the target period. This technique smooths short-term fluctuations and highlights longer-term trends.
+**Statistical Approach**:
 
-**Valid Values Definition**: Only values meeting ALL of the following criteria are used in calculations:
+Rolling averages are used to estimate expected values. A rolling average (also called moving average) is the mean of a set of time periods surrounding the target period. This technique smooths short-term fluctuations and highlights longer-term trends.
+
+**Valid Values Definition**:
+
+Only values meeting ALL of the following criteria are used in calculations:
 
 - `count > 0` (positive non-zero values)
 - `!is.na(count)` (non-missing)
 - `outlier_flag == 0` (not flagged as outlier)
 
-**Implementation**: The module uses `frollmean()` from the `zoo` package for efficient rolling calculations:
+**Implementation**:
+
+The module uses `frollmean()` from the `zoo` package for efficient rolling calculations:
 
 ```r
 data_adj[, valid_count := fifelse(outlier_flag == 0L & !is.na(count), count, NA_real_)]
@@ -464,7 +478,9 @@ The adjustment process follows this **hierarchical order** (stopping at the firs
     -   Provides a facility-specific baseline when no temporal pattern is available
     -   Method tag: `fallback`
 
-**Edge Case**: If no valid replacement can be found from any of these methods, the original outlier value is retained.
+**Edge Case**:
+
+If no valid replacement can be found from any of these methods, the original outlier value is retained.
 
 ### Completeness Adjustment Methodology
 
@@ -473,7 +489,9 @@ Completeness adjustment is applied to any facility-month where:
 - The month is flagged as incomplete (`completeness_flag != 1`) in Module 1, OR
 - The value is missing (`is.na(count_working)`)
 
-**Statistical Approach**: The same rolling average methodology is applied, but the definition of "valid values" differs slightly:
+**Statistical Approach**:
+
+The same rolling average methodology is applied, but the definition of "valid values" differs slightly:
 
 **Valid Values for Completeness Adjustment**:
 
@@ -523,7 +541,9 @@ The replacement follows this **hierarchical order**:
     -   Provides a facility-specific baseline
     -   Method tag: `fallback`
 
-**Edge Case**: If no valid replacement is found, the value remains missing (`NA`).
+**Edge Case**:
+
+If no valid replacement is found, the value remains missing (`NA`).
 
 ### Scenario Processing Logic
 
@@ -536,6 +556,7 @@ The module processes all four adjustment scenarios simultaneously using the `app
 - Serves as baseline for comparison
 
 **Scenario 2: Outliers** (`count_final_outliers`)
+
 - `adjust_outliers = TRUE`, `adjust_completeness = FALSE`
 - Only outlier values are replaced
 - Missing/incomplete values remain as-is
@@ -561,7 +582,9 @@ The module processes all four adjustment scenarios simultaneously using the `app
 2. Completeness adjustment then operates on `count_working`, using the already-adjusted values
 3. This ensures completeness imputation uses cleaned (non-outlier) values when available
 
-**Important**: After scenario-specific adjustments, excluded indicators (deaths) are reset to their original values:
+**Important**:
+
+After scenario-specific adjustments, excluded indicators (deaths) are reset to their original values:
 
 ```r
 dat[indicator_common_id %in% EXCLUDED_FROM_ADJUSTMENT, count_working := count]
@@ -581,7 +604,9 @@ sum(count_final_both, na.rm = TRUE)
 - Missing values (`NA`) are treated as zero in aggregation
 - Consistent with standard HMIS reporting practices
 
-**Caution**: If many facilities have `NA` values after adjustment, subnational/national totals may be underestimated. The `count_final_none` scenario provides a reference point for assessing impact.
+**Caution**:
+
+If many facilities have `NA` values after adjustment, subnational/national totals may be underestimated. The `count_final_none` scenario provides a reference point for assessing impact.
 
 ### Handling Missing Data in Calculations
 
@@ -591,7 +616,9 @@ The module applies `na.rm = TRUE` in all rolling calculations:
 frollmean(valid_count, 6, na.rm = TRUE, align = "center")
 ```
 
-**Implication**: Rolling averages are calculated from available valid values only. If fewer than 6 values exist, the average is computed from whatever is available. If no valid values exist, the result is `NA`.
+**Implication**:
+
+Rolling averages are calculated from available valid values only. If fewer than 6 values exist, the average is computed from whatever is available. If no valid values exist, the result is `NA`.
 
 </details>
 
@@ -600,7 +627,9 @@ frollmean(valid_count, 6, na.rm = TRUE, align = "center")
 
 ### Example 1: Outlier Adjustment
 
-**Scenario**: A facility reports an unusually high ANC1 visit count in March 2023.
+**Scenario**:
+
+A facility reports an unusually high ANC1 visit count in March 2023.
 
 **Data**:
 
@@ -621,11 +650,15 @@ period_id | count | outlier_flag | Surrounding valid values
 - Average: (145 + 152 + 148 + 155 + 147) / 5 = 149.4
 - **Adjusted value**: 149.4
 
-**Method used**: `roll6`
+**Method used**:
+
+`roll6`
 
 ### Example 2: Completeness Adjustment
 
-**Scenario**: A facility fails to report malaria tests in February 2023.
+**Scenario**:
+
+A facility fails to report malaria tests in February 2023.
 
 **Data**:
 
@@ -645,11 +678,15 @@ period_id | count | completeness_flag | Surrounding valid values
 - Average: 48.75 (using available surrounding months)
 - **Imputed value**: 48.75
 
-**Method used**: `roll6`
+**Method used**:
+
+`roll6`
 
 ### Example 3: Seasonal Indicator with Same-Month-Last-Year
 
-**Scenario**: Malaria cases show strong seasonality, and a June 2023 outlier needs adjustment.
+**Scenario**:
+
+Malaria cases show strong seasonality, and a June 2023 outlier needs adjustment.
 
 **Data**:
 
@@ -667,13 +704,23 @@ period_id | count | outlier_flag | Notes
 3. June 2022 value = 234 (valid)
 4. **Adjusted value**: 234
 
-**Method used**: `same_month_last_year`
+**Method used**:
+
+`same_month_last_year`
 
 ### Example 4: Scenario Comparison
 
-**Facility**: FAC001
-**Indicator**: Institutional deliveries
-**Period**: Q1 2023
+**Facility**:
+
+FAC001
+
+**Indicator**:
+
+Institutional deliveries
+
+**Period**:
+
+Q1 2023
 
 **Original Data**:
 
@@ -694,6 +741,7 @@ Mar 2023 | NA    | -        | No        # Incomplete
 | Mar 2023 | NA   | NA       | 80**         | 80** |
 
 *Adjusted using rolling average
+
 **Imputed using rolling average
 
 **Interpretation**:
@@ -747,52 +795,54 @@ adjusted_data_national_final <- adjusted_data_export[
 **Possible causes**:
 
 - Indicator is in the excluded list (deaths)
-    - Indicator flagged as low-volume
-    - No outlier or completeness flags in input data
+- Indicator flagged as low-volume
+- No outlier or completeness flags in input data
 
-**Solution**: Check `M2_low_volume_exclusions.csv` and verify Module 1 outputs contain flags
+**Solution**:
+
+Check `M2_low_volume_exclusions.csv` and verify Module 1 outputs contain flags
 
 **Issue 2: Adjusted values seem unreasonable**
 
 **Possible causes**:
 
 - Insufficient valid historical data for rolling averages
-    - Genuine program changes being smoothed out
-    - Seasonal patterns not captured by 6-month window
+- Genuine program changes being smoothed out
+- Seasonal patterns not captured by 6-month window
 
 **Solution**:
 
 - Review facility-specific time series plots
-    - Consider using "outliers only" scenario if completeness is good
-    - Validate against program implementation records
+- Consider using "outliers only" scenario if completeness is good
+- Validate against program implementation records
 
 **Issue 3: Many NA values after adjustment**
 
 **Possible causes**:
 
 - Facility has very sparse data
-    - No valid values available for any adjustment method
-    - Early months in time series lack historical data
+- No valid values available for any adjustment method
+- Early months in time series lack historical data
 
 **Solution**:
 
 - Expected for facilities with limited reporting history
-    - Consider facility-level data quality filtering
-    - National/subnational aggregates will sum available values
+- Consider facility-level data quality filtering
+- National/subnational aggregates will sum available values
 
 **Issue 4: Subnational/national totals don't match expectations**
 
 **Possible causes**:
 
 - NA values treated as zero in aggregation
-    - Different scenarios produce different totals
-    - Low reporting completeness overall
+- Different scenarios produce different totals
+- Low reporting completeness overall
 
 **Solution**:
 
 - Compare `count_final_none` vs `count_final_both` to assess adjustment impact
-    - Review Module 1 completeness statistics
-    - Consider data quality threshold for inclusion
+- Review Module 1 completeness statistics
+- Consider data quality threshold for inclusion
 
 ### Quality Assurance Checks
 
@@ -849,7 +899,6 @@ After running this module, consider:
 
 1. **Rolling windows assume stability**: Adjustments work best when service delivery is relatively stable. Genuine program changes (e.g., new campaigns) may be incorrectly smoothed.
 
-
 2. **No adjustment uncertainty**: The module provides point estimates without confidence intervals. Adjusted values should be treated as estimates.
 
 3. **Facility-specific adjustments**: No cross-facility borrowing of information. Facilities with very sparse data may have unstable adjustments.
@@ -861,7 +910,6 @@ After running this module, consider:
 ### Best Practices
 
 1. **Always produce all four scenarios**: Even if you plan to use only one, having all scenarios allows for sensitivity analysis and validation
-
 
 2. **Document your scenario choice**: When using adjusted data for analysis, clearly document which scenario was used and why
 

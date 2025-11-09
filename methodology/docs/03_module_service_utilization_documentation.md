@@ -230,50 +230,36 @@ The module operates in two sequential stages, each with a distinct purpose:
 
 **`M3_chartout.csv`**
 
-**Purpose**:
-
-Contains flagged disruptions from the control chart analysis
+**Purpose**: Contains flagged disruptions from the control chart analysis
 
 **Columns**:
 
-  - `admin_area_*`: Geographic identifier (level depends on `CONTROL_CHART_LEVEL`)
-  - `indicator_common_id`: Health service indicator code
-  - `period_id`: Time period in YYYYMM format
-  - `tagged`: Binary flag (1 = disruption detected, 0 = normal)
-  - `count_original`: Actual service volume
-  - `count_predict`: Predicted volume from regression
-  - `count_smooth`: Smoothed prediction
-  - `residual`: Deviation from expected
-  - `robust_control`: Standardized residual
-  - `tag_sharp`, `tag_sustained`, `tag_sustained_dip`, `tag_sustained_rise`, `tag_missing`: Individual disruption flags
+- `admin_area_*`: Geographic identifier (level depends on `CONTROL_CHART_LEVEL`)
+- `indicator_common_id`: Health service indicator code
+- `period_id`: Time period in YYYYMM format
+- `tagged`: Binary flag (1 = disruption detected, 0 = normal)
+- `count_original`: Actual service volume
+- `count_predict`: Predicted volume from regression
+- `count_smooth`: Smoothed prediction
+- `residual`: Deviation from expected
+- `robust_control`: Standardized residual
+- `tag_sharp`, `tag_sustained`, `tag_sustained_dip`, `tag_sustained_rise`, `tag_missing`: Individual disruption flags
 
-**Use**:
-
-Identifies which months require further investigation for each indicator-geography combination
+**Use**: Identifies which months require further investigation for each indicator-geography combination
 
 **`M3_service_utilization.csv`**
 
-**Purpose**:
+**Purpose**: Pass-through copy of adjusted data for visualization
 
-Pass-through copy of adjusted data for visualization
+**Source**: Direct copy of `M2_adjusted_data.csv`
 
-**Source**:
-
-Direct copy of `M2_adjusted_data.csv`
-
-**Use**:
-
-Provides baseline data for plotting actual service volumes
+**Use**: Provides baseline data for plotting actual service volumes
 
 **`M3_memory_log.txt`**
 
-**Purpose**:
+**Purpose**: Tracks memory usage throughout execution
 
-Tracks memory usage throughout execution
-
-**Use**:
-
-Diagnostics for performance optimization and troubleshooting
+**Use**: Diagnostics for performance optimization and troubleshooting
 
 #### 2. Disruption Analysis Results
 
@@ -281,74 +267,54 @@ Diagnostics for performance optimization and troubleshooting
 
 **Columns**:
 
-  - `admin_area_1`: Country name
-  - `indicator_common_id`: Health service indicator
-  - `period_id`: Time period (YYYYMM)
-  - `count_sum`: Actual service volume (sum across all facilities)
-  - `count_expect_sum`: Expected service volume (sum of predictions)
-  - `count_expected_if_above_diff_threshold`: Value for plotting (expected if |difference| > DIFFPERCENT, otherwise actual)
+- `admin_area_1`: Country name
+- `indicator_common_id`: Health service indicator
+- `period_id`: Time period (YYYYMM)
+- `count_sum`: Actual service volume (sum across all facilities)
+- `count_expect_sum`: Expected service volume (sum of predictions)
+- `count_expected_if_above_diff_threshold`: Value for plotting (expected if |difference| > DIFFPERCENT, otherwise actual)
 
 **`M3_disruptions_analysis_admin_area_2.csv`** (Province level - always generated)
 
-**Additional column**:
+**Additional column**: `admin_area_2` (province/region name)
 
-`admin_area_2` (province/region name)
-
-**Same structure**:
-
-As admin_area_1 file but disaggregated by province
+**Same structure**: As admin_area_1 file but disaggregated by province
 
 **`M3_disruptions_analysis_admin_area_3.csv`** (District level - conditional)
 
-**Generated when**:
+**Generated when**: `RUN_DISTRICT_MODEL = TRUE`
 
-`RUN_DISTRICT_MODEL = TRUE`
+**Additional columns**: `admin_area_2`, `admin_area_3`
 
-**Additional columns**:
-
-`admin_area_2`, `admin_area_3`
-
-**Same structure**:
-
-As above but disaggregated by district
+**Same structure**: As above but disaggregated by district
 
 **`M3_disruptions_analysis_admin_area_4.csv`** (Ward level - conditional)
 
-**Generated when**:
+**Generated when**: `RUN_ADMIN_AREA_4_ANALYSIS = TRUE`
 
-`RUN_ADMIN_AREA_4_ANALYSIS = TRUE`
+**Additional columns**: `admin_area_2`, `admin_area_3`, `admin_area_4`
 
-**Additional columns**:
-
-`admin_area_2`, `admin_area_3`, `admin_area_4`
-
-**Warning**:
-
-Very large file size for countries with many wards
+**Warning**: Very large file size for countries with many wards
 
 #### 3. Shortfall/Surplus Summary Files
 
 **`M3_all_indicators_shortfalls_admin_area_*.csv`** (one for each geographic level)
 
-**Purpose**:
-
-Pre-calculated shortfall and surplus metrics for reporting
+**Purpose**: Pre-calculated shortfall and surplus metrics for reporting
 
 **Common columns**:
 
-  - Geographic identifier(s): `admin_area_*`
-  - `indicator_common_id`: Health service indicator
-  - `period_id`: Time period (YYYYMM)
-  - `count_sum`: Actual service volume
-  - `count_expect_sum`: Expected service volume
-  - `shortfall_absolute`: Absolute number of missing services (if negative disruption)
-  - `shortfall_percent`: Percentage shortfall relative to expected
-  - `surplus_absolute`: Absolute number of excess services (if positive disruption)
-  - `surplus_percent`: Percentage surplus relative to expected
+- Geographic identifier(s): `admin_area_*`
+- `indicator_common_id`: Health service indicator
+- `period_id`: Time period (YYYYMM)
+- `count_sum`: Actual service volume
+- `count_expect_sum`: Expected service volume
+- `shortfall_absolute`: Absolute number of missing services (if negative disruption)
+- `shortfall_percent`: Percentage shortfall relative to expected
+- `surplus_absolute`: Absolute number of excess services (if positive disruption)
+- `surplus_percent`: Percentage surplus relative to expected
 
-**Note**:
-
-If optional geographic levels are disabled, empty placeholder files are created for compatibility with downstream processes.
+**Note**: If optional geographic levels are disabled, empty placeholder files are created for compatibility with downstream processes.
 
 #### Temporary Files (Automatically Cleaned)
 
@@ -371,10 +337,12 @@ These are automatically deleted upon successful completion. If the script crashe
 **Purpose**: Identifies anomalies in service utilization using robust regression and MAD-based control limits.
 
 **Inputs**:
+
 - `panel_data`: Time series data for a specific indicator-geography combination
 - `selected_count`: Column name containing service volume counts to analyze
 
 **Process**:
+
 1. Fits a robust linear model (using `MASS::rlm()`) with seasonal controls and time trends
 2. Applies rolling median smoothing to predicted values to reduce noise
 3. Calculates residuals and standardizes them using Median Absolute Deviation (MAD)
@@ -382,6 +350,7 @@ These are automatically deleted upon successful completion. If the script crashe
 5. Flags recent months automatically to ensure timely detection
 
 **Outputs**:
+
 - `count_predict`: Predicted service volume from robust regression
 - `count_smooth`: Smoothed predictions using rolling median
 - `residual`: Difference between actual and smoothed values
@@ -390,6 +359,7 @@ These are automatically deleted upon successful completion. If the script crashe
 - Additional flags: `tag_sharp`, `tag_sustained`, `tag_sustained_dip`, `tag_sustained_rise`, `tag_missing`
 
 **Key Features**:
+
 - Handles missing data gracefully with interpolation
 - Uses robust regression to minimize influence of outliers
 - Employs multiple disruption detection rules for different patterns
@@ -433,9 +403,7 @@ Separate regression for each ward/finest unit
 
 ### Supporting Functions
 
-**`mem_usage(msg)`**:
-
-Tracks and logs memory consumption throughout execution
+**`mem_usage(msg)`**: Tracks and logs memory consumption throughout execution
 
 **Data Processing**:
 
@@ -458,57 +426,43 @@ A robust regression model estimates expected service volumes per indicator × ge
 
 Each rule is controlled by user-defined parameters, allowing customization of the sensitivity and behavior of the detection logic:
 
-**Sharp Disruptions**:
-
-Flags a single month when the standardized residual (residual divided by MAD) exceeds a threshold:
+**Sharp Disruptions**: Flags a single month when the standardized residual (residual divided by MAD) exceeds a threshold:
 
 $$ \left| \frac{\text{residual}}{\text{MAD}} \right| \geq \text{MADS_THRESHOLD} $$
 
 - **Parameter:** `MADS_THRESHOLD` (default: `1.5`)
 - Lower values make the detection more sensitive to sudden spikes or dips.
 
-**Sustained Drops**:
-
-Flags a sustained drop if:
+**Sustained Drops**: Flags a sustained drop if:
 
 - Three consecutive months show mild deviations (standardized residual ≥ 1), and
 - The final month also exceeds the `MADS_THRESHOLD`.
 
 This captures slower, compounding declines.
 
-**Sustained Dips**:
-
-Flags periods where the actual volume falls consistently below a defined proportion of expected volume (smoothed prediction):
+**Sustained Dips**: Flags periods where the actual volume falls consistently below a defined proportion of expected volume (smoothed prediction):
 
 $$ \text{count\_original} < \text{DIP\_THRESHOLD} \times \text{count\_smooth} $$
 
 - **Parameter:** `DIP_THRESHOLD` (default: `0.90`)
 - Users can adjust this to detect deeper or shallower dips (e.g., `0.80` for a 20% drop).
 
-**Sustained Rises**:
-
-Symmetric to dips, flags periods of consistent overperformance:
+**Sustained Rises**: Symmetric to dips, flags periods of consistent overperformance:
 
 $$ \text{count\_original} > \text{RISE\_THRESHOLD} \times \text{count\_smooth} $$
 
 - **Parameter:** `RISE_THRESHOLD` (default: `1 / DIP_THRESHOLD`, e.g., `1.11`)
 - Users can adjust this to detect upward surges in volume.
 
-**Missing Data**:
-
-Flags when 2 or more of the past 3 months have missing (`NA`) or zero service volume.
+**Missing Data**: Flags when 2 or more of the past 3 months have missing (`NA`) or zero service volume.
 
 - **Fixed rule**.
 
-**Recent Tail Override**:
-
-Automatically flags all months in the last 6 months of data to ensure recent trends are reviewed, even if model-based tagging is not conclusive.
+**Recent Tail Override**: Automatically flags all months in the last 6 months of data to ensure recent trends are reviewed, even if model-based tagging is not conclusive.
 
 - **Fixed rule**.
 
-**Final Flag**:
-
-A month is assigned `tagged = 1` if **any** of the following conditions are met:
+**Final Flag**: A month is assigned `tagged = 1` if **any** of the following conditions are met:
 
 - `tag_sharp == 1`
 - `tag_sustained == 1`
@@ -521,15 +475,15 @@ A month is assigned `tagged = 1` if **any** of the following conditions are met:
 
 **Model fitting**:
 
-- If ≥12 observations and >12 unique dates:
+If ≥12 observations and >12 unique dates:
 
 $$Y_{it} = \beta_0 + \sum \gamma_m \cdot \text{month}_m + \beta_1 \cdot \text{date} + \epsilon_{it}$$
 
-- If only ≥12 observations:
+If only ≥12 observations:
 
 $$Y_{it} = \beta_0 + \beta_1 \cdot \text{date} + \epsilon_{it}$$
 
-- If insufficient data: use the median of observed values.
+If insufficient data: use the median of observed values.
 
 **Apply rolling median smoothing to predictions**:
 
@@ -614,19 +568,21 @@ Where:
 
 Each regression level produces the following outputs:
 
-- **Expected values (`expect_admin_area_*`)**: Predicted service volume adjusted for seasonality and trends.
+**Expected values (`expect_admin_area_*`)**: Predicted service volume adjusted for seasonality and trends.
 
-- **Disruption effect (`b_admin_area_*`)**: Estimated relative change during disruptions:
+**Disruption effect (`b_admin_area_*`)**: Estimated relative change during disruptions:
 
 $$ b_{\text{admin\_area\_*}} = -\frac{\text{diff mean}}{\text{predict mean}} $$
 
-- **Trend coefficient (`b_trend_admin_area_*`)**: Reflects long-term trend.
-    - Positive = increasing service use
-    - Negative = declining service use
-    - Near zero = stable trend
+**Trend coefficient (`b_trend_admin_area_*`)**: Reflects long-term trend.
 
-- **P-value (`p_admin_area_*`)**: Measures statistical significance of the disruption effect.
-    - Lower values = stronger evidence of true disruption
+- Positive = increasing service use
+- Negative = declining service use
+- Near zero = stable trend
+
+**P-value (`p_admin_area_*`)**: Measures statistical significance of the disruption effect.
+
+- Lower values = stronger evidence of true disruption
 
 ### Statistical Methods Used
 
