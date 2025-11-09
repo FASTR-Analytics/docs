@@ -152,7 +152,10 @@ The module operates in two sequential stages, each with a distinct purpose:
 | `SELECTEDCOUNT` | "count_final_both" | String | Data column used for analysis | Options: `count_final_none`, `count_final_completeness`, `count_final_both` |
 | `VISUALIZATIONCOUNT` | "count_final_both" | String | Data column used for visualization | Should match or complement `SELECTEDCOUNT` |
 
-### Control Chart Parameters
+</details>
+
+<details>
+<summary><strong>Control Chart Parameters</strong></summary>
 
 | Parameter | Default | Type | Description | Tuning Guidance |
 |-----------|---------|------|-------------|-----------------|
@@ -163,7 +166,10 @@ The module operates in two sequential stages, each with a distinct purpose:
 
 **Note**: `RISE_THRESHOLD` is automatically calculated as `1 / DIP_THRESHOLD` (default: ~1.11) to mirror dip detection symmetrically.
 
-### Geographic Analysis Parameters
+</details>
+
+<details>
+<summary><strong>Geographic Analysis Parameters</strong></summary>
 
 | Parameter | Default | Type | Description | Tuning Guidance |
 |-----------|---------|------|-------------|-----------------|
@@ -171,13 +177,19 @@ The module operates in two sequential stages, each with a distinct purpose:
 | `RUN_DISTRICT_MODEL` | FALSE | Logical | Whether to run admin_area_3 regressions | Set TRUE for district-level analysis (increases runtime) |
 | `RUN_ADMIN_AREA_4_ANALYSIS` | FALSE | Logical | Whether to run admin_area_4 analysis | Set TRUE for finest-level analysis (very slow for large datasets) |
 
-### Data Source Parameters
+</details>
+
+<details>
+<summary><strong>Data Source Parameters</strong></summary>
 
 | Parameter | Default | Type | Description |
 |-----------|---------|------|-------------|
 | `PROJECT_DATA_HMIS` | "hmis_ISO3.csv" | String | Filename for raw HMIS data |
 
-### Parameter Selection Guide
+</details>
+
+<details>
+<summary><strong>Parameter Selection Guide</strong></summary>
 
 **For High-Sensitivity Analysis** (detecting smaller disruptions):
 - `MADS_THRESHOLD = 1.0`

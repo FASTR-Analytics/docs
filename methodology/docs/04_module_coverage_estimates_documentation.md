@@ -104,8 +104,8 @@ Results are saved with standardized column structures for each administrative le
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         PART 1: DENOMINATOR                      │
-│                    CALCULATION AND SELECTION                     │
+│                         PART 1: DENOMINATOR                     │
+│                    CALCULATION AND SELECTION                    │
 └─────────────────────────────────────────────────────────────────┘
 
   ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
@@ -125,14 +125,14 @@ Results are saved with standardized column structures for each administrative le
                         ▼
   ┌──────────────────────────────────────────────────────┐
   │      Calculate Multiple Denominator Options          │
-  │                                                       │
+  │                                                      │
   │  HMIS-Based:              Population-Based:          │
   │  • From ANC1              • From birth rate          │
   │  • From Delivery          • From total population    │
   │  • From SBA               • From under-1 population  │
   │  • From BCG                                          │
   │  • From Penta1                                       │
-  │                                                       │
+  │                                                      │
   │  [Apply demographic adjustments to each]             │
   └─────────────────────┬────────────────────────────────┘
                         │
@@ -161,10 +161,10 @@ Results are saved with standardized column structures for each administrative le
   │  • M4_combined_results (coverage + best selection)   │
   └─────────────────────┬────────────────────────────────┘
                         │
-                        │
 ┌───────────────────────┼──────────────────────────────────────────┐
-│                       ▼              PART 2: DENOMINATOR         │
-│                                  SELECTION AND PROJECTION        │
+│                       ▼                                          |
+|               PART 2: DENOMINATOR                                │
+│             SELECTION AND PROJECTION                             │
 └──────────────────────────────────────────────────────────────────┘
 
   ┌──────────────────────────────────────────────────────┐
@@ -260,6 +260,7 @@ ANALYSIS_LEVEL <- "NATIONAL_PLUS_AA2"          # Geographic scope
 ```
 
 **Analysis Level Options:**
+
 - `NATIONAL_ONLY`: National-level analysis only
 - `NATIONAL_PLUS_AA2`: National + administrative area 2 (e.g., provinces)
 - `NATIONAL_PLUS_AA2_AA3`: National + admin area 2 + admin area 3 (e.g., districts)
@@ -276,26 +277,31 @@ UNDER5_MORTALITY_RATE <- 0.103   # Under-5 mortality rate
 ```
 
 **Count Variable Options:**
+
 - `count_final_none`: No adjustments (raw reported data)
 - `count_final_outlier`: Outlier adjustment only
 - `count_final_completeness`: Completeness adjustment only
 - `count_final_both`: Both adjustments **(recommended)**
+
 
 #### Input Data Sources
 
 Part 1 integrates three primary data sources:
 
 **1. HMIS Adjusted Data** (from Module 2)
+
 - National: `M2_adjusted_data_national.csv`
 - Subnational: `M2_adjusted_data_admin_area.csv`
 - Contains service volumes by indicator, area, and time period
 
 **2. Survey Data** (DHS/MICS)
+
 - Source: GitHub repository (unified survey dataset)
 - Provides coverage benchmarks for comparison
 - DHS data prioritized over MICS when both available
 
 **3. Population Data** (UN WPP)
+
 - Source: GitHub repository
 - Provides population-based denominators
 - Includes total population, births, under-1, and under-5 populations
@@ -338,7 +344,6 @@ Prepares HMIS data for denominator calculation
 
 **Example Structure**:
 
-```
 ```
 admin_area_1  admin_area_2  year  countanc1  countdelivery  ...  nummonth
 Country_Name  Province_A    2020  12500      10200          ...  12
