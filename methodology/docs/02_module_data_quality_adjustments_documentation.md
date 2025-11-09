@@ -194,10 +194,12 @@ The adjusted data maintains realistic values that fit the facility's typical pat
 
 ## 3. Detailed Reference
 
-<details>
-<summary><strong>Configuration Parameters</strong></summary>
+### Configuration Parameters
 
-### Excluded Indicators
+<details>
+<summary><strong>Excluded Indicators</strong></summary>
+
+**Excluded Indicators**
 
 Some indicators are excluded from all adjustments due to their sensitive nature:
 
@@ -207,7 +209,12 @@ EXCLUDED_FROM_ADJUSTMENT <- c("u5_deaths", "maternal_deaths", "neonatal_deaths")
 
 **Rationale**: Death counts should not be smoothed or imputed as they represent discrete events that may have genuine temporal variation. Adjusting these could mask important epidemiological patterns or outbreak signals.
 
-### Low Volume Exclusions
+</details>
+
+<details>
+<summary><strong>Low Volume Exclusions</strong></summary>
+
+**Low Volume Exclusions**
 
 
 Indicators are also automatically excluded from **outlier adjustment** if they have zero observations above 100 across the entire dataset. This prevents meaningless outlier detection on indicators with consistently low counts.
@@ -225,7 +232,12 @@ no_outlier_adj <- volume_check[above_100 == 0, indicator_common_id]
 
 This information is saved to `M2_low_volume_exclusions.csv` for transparency.
 
-### Rolling Window Configuration
+</details>
+
+<details>
+<summary><strong>Rolling Window Configuration</strong></summary>
+
+**Rolling Window Configuration**
 
 The module uses a **6-month window** for all rolling averages. This choice balances:
 
@@ -244,10 +256,12 @@ The module uses a **6-month window** for all rolling averages. This choice balan
 
 </details>
 
-<details>
-<summary><strong>Input/Output Specifications</strong></summary>
+### Input/Output Specifications
 
-### Input Files
+<details>
+<summary><strong>Input Files</strong></summary>
+
+**Input Files**
 
 The module requires three input files from previous processing steps:
 
@@ -257,7 +271,12 @@ The module requires three input files from previous processing steps:
 | `M1_output_outliers.csv` | Module 1 | Outlier flags for each facility-month-indicator | `facility_id`, `indicator_common_id`, `period_id`, `outlier_flag` |
 | `M1_output_completeness.csv` | Module 1 | Completeness flags for each facility-month-indicator | `facility_id`, `indicator_common_id`, `period_id`, `completeness_flag` |
 
-### Input Data Structure
+</details>
+
+<details>
+<summary><strong>Input Data Structure</strong></summary>
+
+**Input Data Structure**
 
 **Raw HMIS Data (`hmis_ISO3.csv`)**:
 
@@ -289,7 +308,12 @@ FAC001      | anc1                | 202302    | 0             # Incomplete
 FAC001      | anc1                | 202303    | 1             # Complete
 ```
 
-### Output Files
+</details>
+
+<details>
+<summary><strong>Output Files</strong></summary>
+
+**Output Files**
 
 The module generates four output files:
 
@@ -300,7 +324,12 @@ The module generates four output files:
 | `M2_adjusted_data_national.csv` | National | Aggregated adjusted volumes at national level | `admin_area_1`, `period_id`, `indicator_common_id`, `count_final_*` |
 | `M2_low_volume_exclusions.csv` | Metadata | Indicators excluded from outlier adjustment due to low volumes | `indicator_common_id`, `low_volume_exclude` |
 
-### Output Data Structure
+</details>
+
+<details>
+<summary><strong>Output Data Structure</strong></summary>
+
+**Output Data Structure**
 
 **Facility-Level Output** (`M2_adjusted_data.csv`):
 
@@ -321,10 +350,12 @@ Each `count_final_*` column represents a different adjustment scenario:
 
 </details>
 
-<details>
-<summary><strong>Key Functions Documentation</strong></summary>
+### Key Functions Documentation
 
-### Required Libraries
+<details>
+<summary><strong>Required Libraries</strong></summary>
+
+**Required Libraries**
 
 The module depends on the following R packages:
 
@@ -332,7 +363,12 @@ The module depends on the following R packages:
 -   `zoo` - Rolling window calculations (`frollmean` for rolling averages)
 -   `lubridate` - Date handling and manipulation
 
-### 1. `apply_adjustments()`
+</details>
+
+<details>
+<summary><strong>1. `apply_adjustments()`</strong></summary>
+
+**1. `apply_adjustments()`**
 
 Core function that implements the adjustment logic for a single scenario.
 
@@ -360,7 +396,12 @@ data.table with adjusted values in `count_working` column and adjustment metadat
 4. Applies adjustment hierarchy based on data availability
 5. Tracks adjustment method used for each replaced value
 
-### 2. `apply_adjustments_scenarios()`
+</details>
+
+<details>
+<summary><strong>2. `apply_adjustments_scenarios()`</strong></summary>
+
+**2. `apply_adjustments_scenarios()`**
 
 Wrapper function that runs adjustments across all four scenarios.
 
@@ -393,10 +434,12 @@ data.table with four `count_final_*` columns, one per scenario
 
 </details>
 
-<details>
-<summary><strong>Statistical Methods & Algorithms</strong></summary>
+### Statistical Methods & Algorithms
 
-### Outlier Adjustment Methodology
+<details>
+<summary><strong>Outlier Adjustment Methodology</strong></summary>
+
+**Outlier Adjustment Methodology**
 
 Outlier adjustment is applied to any facility-month value flagged in Module 1 (`outlier_flag == 1`). The goal is to replace these outlier values using valid historical data from the same facility and indicator.
 
@@ -426,7 +469,12 @@ data_adj[, `:=`(
 ), by = .(facility_id, indicator_common_id)]
 ```
 
-### Adjustment Hierarchy for Outliers
+</details>
+
+<details>
+<summary><strong>Adjustment Hierarchy for Outliers</strong></summary>
+
+**Adjustment Hierarchy for Outliers**
 
 The adjustment process follows this **hierarchical order** (stopping at the first available method):
 
@@ -482,7 +530,12 @@ The adjustment process follows this **hierarchical order** (stopping at the firs
 
 If no valid replacement can be found from any of these methods, the original outlier value is retained.
 
-### Completeness Adjustment Methodology
+</details>
+
+<details>
+<summary><strong>Completeness Adjustment Methodology</strong></summary>
+
+**Completeness Adjustment Methodology**
 
 Completeness adjustment is applied to any facility-month where:
 
@@ -515,7 +568,12 @@ data_adj[, `:=`(
 ), by = .(facility_id, indicator_common_id)]
 ```
 
-### Adjustment Hierarchy for Completeness
+</details>
+
+<details>
+<summary><strong>Adjustment Hierarchy for Completeness</strong></summary>
+
+**Adjustment Hierarchy for Completeness**
 
 The replacement follows this **hierarchical order**:
 
@@ -545,7 +603,12 @@ The replacement follows this **hierarchical order**:
 
 If no valid replacement is found, the value remains missing (`NA`).
 
-### Scenario Processing Logic
+</details>
+
+<details>
+<summary><strong>Scenario Processing Logic</strong></summary>
+
+**Scenario Processing Logic**
 
 The module processes all four adjustment scenarios simultaneously using the `apply_adjustments_scenarios()` function:
 
@@ -590,7 +653,12 @@ After scenario-specific adjustments, excluded indicators (deaths) are reset to t
 dat[indicator_common_id %in% EXCLUDED_FROM_ADJUSTMENT, count_working := count]
 ```
 
-### Aggregation Methods
+</details>
+
+<details>
+<summary><strong>Aggregation Methods</strong></summary>
+
+**Aggregation Methods**
 
 All geographic aggregations use **simple sums**:
 
@@ -608,7 +676,12 @@ sum(count_final_both, na.rm = TRUE)
 
 If many facilities have `NA` values after adjustment, subnational/national totals may be underestimated. The `count_final_none` scenario provides a reference point for assessing impact.
 
-### Handling Missing Data in Calculations
+</details>
+
+<details>
+<summary><strong>Handling Missing Data in Calculations</strong></summary>
+
+**Handling Missing Data in Calculations**
 
 The module applies `na.rm = TRUE` in all rolling calculations:
 
@@ -622,10 +695,12 @@ Rolling averages are calculated from available valid values only. If fewer than 
 
 </details>
 
-<details>
-<summary><strong>Code Examples</strong></summary>
+### Code Examples
 
-### Example 1: Outlier Adjustment
+<details>
+<summary><strong>Example 1: Outlier Adjustment</strong></summary>
+
+**Example 1: Outlier Adjustment**
 
 **Scenario**:
 
@@ -654,7 +729,12 @@ period_id | count | outlier_flag | Surrounding valid values
 
 `roll6`
 
-### Example 2: Completeness Adjustment
+</details>
+
+<details>
+<summary><strong>Example 2: Completeness Adjustment</strong></summary>
+
+**Example 2: Completeness Adjustment**
 
 **Scenario**:
 
@@ -682,7 +762,12 @@ period_id | count | completeness_flag | Surrounding valid values
 
 `roll6`
 
-### Example 3: Seasonal Indicator with Same-Month-Last-Year
+</details>
+
+<details>
+<summary><strong>Example 3: Seasonal Indicator with Same-Month-Last-Year</strong></summary>
+
+**Example 3: Seasonal Indicator with Same-Month-Last-Year**
 
 **Scenario**:
 
@@ -708,7 +793,12 @@ period_id | count | outlier_flag | Notes
 
 `same_month_last_year`
 
-### Example 4: Scenario Comparison
+</details>
+
+<details>
+<summary><strong>Example 4: Scenario Comparison</strong></summary>
+
+**Example 4: Scenario Comparison**
 
 **Facility**:
 
@@ -751,7 +841,12 @@ Mar 2023 | NA    | -        | No        # Incomplete
 - **Completeness**: March filled in, but February outlier retained
 - **Both**: Most complete and clean dataset
 
-### Example 5: Geographic Aggregation
+</details>
+
+<details>
+<summary><strong>Example 5: Geographic Aggregation</strong></summary>
+
+**Example 5: Geographic Aggregation**
 
 **Subnational Aggregation Code**:
 
@@ -785,10 +880,12 @@ adjusted_data_national_final <- adjusted_data_export[
 
 </details>
 
-<details>
-<summary><strong>Troubleshooting</strong></summary>
+### Troubleshooting
 
-### Common Issues
+<details>
+<summary><strong>Common Issues</strong></summary>
+
+**Common Issues**
 
 **Issue 1: All values remain unadjusted**
 
@@ -844,7 +941,12 @@ Check `M2_low_volume_exclusions.csv` and verify Module 1 outputs contain flags
 - Review Module 1 completeness statistics
 - Consider data quality threshold for inclusion
 
-### Quality Assurance Checks
+</details>
+
+<details>
+<summary><strong>Quality Assurance Checks</strong></summary>
+
+**Quality Assurance Checks**
 
 The module includes several quality checks:
 
@@ -872,10 +974,12 @@ Running adjustments...
 
 </details>
 
-<details>
-<summary><strong>Usage Notes & Recommendations</strong></summary>
+### Usage Notes & Recommendations
 
-### Choosing the Right Scenario
+<details>
+<summary><strong>Choosing the Right Scenario</strong></summary>
+
+**Choosing the Right Scenario**
 
 | Situation | Recommended Scenario | Rationale |
 |-----------|---------------------|-----------|
@@ -885,7 +989,12 @@ Running adjustments...
 | Poor quality and completeness | `both` | Comprehensive cleaning |
 | Uncertainty about data quality | Compare all scenarios | Sensitivity analysis |
 
-### Validation Steps
+</details>
+
+<details>
+<summary><strong>Validation Steps</strong></summary>
+
+**Validation Steps**
 
 After running this module, consider:
 
@@ -895,7 +1004,12 @@ After running this module, consider:
 4. **Temporal plots**: Visualize trends before/after adjustment to identify over-smoothing
 5. **Facility-level spot checks**: Review adjustments for a sample of facilities
 
-### Limitations
+</details>
+
+<details>
+<summary><strong>Limitations</strong></summary>
+
+**Limitations**
 
 1. **Rolling windows assume stability**: Adjustments work best when service delivery is relatively stable. Genuine program changes (e.g., new campaigns) may be incorrectly smoothed.
 
@@ -907,7 +1021,12 @@ After running this module, consider:
 
 5. **NA treatment in aggregation**: Missing values are treated as zero when summing to higher geographic levels, which may underestimate totals if missingness is high.
 
-### Best Practices
+</details>
+
+<details>
+<summary><strong>Best Practices</strong></summary>
+
+**Best Practices**
 
 1. **Always produce all four scenarios**: Even if you plan to use only one, having all scenarios allows for sensitivity analysis and validation
 

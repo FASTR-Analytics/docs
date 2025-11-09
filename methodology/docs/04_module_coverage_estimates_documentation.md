@@ -249,8 +249,7 @@ The transformation flow:
 
 ### Part 1: Denominator Calculation (Technical Details)
 
-<details>
-<summary><strong>Configuration Parameters</strong></summary>
+#### Configuration Parameters
 
 The module begins with several configurable parameters that control the analysis:
 
@@ -282,10 +281,7 @@ UNDER5_MORTALITY_RATE <- 0.103   # Under-5 mortality rate
 - `count_final_completeness`: Completeness adjustment only
 - `count_final_both`: Both adjustments **(recommended)**
 
-</details>
-
-<details>
-<summary><strong>Input Data Sources</strong></summary>
+#### Input Data Sources
 
 Part 1 integrates three primary data sources:
 
@@ -315,10 +311,7 @@ The Multiple Indicator Cluster Surveys (MICS), conducted by UNICEF, provide hous
 **Survey Data - DHS**
 The Demographic and Health Surveys (DHS), conducted by USAID, provide survey data on health service utilization, including immunization rates and maternal care coverage.
 
-</details>
-
-<details>
-<summary><strong>Core Functions Documentation</strong></summary>
+#### Core Functions Documentation
 
 #### 1. `process_hmis_adjusted_volume()`
 
@@ -582,10 +575,7 @@ Country_Name  2020  anc1                 dwpp_pregnancy              82.1
 - `survey`: Actual survey observation
 - `d*_*`: Individual denominator results (all options)
 
-</details>
-
-<details>
-<summary><strong>Statistical Methods & Algorithms</strong></summary>
+#### Statistical Methods & Algorithms
 
 #### Forward-Filling (Last Observation Carried Forward)
 
@@ -731,10 +721,7 @@ $$
 
 HMIS data can contain incomplete or partial reporting, where service volumes are only available for a subset of months in a given year. If fewer than 12 months of data are reported, directly using the raw count would underestimate the total number of pregnancies. To adjust for this, we scale the reported number up to a full year equivalent by applying the factor $\frac{12}{\text{months reported}}$.
 
-</details>
-
-<details>
-<summary><strong>Output Files Specification</strong></summary>
+#### Output Files Specification
 
 Part 1 generates six CSV files:
 
@@ -779,10 +766,7 @@ admin_area_1, [admin_area_2/3], year, indicator_common_id, denominator_best_or_s
 
 **Special "best" Entry**: Duplicates the selected optimal denominator for easy filtering
 
-</details>
-
-<details>
-<summary><strong>Data Safeguards and Validation</strong></summary>
+#### Data Safeguards and Validation
 
 Part 1 includes multiple validation checks:
 
@@ -803,10 +787,7 @@ Part 1 includes multiple validation checks:
 
 6. **Error Handling**: Wraps survey processing in `tryCatch` to handle mismatches gracefully
 
-</details>
-
-<details>
-<summary><strong>Indicators Supported</strong></summary>
+#### Indicators Supported
 
 Part 1 processes the following health indicators:
 
@@ -831,10 +812,7 @@ Part 1 processes the following health indicators:
 - `imr`: Infant mortality rate (survey only)
 - `vitaminA`: Vitamin A supplementation
 
-</details>
-
-<details>
-<summary><strong>Usage Notes and Best Practices</strong></summary>
+#### Usage Notes and Best Practices
 
 #### When to Use Which Count Variable
 
@@ -861,10 +839,7 @@ Different denominators serve different purposes:
 - **WPP denominators**: Offer population-based benchmarks
 - Comparing multiple options reveals data quality issues
 
-</details>
-
-<details>
-<summary><strong>Troubleshooting Common Issues</strong></summary>
+#### Troubleshooting Common Issues
 
 **Issue**: No matching admin areas between HMIS and survey
 
@@ -878,14 +853,11 @@ Different denominators serve different purposes:
 
 - **Solution**: May indicate poor HMIS data quality or completeness; review Module 2 adjustments
 
-</details>
-
 ---
 
-### Part 2: Denominator Selection & Projection (Technical Details)
+### Part 2: Denominator Selection and Survey Projection (Technical Details)
 
-<details>
-<summary><strong>Purpose and Objectives</strong></summary>
+#### Purpose and Objectives
 
 Part 2 serves three key purposes:
 
@@ -895,29 +867,7 @@ Part 2 serves three key purposes:
 
 3. **Survey Projection**: Projects survey-based coverage estimates forward in time using trends observed in administrative (HMIS) data, filling gaps where survey data is unavailable
 
-</details>
-
-<details>
-<summary><strong>Input Data Requirements</strong></summary>
-
-Part 2 requires the following inputs from Part 1:
-
-| Input File | Description | Key Columns |
-|------------|-------------|-------------|
-| `M4_combined_results_national.csv` | Combined coverage estimates for all denominators at national level | admin_area_1, year, indicator_common_id, denominator_best_or_survey, value |
-| `M4_combined_results_admin2.csv` | Combined coverage estimates for admin level 2 | admin_area_1, admin_area_2, year, indicator_common_id, denominator_best_or_survey, value |
-| `M4_combined_results_admin3.csv` | Combined coverage estimates for admin level 3 | admin_area_1, admin_area_3, year, indicator_common_id, denominator_best_or_survey, value |
-
-These files contain:
-- Coverage estimates calculated using different denominators
-- Survey values for comparison
-- A "best" denominator selection from Part 1
-- Source and source detail information
-
-</details>
-
-<details>
-<summary><strong>User Configuration Parameters</strong></summary>
+#### User Configuration
 
 Users configure Part 2 through two key parameter sets:
 
@@ -977,10 +927,7 @@ RUN_ADMIN3 <- TRUE    # Enable/disable admin level 3 analysis
 
 The script automatically checks data availability and disables admin levels with no data.
 
-</details>
-
-<details>
-<summary><strong>Core Functions and Methods</strong></summary>
+#### Core Functions and Methods
 
 #### Function 1: `coverage_deltas()`
 
@@ -1184,10 +1131,7 @@ Comprehensive data frame with columns:
 - `survey_raw_source`: Survey data source (e.g., "DHS", "MICS")
 - `survey_raw_source_detail`: Detailed source information
 
-</details>
-
-<details>
-<summary><strong>Helper Functions</strong></summary>
+#### Helper Functions
 
 #### `filter_by_denominator_selection()`
 
@@ -1233,10 +1177,7 @@ Combined results data frame from Part 1
 
 Survey data frame with columns: admin areas, year, indicator_common_id, survey_value
 
-</details>
-
-<details>
-<summary><strong>Workflow Execution Steps</strong></summary>
+#### Workflow Execution Steps
 
 Part 2 executes the following workflow for each administrative level (national, admin2, admin3):
 
@@ -1280,10 +1221,7 @@ Part 2 executes the following workflow for each administrative level (national, 
 - Save as CSV with UTF-8 encoding
 - Create empty files for admin levels with no data
 
-</details>
-
-<details>
-<summary><strong>Output Specifications</strong></summary>
+#### Output Specifications
 
 Part 2 produces three output files:
 
@@ -1330,10 +1268,7 @@ Same as national, plus:
 
 **Note**: Does NOT include admin_area_2 column (skips straight from admin_area_1 to admin_area_3).
 
-</details>
-
-<details>
-<summary><strong>Methodological Considerations</strong></summary>
+#### Methodological Considerations
 
 #### 1. Denominator Selection Strategy
 
@@ -1389,10 +1324,7 @@ Part 2 processes each administrative level independently:
 
 **Important**: Estimates across levels may not be directly comparable if different denominators are selected or if data quality varies by level.
 
-</details>
-
-<details>
-<summary><strong>Example Use Case</strong></summary>
+#### Example Use Case
 
 **Scenario**: Analyst wants to estimate Penta3 coverage for 2015-2024 using Penta1-derived denominators.
 
@@ -1427,10 +1359,7 @@ DENOMINATOR_SELECTION <- list(
 - Year 2018: Survey value (75.0%) and HMIS coverage
 - Years 2019-2024: Projected coverage based on HMIS trends
 
-</details>
-
-<details>
-<summary><strong>Validation and Quality Checks</strong></summary>
+#### Validation and Quality Checks
 
 Users should validate Part 2 outputs by:
 
@@ -1454,10 +1383,7 @@ Users should validate Part 2 outputs by:
    - Check if subnational trends align with national patterns
    - Investigate large discrepancies
 
-</details>
-
-<details>
-<summary><strong>Integration with Part 1</strong></summary>
+#### Integration with Part 1
 
 Part 2 builds directly on Part 1 outputs:
 
@@ -1477,10 +1403,7 @@ Part 1: Calculate denominators → Select "best" → Output combined results
 Part 2: User selects denominators → Calculate trends → Project surveys → Final estimates
 ```
 
-</details>
-
-<details>
-<summary><strong>Troubleshooting Common Issues</strong></summary>
+#### Troubleshooting Common Issues
 
 **Issue**: "No data in admin2 combined results"
 
@@ -1501,8 +1424,6 @@ Part 2: User selects denominators → Calculate trends → Project surveys → F
 
 - **Cause**: Missing HMIS data for some years
 - **Solution**: Review Module 2 outputs, check data completeness adjustments
-
-</details>
 
 ---
 

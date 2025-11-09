@@ -141,10 +141,10 @@ The module operates in two sequential stages, each with a distinct purpose:
 
 ## 3. Detailed Reference
 
-<details>
-<summary><strong>Configuration Parameters</strong></summary>
+### Configuration Parameters
 
-### Core Analysis Parameters
+<details>
+<summary><strong>Core Analysis Parameters</strong></summary>
 
 | Parameter | Default | Type | Description | Tuning Guidance |
 |-----------|---------|------|-------------|-----------------|
@@ -196,10 +196,10 @@ The module operates in two sequential stages, each with a distinct purpose:
 
 </details>
 
-<details>
-<summary><strong>Input/Output Specifications</strong></summary>
+### Input/Output Specifications
 
-### Input Requirements
+<details>
+<summary><strong>Input Requirements</strong></summary>
 
 #### Primary Inputs
 
@@ -329,10 +329,10 @@ These are automatically deleted upon successful completion. If the script crashe
 
 </details>
 
-<details>
-<summary><strong>Key Functions Documentation</strong></summary>
+### Key Functions Documentation
 
-### `robust_control_chart(panel_data, selected_count)`
+<details>
+<summary><strong>`robust_control_chart(panel_data, selected_count)`</strong></summary>
 
 **Purpose**: Identifies anomalies in service utilization using robust regression and MAD-based control limits.
 
@@ -413,10 +413,10 @@ Separate regression for each ward/finest unit
 
 </details>
 
-<details>
-<summary><strong>Statistical Methods & Algorithms</strong></summary>
+### Statistical Methods & Algorithms
 
-### Control Chart Analysis
+<details>
+<summary><strong>Control Chart Analysis</strong></summary>
 
 Service volumes are aggregated at the specified geographic level (configurable via `CONTROL_CHART_LEVEL`). The pipeline removes outliers (`outlier_flag == 1`), fills in missing months, and filters low-volume months (<50% of global mean volume).
 
@@ -616,10 +616,10 @@ $$ b_{\text{admin\_area\_*}} = -\frac{\text{diff mean}}{\text{predict mean}} $$
 
 </details>
 
-<details>
-<summary><strong>Detailed Analysis Steps</strong></summary>
+### Detailed Analysis Steps
 
-### PART 1 - Control Chart Analysis
+<details>
+<summary><strong>PART 1 - Control Chart Analysis</strong></summary>
 
 #### Step 1: Prepare the Data
 
@@ -719,10 +719,10 @@ This logic is applied consistently across all admin levels. These adjusted value
 
 </details>
 
-<details>
-<summary><strong>Code Examples</strong></summary>
+### Code Examples
 
-### Basic Execution
+<details>
+<summary><strong>Basic Execution</strong></summary>
 
 ```r
 # Set working directory
@@ -817,10 +817,10 @@ RUN_DISTRICT_MODEL <- TRUE  # District-level for targeted support
 
 </details>
 
-<details>
-<summary><strong>Troubleshooting</strong></summary>
+### Troubleshooting
 
-### Common Issues and Solutions
+<details>
+<summary><strong>Common Issues and Solutions</strong></summary>
 
 #### Issue: Script crashes with "out of memory" error
 
@@ -912,10 +912,10 @@ RUN_DISTRICT_MODEL <- TRUE  # District-level for targeted support
 
 </details>
 
-<details>
-<summary><strong>Usage Notes</strong></summary>
+### Usage Notes
 
-### Interpretation Guidelines
+<details>
+<summary><strong>Interpretation Guidelines</strong></summary>
 
 **Disruption Effects (b_admin_area_*)**:
 
@@ -1068,10 +1068,10 @@ This module is **Module 3** in the FASTR analytical pipeline:
 
 </details>
 
-<details>
-<summary><strong>References and Further Reading</strong></summary>
+### References and Further Reading
 
-**Statistical Process Control**:
+<details>
+<summary><strong>Statistical Process Control</strong></summary>
 
 - Montgomery, D. C. (2009). *Introduction to Statistical Quality Control*. Wiley.
 - Shewhart, W. A. (1931). *Economic Control of Quality of Manufactured Product*. Van Nostrand.
