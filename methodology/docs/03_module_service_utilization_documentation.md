@@ -929,14 +929,8 @@ The module operates in two sequential stages, each with a distinct purpose:
 
     **Prerequisites**:
 
-    1. **Module 0**: Data preparation and harmonization
-    2. **Module 1**: Data Quality Assessment (generates `M1_output_outliers.csv`)
-    3. **Module 2**: Data Quality Adjustments (generates `M2_adjusted_data.csv`)
-
-    **Downstream Modules**:
-
-    4. **Module 4**: Coverage Estimates (may use disruption flags)
-    5. **Module 5**: Visualization and reporting (uses all M3 outputs)
+    1. **Module 1**: Data Quality Assessment (generates `M1_output_outliers.csv`)
+    2. **Module 2**: Data Quality Adjustments (generates `M2_adjusted_data.csv`)
 
     ### Dependencies
 
@@ -950,27 +944,6 @@ The module operates in two sequential stages, each with a distinct purpose:
     - `dplyr`: Data manipulation
     - `tidyr`: Data tidying
 
-### References and Further Reading
-
-??? "Statistical Process Control"
-
-    - Montgomery, D. C. (2009). *Introduction to Statistical Quality Control*. Wiley.
-    - Shewhart, W. A. (1931). *Economic Control of Quality of Manufactured Product*. Van Nostrand.
-
-    **Robust Regression**:
-
-    - Huber, P. J. (1981). *Robust Statistics*. Wiley.
-    - Maronna, R. A., Martin, R. D., & Yohai, V. J. (2006). *Robust Statistics: Theory and Methods*. Wiley.
-
-    **Panel Data Methods**:
-
-    - Wooldridge, J. M. (2010). *Econometric Analysis of Cross Section and Panel Data*. MIT Press.
-    - Cameron, A. C., & Miller, D. L. (2015). "A Practitioner's Guide to Cluster-Robust Inference." *Journal of Human Resources*, 50(2), 317-372.
-
-    **Health Service Disruptions**:
-
-    - WHO (2020). *Pulse survey on continuity of essential health services during the COVID-19 pandemic*.
-    - Arsenault, C., et al. (2022). "COVID-19 and resilience of healthcare systems in ten countries." *Nature Medicine*, 28, 1314-1324.
 
 ---
 
