@@ -18,9 +18,9 @@ Rapid-cycle analytic approaches provide timely, rigorous, and high-priority data
 
 ![FASTR rapid-cycle analytics framework showing the continuous cycle of analyze, learn, strengthen, and act.](images/GFF-Rapid-Cycle-Analytics-Data-Use_Figure-1.svg)
 
-### What support is available?
+### Technical Approaches
 
-Four technical approaches, underpinned by capacity strengthening and data use support, enable the timely and high-frequency analysis and use of data. All approaches are customized to the country context and aim to support countries' priority policy and programmatic initiatives.
+FASTR's four technical approaches, underpinned by capacity strengthening and data use support, enable countries to use rapid-cycle analytics for strengthening PHC systems and improving RMNCAH-N outcomes through the timely and high-frequency analysis and use of data.
 
 1. **Analysis of routine health management information system (HMIS) data** assesses data quality, quantifies changes in priority health service volumes, and compares trends in service coverage to country targets for priority RMNCAH-N indicators.
 
@@ -31,6 +31,10 @@ Four technical approaches, underpinned by capacity strengthening and data use su
 4. **Rapid qualitative implementation research** approaches provide a deeper understanding of prioritized HMIS and phone survey trends (e.g., by explaining district-level performance variation or contextualizing the impact of health systems reforms).
 
 Illustrative capacity-building activities include support to automate the extraction, cleaning, and analysis of routine data and support to institutionalize rapid phone survey data collection and analysis approaches. Data use support prioritizes the integration of rapid-cycle analytics into existing data review and feedback mechanisms at national and subnational levels to strengthen the systematic use of data for decision making.
+
+![Rapid-cycle analytics under the Frequent Assessments and Systems Tools for Resilience (FASTR) initiative.](images/Technical-Rapid-cycle-analytics--V3.svg)
+
+*Figure 2. Rapid-cycle analytics under the Frequent Assessments and Systems Tools for Resilience (FASTR) initiative*
 
 ## Acronyms and Abbreviations
 
