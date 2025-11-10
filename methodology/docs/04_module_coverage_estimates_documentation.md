@@ -126,112 +126,112 @@ Results are saved with standardized column structures for each administrative le
 
 <iframe src="../images/mod4_workflow.html" width="100%" height="800" style="border: 1px solid #ccc; border-radius: 4px;" title="Module 1 Interactive Workflow"></iframe>
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         PART 1: DENOMINATOR                     │
-│                    CALCULATION AND SELECTION                    │
-└─────────────────────────────────────────────────────────────────┘
-
-  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-  │ HMIS Data    │     │ Survey Data  │     │ Population   │
-  │ (Module 2)   │     │ (MICS/DHS)   │     │ Data (UN WPP)│
-  └──────┬───────┘     └──────┬───────┘     └──────┬───────┘
-         │                    │                    │
-         ▼                    ▼                    ▼
-  ┌─────────────────────────────────────────────────────┐
-  │          Process and Harmonize Data                 │
-  │  • Aggregate monthly → annual                       │
-  │  • Prioritize DHS over MICS                         │
-  │  • Forward-fill survey gaps                         │
-  │  • Filter population to country                     │
-  └─────────────────────┬───────────────────────────────┘
-                        │
-                        ▼
-  ┌──────────────────────────────────────────────────────┐
-  │      Calculate Multiple Denominator Options          │
-  │                                                      │
-  │  HMIS-Based:              Population-Based:          │
-  │  • From ANC1              • From birth rate          │
-  │  • From Delivery          • From total population    │
-  │  • From SBA               • From under-1 population  │
-  │  • From BCG                                          │
-  │  • From Penta1                                       │
-  │                                                      │
-  │  [Apply demographic adjustments to each]             │
-  └─────────────────────┬────────────────────────────────┘
-                        │
-                        ▼
-  ┌──────────────────────────────────────────────────────┐
-  │   Calculate Coverage for Each Denominator            │
-  │   Coverage = (Service Volume / Denominator) × 100    │
-  └─────────────────────┬────────────────────────────────┘
-                        │
-                        ▼
-  ┌──────────────────────────────────────────────────────┐
-  │      Compare Each Coverage to Survey Benchmark       │
-  │      Error = (HMIS Coverage - Survey Coverage)²      │
-  └─────────────────────┬────────────────────────────────┘
-                        │
-                        ▼
-  ┌──────────────────────────────────────────────────────┐
-  │         Select Best Denominator                      │
-  │         (Minimum error, prefer HMIS-based)           │
-  └─────────────────────┬────────────────────────────────┘
-                        │
-                        ▼
-  ┌──────────────────────────────────────────────────────┐
-  │                Save Outputs                          │
-  │  • M4_denominators (all options)                     │
-  │  • M4_combined_results (coverage + best selection)   │
-  └─────────────────────┬────────────────────────────────┘
-                        │
-┌───────────────────────┼──────────────────────────────────────────┐
-│                       ▼                                          |
-|               PART 2: DENOMINATOR                                │
-│             SELECTION AND PROJECTION                             │
-└──────────────────────────────────────────────────────────────────┘
-
-  ┌──────────────────────────────────────────────────────┐
-  │          User Configures Denominator Selection       │
-  │          (Use "best" or specify for each indicator)  │
-  └─────────────────────┬────────────────────────────────┘
-                        │
-                        ▼
-  ┌──────────────────────────────────────────────────────┐
-  │      Filter Part 1 Results to Selected Denominators  │
-  └─────────────────────┬────────────────────────────────┘
-                        │
-                        ▼
-  ┌──────────────────────────────────────────────────────┐
-  │         Calculate Year-Over-Year Coverage Deltas     │
-  │         Δ Coverage = Coverage(t) - Coverage(t-1)     │
-  └─────────────────────┬────────────────────────────────┘
-                        │
-                        ▼
-  ┌──────────────────────────────────────────────────────┐
-  │    Identify Most Recent Survey as Baseline           │
-  └─────────────────────┬────────────────────────────────┘
-                        │
-                        ▼
-  ┌──────────────────────────────────────────────────────┐
-  │         Project Survey Estimates Forward             │
-  │  Projection = Last Survey + (HMIS_now - HMIS_then)  │
-  └─────────────────────┬────────────────────────────────┘
-                        │
-                        ▼
-  ┌──────────────────────────────────────────────────────┐
-  │              Combine Final Results                   │
-  │  • HMIS-based coverage                               │
-  │  • Original survey values                            │
-  │  • Projected survey coverage                         │
-  └─────────────────────┬────────────────────────────────┘
-                        │
-                        ▼
-  ┌──────────────────────────────────────────────────────┐
-  │                Save Final Outputs                    │
-  │        M5_coverage_estimation (by admin level)       │
-  └──────────────────────────────────────────────────────┘
-```
+# ```
+# ┌─────────────────────────────────────────────────────────────────┐
+# │                         PART 1: DENOMINATOR                     │
+# │                    CALCULATION AND SELECTION                    │
+# └─────────────────────────────────────────────────────────────────┘
+# 
+#   ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+#   │ HMIS Data    │     │ Survey Data  │     │ Population   │
+#   │ (Module 2)   │     │ (MICS/DHS)   │     │ Data (UN WPP)│
+#   └──────┬───────┘     └──────┬───────┘     └──────┬───────┘
+#          │                    │                    │
+#          ▼                    ▼                    ▼
+#   ┌─────────────────────────────────────────────────────┐
+#   │          Process and Harmonize Data                 │
+#   │  • Aggregate monthly → annual                       │
+#   │  • Prioritize DHS over MICS                         │
+#   │  • Forward-fill survey gaps                         │
+#   │  • Filter population to country                     │
+#   └─────────────────────┬───────────────────────────────┘
+#                         │
+#                         ▼
+#   ┌──────────────────────────────────────────────────────┐
+#   │      Calculate Multiple Denominator Options          │
+#   │                                                      │
+#   │  HMIS-Based:              Population-Based:          │
+#   │  • From ANC1              • From birth rate          │
+#   │  • From Delivery          • From total population    │
+#   │  • From SBA               • From under-1 population  │
+#   │  • From BCG                                          │
+#   │  • From Penta1                                       │
+#   │                                                      │
+#   │  [Apply demographic adjustments to each]             │
+#   └─────────────────────┬────────────────────────────────┘
+#                         │
+#                         ▼
+#   ┌──────────────────────────────────────────────────────┐
+#   │   Calculate Coverage for Each Denominator            │
+#   │   Coverage = (Service Volume / Denominator) × 100    │
+#   └─────────────────────┬────────────────────────────────┘
+#                         │
+#                         ▼
+#   ┌──────────────────────────────────────────────────────┐
+#   │      Compare Each Coverage to Survey Benchmark       │
+#   │      Error = (HMIS Coverage - Survey Coverage)²      │
+#   └─────────────────────┬────────────────────────────────┘
+#                         │
+#                         ▼
+#   ┌──────────────────────────────────────────────────────┐
+#   │         Select Best Denominator                      │
+#   │         (Minimum error, prefer HMIS-based)           │
+#   └─────────────────────┬────────────────────────────────┘
+#                         │
+#                         ▼
+#   ┌──────────────────────────────────────────────────────┐
+#   │                Save Outputs                          │
+#   │  • M4_denominators (all options)                     │
+#   │  • M4_combined_results (coverage + best selection)   │
+#   └─────────────────────┬────────────────────────────────┘
+#                         │
+# ┌───────────────────────┼──────────────────────────────────────────┐
+# │                       ▼                                          |
+# |               PART 2: DENOMINATOR                                │
+# │             SELECTION AND PROJECTION                             │
+# └──────────────────────────────────────────────────────────────────┘
+# 
+#   ┌──────────────────────────────────────────────────────┐
+#   │          User Configures Denominator Selection       │
+#   │          (Use "best" or specify for each indicator)  │
+#   └─────────────────────┬────────────────────────────────┘
+#                         │
+#                         ▼
+#   ┌──────────────────────────────────────────────────────┐
+#   │      Filter Part 1 Results to Selected Denominators  │
+#   └─────────────────────┬────────────────────────────────┘
+#                         │
+#                         ▼
+#   ┌──────────────────────────────────────────────────────┐
+#   │         Calculate Year-Over-Year Coverage Deltas     │
+#   │         Δ Coverage = Coverage(t) - Coverage(t-1)     │
+#   └─────────────────────┬────────────────────────────────┘
+#                         │
+#                         ▼
+#   ┌──────────────────────────────────────────────────────┐
+#   │    Identify Most Recent Survey as Baseline           │
+#   └─────────────────────┬────────────────────────────────┘
+#                         │
+#                         ▼
+#   ┌──────────────────────────────────────────────────────┐
+#   │         Project Survey Estimates Forward             │
+#   │  Projection = Last Survey + (HMIS_now - HMIS_then)  │
+#   └─────────────────────┬────────────────────────────────┘
+#                         │
+#                         ▼
+#   ┌──────────────────────────────────────────────────────┐
+#   │              Combine Final Results                   │
+#   │  • HMIS-based coverage                               │
+#   │  • Original survey values                            │
+#   │  • Projected survey coverage                         │
+#   └─────────────────────┬────────────────────────────────┘
+#                         │
+#                         ▼
+#   ┌──────────────────────────────────────────────────────┐
+#   │                Save Final Outputs                    │
+#   │        M5_coverage_estimation (by admin level)       │
+#   └──────────────────────────────────────────────────────┘
+# ```
 
 ### Key Decision Points
 
