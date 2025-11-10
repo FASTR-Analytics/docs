@@ -2,26 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://FASTR-Analytics.github.io/docs/</loc>
-         <lastmod>2025-11-09</lastmod>
+         <lastmod>2025-11-10</lastmod>
     </url>
     <url>
          <loc>https://FASTR-Analytics.github.io/docs/00_background_documentation/</loc>
-         <lastmod>2025-11-09</lastmod>
+         <lastmod>2025-11-10</lastmod>
     </url>
     <url>
          <loc>https://FASTR-Analytics.github.io/docs/01_module_data_quality_assessment_documentation/</loc>
-         <lastmod>2025-11-09</lastmod>
+         <lastmod>2025-11-10</lastmod>
     </url>
     <url>
          <loc>https://FASTR-Analytics.github.io/docs/02_module_data_quality_adjustments_documentation/</loc>
-         <lastmod>2025-11-09</lastmod>
+         <lastmod>2025-11-10</lastmod>
     </url>
     <url>
          <loc>https://FASTR-Analytics.github.io/docs/03_module_service_utilization_documentation/</loc>
-         <lastmod>2025-11-09</lastmod>
+         <lastmod>2025-11-10</lastmod>
     </url>
     <url>
          <loc>https://FASTR-Analytics.github.io/docs/04_module_coverage_estimates_documentation/</loc>
-         <lastmod>2025-11-09</lastmod>
+         <lastmod>2025-11-10</lastmod>
+    </url>
+    <url>
+         <loc>https://FASTR-Analytics.github.io/docs/disclaimer/</loc>
+         <lastmod>2025-11-10</lastmod>
     </url>
 </urlset>
