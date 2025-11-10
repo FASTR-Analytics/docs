@@ -132,10 +132,7 @@ Heatmap showing percent change in service volumes when both outlier and complete
 ![Percent change in volume due to both outlier and completeness adjustment.](images/Default_3._Percent_change_in_volume_due_to_both_outlier_and_completeness_adjustment.png)
 
 **Interpretation Guide:**
-- **Positive values (red)**: Adjustments increased reported service volumes
-- **Negative values (blue)**: Adjustments decreased reported service volumes
-- **Near zero (white)**: Minimal impact from adjustments
-- **Larger absolute values**: Indicate greater data quality issues requiring substantial adjustment
+tbd
 
 
 ---
