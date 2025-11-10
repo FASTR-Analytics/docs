@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FASTR Denominator Calculation & Coverage Estimation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a8c 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        header p {
+            font-size: 14px;
+            opacity: 0.95;
+            letter-spacing: 0.5px;
+        }
+
+        .workflow {
+            padding: 40px;
+        }
+
+        .part {
+            margin-bottom: 50px;
+        }
+
+        .part-header {
+            background: #f0f4f8;
+            border-left: 5px solid #2d5a8c;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+
+        .part-header h2 {
+            color: #1e3a5f;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .part-header p {
+            color: #555;
+            font-size: 14px;
+        }
+
+        .stage-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .flow-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .input-box {
+            flex: 1;
+            min-width: 200px;
+            background: #e8f1f8;
+            border: 2px solid #2d5a8c;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+            font-weight: 600;
+            color: #1e3a5f;
+            transition: all 0.3s ease;
+        }
+
+        .input-box:hover {
+            background: #d4e5f2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(45, 90, 140, 0.15);
+        }
+
+        .process-box {
+            flex: 1;
+            min-width: 250px;
+            background: #fafbfc;
+            border: 2px solid #4a7ba7;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: left;
+            color: #333;
+        }
+
+        .process-box h4 {
+            color: #1e3a5f;
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .process-box ul {
+            list-style: none;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .process-box li {
+            color: #555;
+            margin-bottom: 8px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .process-box li:before {
+            content: "•";
+            color: #2d5a8c;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .comparison-box {
+            background: #f9f3e9;
+            border: 2px solid #d4a574;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .comparison-box h4 {
+            color: #8b5a2b;
+            font-size: 13px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .comparison-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            font-size: 13px;
+        }
+
+        .comparison-item {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #d4a574;
+            padding-left: 12px;
+        }
+
+        .arrow {
+            text-align: center;
+            color: #2d5a8c;
+            font-size: 24px;
+            margin: 10px 0;
+            font-weight: 300;
+        }
+
+        .decision-box {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .decision-box h4 {
+            color: #2e7d32;
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .output-box {
+            background: #f3e5f5;
+            border: 2px solid #7b1fa2;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .output-box h4 {
+            color: #4a148c;
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .output-box ul {
+            list-style: none;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .output-box li {
+            color: #555;
+            margin-bottom: 8px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .output-box li:before {
+            content: "✓";
+            color: #7b1fa2;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #2d5a8c;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 32px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stage-title {
+            color: #1e3a5f;
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+
+
+        @media (max-width: 768px) {
+            .flow-row {
+                flex-direction: column;
+            }
+
+            .comparison-row {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 22px;
+            }
+
+            .workflow {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>FASTR Denominator Calculation & Coverage Estimation</h1>
+            <p>Rapid-Cycle Analytics for HMIS-Based Service Coverage Monitoring</p>
+        </header>
+
+        <div class="workflow">
+            <!-- PART 1 -->
+            <div class="part">
+                <div class="part-header">
+                    <h2>PART 1: Denominator Calculation and Selection</h2>
+                    <p>Harmonize multiple data sources to calculate and compare denominator options</p>
+                </div>
+
+                <div class="stage-container">
+                    <!-- Step 1: Data Sources -->
+                    <div>
+                        <div class="stage-title">
+                            <span class="step-number">1</span>
+                            Gather Data Sources
+                        </div>
+                        <div class="flow-row">
+                            <div class="input-box">HMIS Data<br><small>(Module 2)</small></div>
+                            <div class="input-box">Survey Data<br><small>(MICS/DHS)</small></div>
+                            <div class="input-box">Population Data<br><small>(UN WPP)</small></div>
+                        </div>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <!-- Step 2: Process & Harmonize -->
+                    <div>
+                        <div class="stage-title">
+                            <span class="step-number">2</span>
+                            Process and Harmonize Data
+                        </div>
+                        <div class="process-box">
+                            <h4>Data Preparation Steps</h4>
+                            <ul>
+                                <li>Aggregate monthly data to annual level</li>
+                                <li>Prioritize DHS data over MICS where both available</li>
+                                <li>Forward-fill survey data gaps</li>
+                                <li>Filter population estimates to country level</li>
+                                <li>Align all datasets by time period</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <!-- Step 3: Calculate Multiple Options -->
+                    <div>
+                        <div class="stage-title">
+                            <span class="step-number">3</span>
+                            Calculate Multiple Denominator Options
+                        </div>
+                        <div class="comparison-box">
+                            <h4>Denominator Options by Source</h4>
+                            <div class="comparison-row">
+                                <div class="comparison-item">
+                                    <strong>HMIS-Based:</strong><br>
+                                    • From ANC1 contacts<br>
+                                    • From Deliveries<br>
+                                    • From SBA procedures<br>
+                                    • From BCG vaccinations<br>
+                                    • From Penta1 doses
+                                </div>
+                                <div class="comparison-item">
+                                    <strong>Population-Based:</strong><br>
+                                    • From birth rate estimates<br>
+                                    • From total population<br>
+                                    • From under-1 population<br>
+                                    • With demographic adjustments
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <!-- Step 4: Calculate Coverage -->
+                    <div>
+                        <div class="stage-title">
+                            <span class="step-number">4</span>
+                            Calculate Coverage for Each Denominator
+                        </div>
+                        <div class="process-box">
+                            <h4>Coverage Calculation Formula</h4>
+                            <ul>
+                                <li><strong>Coverage = (Service Volume / Denominator) × 100</strong></li>
+                                <li>Apply demographic adjustments to each denominator option</li>
+                                <li>Generate coverage estimates for all service indicators</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <!-- Step 5: Compare to Survey -->
+                    <div>
+                        <div class="stage-title">
+                            <span class="step-number">5</span>
+                            Compare Each Coverage to Survey Benchmark
+                        </div>
+                        <div class="comparison-box">
+                            <h4>Error Calculation</h4>
+                            <div class="comparison-row">
+                                <div class="comparison-item">
+                                    <strong>Error Metric:</strong><br>
+                                    Error = (HMIS Coverage - Survey Coverage)²
+                                </div>
+                                <div class="comparison-item">
+                                    <strong>Evaluation:</strong><br>
+                                    Identify denominator with minimum error
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <!-- Step 6: Selection -->
+                    <div>
+                        <div class="stage-title">
+                            <span class="step-number">6</span>
+                            Select Best Denominator
+                        </div>
+                        <div class="decision-box">
+                            <h4>Selection Criteria</h4>
+                            <ul style="list-style: none; font-size: 13px;">
+                                <li style="margin-bottom: 8px;">✓ <strong>Primary:</strong> Minimum error compared to survey</li>
+                                <li style="margin-bottom: 8px;">✓ <strong>Secondary:</strong> Prefer HMIS-based over population-based</li>
+                                <li style="margin-bottom: 8px;">✓ <strong>Tertiary:</strong> Data quality and completeness considerations</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <!-- Step 7: Outputs Part 1 -->
+                    <div>
+                        <div class="stage-title">
+                            <span class="step-number">7</span>
+                            Save Part 1 Outputs
+                        </div>
+                        <div class="output-box">
+                            <h4>Output Files</h4>
+                            <ul>
+                                <li><strong>M4_denominators:</strong> All calculated denominator options and coverage estimates</li>
+                                <li><strong>M4_combined_results:</strong> Coverage values + best denominator selection by indicator</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PART 2 -->
+            <div class="part">
+                <div class="part-header">
+                    <h2>PART 2: Denominator Selection and Coverage Projection</h2>
+                    <p>Select denominators and project survey estimates forward using HMIS trends</p>
+                </div>
+
+                <div class="stage-container">
+                    <!-- Step 1: Configure Selection -->
+                    <div>
+                        <div class="stage-title">
+                            <span class="step-number">1</span>
+                            User Configures Denominator Selection
+                        </div>
+                        <div class="process-box">
+                            <h4>Configuration Options</h4>
+                            <ul>
+                                <li>Use "best" denominators (automatically selected from Part 1)</li>
+                                <li>Override with custom denominator specifications per indicator</li>
+                                <li>Specify different denominators for different health service areas</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <!-- Step 2: Filter Results -->
+                    <div>
+                        <div class="stage-title">
+                            <span class="step-number">2</span>
+                            Filter Part 1 Results to Selected Denominators
+                        </div>
+                        <div class="process-box">
+                            <h4>Data Subsetting</h4>
+                            <ul>
+                                <li>Extract selected denominator option for each indicator</li>
+                                <li>Retain associated coverage calculations</li>
+                                <li>Prepare data for projection analysis</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <!-- Step 3: Calculate Deltas -->
+                    <div>
+                        <div class="stage-title">
+                            <span class="step-number">3</span>
+                            Calculate Year-Over-Year Coverage Deltas
+                        </div>
+                        <div class="comparison-box">
+                            <h4>Delta Calculation</h4>
+                            <div class="comparison-row">
+                                <div class="comparison-item">
+                                    <strong>Formula:</strong><br>
+                                    Δ Coverage = Coverage(t) - Coverage(t-1)
+                                </div>
+                                <div class="comparison-item">
+                                    <strong>Purpose:</strong><br>
+                                    Identify trends in service delivery over time
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <!-- Step 4: Baseline -->
+                    <div>
+                        <div class="stage-title">
+                            <span class="step-number">4</span>
+                            Identify Most Recent Survey as Baseline
+                        </div>
+                        <div class="process-box">
+                            <h4>Baseline Selection</h4>
+                            <ul>
+                                <li>Locate most recent DHS or MICS survey</li>
+                                <li>Extract survey coverage estimates for all indicators</li>
+                                <li>Use as reference point for projection</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <!-- Step 5: Project Forward -->
+                    <div>
+                        <div class="stage-title">
+                            <span class="step-number">5</span>
+                            Project Survey Estimates Forward
+                        </div>
+                        <div class="decision-box">
+                            <h4>Projection Formula</h4>
+                            <ul style="list-style: none; font-size: 13px;">
+                                <li style="margin-bottom: 10px;">
+                                    <strong>Projected Coverage = Last Survey + (HMIS_now - HMIS_then)</strong>
+                                </li>
+                                <li style="margin-bottom: 8px;">
+                                    Uses HMIS trend to update survey baseline forward
+                                </li>
+                                <li>
+                                    Bridges gap between survey year and current period
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <!-- Step 6: Combine Results -->
+                    <div>
+                        <div class="stage-title">
+                            <span class="step-number">6</span>
+                            Combine Final Results
+                        </div>
+                        <div class="comparison-box">
+                            <h4>Result Integration</h4>
+                            <div class="comparison-row">
+                                <div class="comparison-item">
+                                    • HMIS-based coverage estimates
+                                </div>
+                                <div class="comparison-item">
+                                    • Original survey values
+                                </div>
+                            </div>
+                            <div class="comparison-row">
+                                <div class="comparison-item">
+                                    • Projected survey coverage
+                                </div>
+                                <div class="comparison-item">
+                                    • By administrative level
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <!-- Step 7: Final Output -->
+                    <div>
+                        <div class="stage-title">
+                            <span class="step-number">7</span>
+                            Save Final Outputs
+                        </div>
+                        <div class="output-box">
+                            <h4>Final Deliverable</h4>
+                            <ul>
+                                <li><strong>M5_coverage_estimation_national.csv:</strong> National-level coverage estimates including HMIS-based values, survey data, and forward projections</li>
+                                <li><strong>M5_coverage_estimation_admin2.csv:</strong> Admin area level 2 coverage estimates</li>
+                                <li><strong>M5_coverage_estimation_admin3.csv:</strong> Admin area level 3 coverage estimates</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</body>
+</html>
