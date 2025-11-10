@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FASTR HMIS Data Quality Assessment Workflow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a8c 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        header p {
+            font-size: 14px;
+            opacity: 0.95;
+            letter-spacing: 0.5px;
+        }
+
+        .workflow {
+            padding: 40px;
+        }
+
+        .input-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 3px solid #1e3a5f;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .input-section h3 {
+            color: #1e3a5f;
+            font-size: 16px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .input-section p {
+            color: #0d47a1;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin: 30px 0;
+        }
+
+        .process-step {
+            display: flex;
+            gap: 0;
+            margin-bottom: 0;
+            align-items: stretch;
+        }
+
+        .step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2d5a8c;
+            color: white;
+            width: 60px;
+            min-width: 60px;
+            font-weight: 600;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .step-number span {
+            display: none;
+        }
+
+        .arrow-down {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2d5a8c;
+            font-size: 24px;
+            font-weight: 300;
+            background: white;
+            border-left: 2px solid #ccc;
+            border-right: 2px solid #ccc;
+        }
+
+        .step-content {
+            flex: 1;
+            background: #fafbfc;
+            border: 2px solid #4a7ba7;
+            border-left: none;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .step-content h4 {
+            color: #1e3a5f;
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .step-content ul {
+            list-style: none;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .step-content li {
+            color: #555;
+            margin-bottom: 6px;
+            padding-left: 18px;
+            position: relative;
+        }
+
+        .step-content li:before {
+            content: "•";
+            color: #2d5a8c;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .output-section {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border: 3px solid #7b1fa2;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .output-section h3 {
+            color: #4a148c;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .output-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .output-item {
+            background: white;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 4px solid #7b1fa2;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .output-item:before {
+            content: "✓ ";
+            color: #7b1fa2;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .section-divider {
+            height: 30px;
+            background: white;
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .section-divider:after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 100%;
+            background: #ccc;
+        }
+
+        footer {
+            background: #f0f4f8;
+            padding: 20px 40px;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        /* Visual line connecting steps */
+        .step-connector {
+            width: 60px;
+            height: 0;
+            border-top: 2px solid #ccc;
+            margin: 0;
+        }
+
+        .flow-line {
+            position: absolute;
+            left: 30px;
+            width: 2px;
+            background: #ccc;
+            height: 30px;
+        }
+
+        /* Step box styling with vertical connector */
+        .process-step {
+            position: relative;
+        }
+
+        .process-step:not(:last-child) .step-number:after {
+            content: "";
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 30px;
+            background: #ccc;
+        }
+
+        .step-number-circle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #2d5a8c;
+            color: white;
+            border-radius: 50%;
+            font-weight: 600;
+            font-size: 16px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-box {
+            background: #fafbfc;
+            border: 2px solid #4a7ba7;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .step-header h4 {
+            color: #1e3a5f;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .arrow-connector {
+            text-align: center;
+            color: #2d5a8c;
+            font-size: 28px;
+            margin: 15px 0;
+            font-weight: 300;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step-list {
+            list-style: none;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .step-list li {
+            color: #555;
+            margin-bottom: 8px;
+            padding-left: 18px;
+            position: relative;
+        }
+
+        .step-list li:before {
+            content: "•";
+            color: #2d5a8c;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        @media (max-width: 768px) {
+            .workflow {
+                padding: 20px;
+            }
+
+            .output-list {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 22px;
+            }
+
+            .step-number-circle {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>HMIS Data Quality Assessment Workflow</h1>
+            <p>Systematic evaluation of facility-level monthly health data quality</p>
+        </header>
+
+        <div class="workflow">
+            <!-- Input Section -->
+            <div class="input-section">
+                <h3>INPUT: Monthly Facility Data</h3>
+                <p><strong>facility_id, period_id, indicator, count</strong></p>
+                <p style="margin-top: 10px; font-size: 12px;">Raw health facility reporting data aggregated at monthly level across all indicators</p>
+            </div>
+
+            <!-- Step 1: Data Loading & Preparation -->
+            <div class="step-box">
+                <div class="step-header">
+                    <div class="step-number-circle">1</div>
+                    <h4>Data Loading & Preparation</h4>
+                </div>
+                <ul class="step-list">
+                    <li>Convert dates to standardized format</li>
+                    <li>Detect and assign geographic hierarchy</li>
+                    <li>Create composite indicators from component data</li>
+                    <li>Validate facility identifiers and metadata</li>
+                </ul>
+            </div>
+
+            <div class="arrow-connector">↓</div>
+
+            <!-- Step 2: Outlier Detection -->
+            <div class="step-box">
+                <div class="step-header">
+                    <div class="step-number-circle">2</div>
+                    <h4>Outlier Detection</h4>
+                </div>
+                <ul class="step-list">
+                    <li>Calculate median and median absolute deviation (MAD)</li>
+                    <li>Flag statistical outliers using MAD multiplier (typically 2.5×)</li>
+                    <li>Flag proportional outliers where a single value dominates</li>
+                    <li>Generate outlier flags and facility-level alerts</li>
+                </ul>
+            </div>
+
+            <div class="arrow-connector">↓</div>
+
+            <!-- Step 3: Completeness Assessment -->
+            <div class="step-box">
+                <div class="step-header">
+                    <div class="step-number-circle">3</div>
+                    <h4>Completeness Assessment</h4>
+                </div>
+                <ul class="step-list">
+                    <li>Generate expected full time series for each facility-indicator pair</li>
+                    <li>Identify missing monthly reports</li>
+                    <li>Flag inactive facilities (zero reporting)</li>
+                    <li>Calculate completeness percentages by facility and indicator</li>
+                </ul>
+            </div>
+
+            <div class="arrow-connector">↓</div>
+
+            <!-- Step 4: Consistency Analysis -->
+            <div class="step-box">
+                <div class="step-header">
+                    <div class="step-number-circle">4</div>
+                    <h4>Consistency Analysis</h4>
+                </div>
+                <ul class="step-list">
+                    <li>Aggregate facility-level data to district level</li>
+                    <li>Calculate indicator ratios and relationships (e.g., deliveries vs. ANC1)</li>
+                    <li>Apply evidence-based benchmarks for logical consistency</li>
+                    <li>Assign consistency scores to individual facilities</li>
+                </ul>
+            </div>
+
+            <div class="arrow-connector">↓</div>
+
+            <!-- Step 5: DQA Scoring -->
+            <div class="step-box">
+                <div class="step-header">
+                    <div class="step-number-circle">5</div>
+                    <h4>DQA Scoring</h4>
+                </div>
+                <ul class="step-list">
+                    <li>Filter to core indicators specified in DQA framework</li>
+                    <li>Combine quality dimensions (completeness, consistency, accuracy)</li>
+                    <li>Calculate facility-level composite DQA scores</li>
+                    <li>Assign DQA categories (Good, Acceptable, Poor)</li>
+                </ul>
+            </div>
+
+            <!-- Output Section -->
+            <div class="output-section">
+                <h3>OUTPUTS</h3>
+                <div class="output-list">
+                    <div class="output-item">Outlier flags & facility lists</div>
+                    <div class="output-item">Completeness status report</div>
+                    <div class="output-item">Consistency results & ratios</div>
+                    <div class="output-item">DQA scores by facility</div>
+                    <div class="output-item">Quality dimension breakdowns</div>
+                    <div class="output-item">Trend analysis visualizations</div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>This DQA workflow systematically evaluates multiple dimensions of data quality to support timely decision-making under the FASTR initiative. Results inform data use recommendations and quality improvement actions.</p>
+        </footer>
+    </div>
+</body>
+</html>
