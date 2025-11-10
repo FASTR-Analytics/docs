@@ -61,7 +61,7 @@ After adjustments are complete, the facility-level data is aggregated (summed up
 **Step 7: Export Results**
 The module saves four CSV files: one for facility-level data, one for subnational areas, one for national totals, and one documenting which indicators were excluded from adjustment and why.
 
-### Visual Workflow
+### Workflow Diagram
 
 <iframe src="../images/mod2_workflow.html" width="100%" height="800" style="border: 1px solid #ccc; border-radius: 4px;" title="Module 2 Interactive Workflow"></iframe>
 

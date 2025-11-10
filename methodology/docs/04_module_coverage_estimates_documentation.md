@@ -122,7 +122,7 @@ The final output merges three types of estimates:
 **Step 7: Save Final Outputs**
 Results are saved with standardized column structures for each administrative level, ready for visualization and reporting.
 
-### Visual Workflow Diagram
+### Workflow Diagram
 
 <iframe src="../images/mod4_workflow.html" width="100%" height="800" style="border: 1px solid #ccc; border-radius: 4px;" title="Module 1 Interactive Workflow"></iframe>
 

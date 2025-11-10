@@ -55,7 +55,7 @@ The module operates in two sequential stages, each with a distinct purpose:
 
 7. **Generate outputs**: Create summary files showing disruption impacts at each geographic level, ready for visualization and reporting.
 
-### Visual Workflow Diagram
+### Workflow Diagram
 
 <iframe src="../images/mod3_workflow.html" width="100%" height="800" style="border: 1px solid #ccc; border-radius: 4px;" title="Module 3 Interactive Workflow"></iframe>
 
