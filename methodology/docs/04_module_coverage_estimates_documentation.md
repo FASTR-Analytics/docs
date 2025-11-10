@@ -574,7 +574,7 @@ $$
 d_{\text{anc1, mcv}} = d_{\text{anc1, pregnancy}} \times (1 - \text{pregnancy loss rate}) \times (1 - \frac{\text{twin rate}}{2}) \times (1 - \text{stillbirth rate}) \times (1 - \text{infant mortality rate})
 $$
 
-**Delivery Denominator (Live Births)**
+**Delivery Denominator**
 
 $$
 d_{\text{delivery, pregnancy}} = \frac{\text{count}_{\text{delivery}} \times 100}{\text{coverage}_{\text{delivery}}} \times (1 - \text{pregnancy loss rate})
