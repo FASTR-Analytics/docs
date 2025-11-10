@@ -255,6 +255,34 @@ Each health indicator targets a specific population (e.g., pregnant women for AN
 
 **Temporal Projection**: For years beyond the most recent survey, the module projects coverage estimates forward by combining the last observed survey value with HMIS-based trends. This produces complete coverage time series that leverage both the validity of survey data and the timeliness of routine HMIS reporting, with all estimates accompanied by metadata indicating data source and projection methodology.
 
+### Analysis Outputs and Visualization
+
+The FASTR analysis generates coverage estimate visualizations at multiple geographic levels:
+
+**1. Coverage Calculated from HMIS Data (National)**
+
+Time series showing coverage estimates calculated from HMIS service volumes at the national level, comparing HMIS-based estimates with survey benchmarks.
+
+![Coverage calculated from HMIS data at national level.](images/Module4_1_Coverage_HMIS_National.png)
+
+**2. Coverage Calculated from HMIS Data (Admin Area 2)**
+
+Coverage estimates disaggregated to admin area 2 level, enabling identification of subnational variation in service coverage.
+
+![Coverage calculated from HMIS data at admin area 2 level.](images/Module4_2_Coverage_HMIS_Admin2.png)
+
+**3. Coverage Calculated from HMIS Data (Admin Area 3)**
+
+Highly disaggregated coverage estimates at admin area 3 level for detailed geographic analysis where data quality permits.
+
+![Coverage calculated from HMIS data at admin area 3 level.](images/Module4_3_Coverage_HMIS_Admin3.png)
+
+**Interpretation Guide:**
+- **Survey points**: Shown as markers representing validated household survey coverage estimates
+- **HMIS-based estimates**: Line series showing coverage calculated from routine facility data
+- **Projected coverage**: Forward projections combining survey benchmarks with HMIS trends
+- **Geographic disaggregation**: Lower administrative levels enable targeting of interventions to areas with coverage gaps
+
 ---
 
 ## 3. Detailed Reference
