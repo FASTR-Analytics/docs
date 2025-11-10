@@ -46,7 +46,7 @@ Poor-quality data impact various levels of the health system in different ways. 
 
 ### What This Documentation Covers
 
-This methodology documentation describes the FASTR approach to routine HMIS data analysis. The FASTR toolkit includes four automated code modules, each designed to streamline a specific component of the analytical process:
+This methodology documentation describes the FASTR approach to routine HMIS data analysis. FASTR uses four code modules to automate different parts of the analysis:
 
 - [**Module 1 · Data Quality Assessment**](01_module_data_quality_assessment_documentation.md) - Automated assessment of HMIS data quality through completeness, timeliness, consistency, and accuracy metrics
 - [**Module 2 · Data Quality Adjustments**](02_module_data_quality_adjustments_documentation.md) - Automated techniques for improving data accuracy by identifying and adjusting for data quality issues
