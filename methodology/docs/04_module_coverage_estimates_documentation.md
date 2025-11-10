@@ -848,253 +848,243 @@ The script automatically checks data availability and disables admin levels with
 
 #### Core Functions and Methods
 
-#### Function 1: `coverage_deltas()`
+??? "Function 1: `coverage_deltas()`"
 
-**Purpose**:
+    **Purpose**: Calculates year-over-year changes in coverage for each indicator-denominator-geography combination.
 
-Calculates year-over-year changes in coverage for each indicator-denominator-geography combination.
+    **Algorithm**:
 
-**Algorithm**:
+    ```r
+    coverage_deltas <- function(coverage_df, lag_n = 1, complete_years = TRUE)
+    ```
 
-```r
-coverage_deltas <- function(coverage_df, lag_n = 1, complete_years = TRUE)
-```
+    **Process**:
 
-**Process**:
+    1. Groups data by geography (admin areas), indicator, and denominator
+    2. Optionally fills in missing years to create a complete time series
+    3. Sorts data chronologically within each group
+    4. Calculates delta as: $\Delta\text{coverage}_t = \text{coverage}_t - \text{coverage}_{t-1}$
 
-1. Groups data by geography (admin areas), indicator, and denominator
-2. Optionally fills in missing years to create a complete time series
-3. Sorts data chronologically within each group
-4. Calculates delta as: $\Delta\text{coverage}_t = \text{coverage}_t - \text{coverage}_{t-1}$
+    **Mathematical Formulation**:
+    $$
+    \Delta C_{i,d,g,t} = C_{i,d,g,t} - C_{i,d,g,t-1}
+    $$
 
-**Mathematical Formulation**:
-$$
-\Delta C_{i,d,g,t} = C_{i,d,g,t} - C_{i,d,g,t-1}
-$$
+    where:
+    - $C$ = coverage estimate
+    - $i$ = indicator
+    - $d$ = denominator
+    - $g$ = geographic area
+    - $t$ = time (year)
 
-where:
-- $C$ = coverage estimate
-- $i$ = indicator
-- $d$ = denominator
-- $g$ = geographic area
-- $t$ = time (year)
+    **Input**:
 
-**Input**:
+    - `coverage_df`: Data frame with coverage estimates
+    - `lag_n`: Number of years to lag (default = 1 for year-over-year)
+    - `complete_years`: Whether to fill missing years (default = TRUE)
 
-- `coverage_df`: Data frame with coverage estimates
-- `lag_n`: Number of years to lag (default = 1 for year-over-year)
-- `complete_years`: Whether to fill missing years (default = TRUE)
+    **Output**:
 
-**Output**:
+    Data frame with original coverage values plus a `delta` column showing year-over-year change.
 
-Data frame with original coverage values plus a `delta` column showing year-over-year change.
+    **Example Output**:
 
-**Example Output**:
+    | admin_area_1 | indicator_common_id | denominator | year | coverage | delta |
+    |--------------|---------------------|-------------|------|----------|-------|
+    | Country A | penta3 | dpenta1_dpt | 2018 | 75.2 | NA |
+    | Country A | penta3 | dpenta1_dpt | 2019 | 78.5 | 3.3 |
+    | Country A | penta3 | dpenta1_dpt | 2020 | 80.1 | 1.6 |
 
-| admin_area_1 | indicator_common_id | denominator | year | coverage | delta |
-|--------------|---------------------|-------------|------|----------|-------|
-| Country A | penta3 | dpenta1_dpt | 2018 | 75.2 | NA |
-| Country A | penta3 | dpenta1_dpt | 2019 | 78.5 | 3.3 |
-| Country A | penta3 | dpenta1_dpt | 2020 | 80.1 | 1.6 |
+??? "Function 2: `project_survey_from_deltas()`"
 
-#### Function 2: `project_survey_from_deltas()`
+    **Purpose**: Projects survey-based coverage estimates forward using administrative data trends.
 
-**Purpose**:
+    **Algorithm**:
 
-Projects survey-based coverage estimates forward using administrative data trends.
+    ```r
+    project_survey_from_deltas <- function(deltas_df, survey_raw_long)
+    ```
 
-**Algorithm**:
+    **Process**:
 
-```r
-project_survey_from_deltas <- function(deltas_df, survey_raw_long)
-```
+    1. **Identify Baseline**: For each geography-indicator combination, find the most recent survey observation
+       - Extract the last observed survey year
+       - Record the baseline coverage value at that year
 
-**Process**:
+    2. **Attach Baseline to Each Denominator Path**: Since Part 2 operates on specific denominator selections, attach the baseline to each denominator series
 
-1. **Identify Baseline**: For each geography-indicator combination, find the most recent survey observation
-   - Extract the last observed survey year
-   - Record the baseline coverage value at that year
+    3. **Compute Cumulative Deltas**: For years after the baseline year, calculate cumulative sum of deltas:
 
-2. **Attach Baseline to Each Denominator Path**: Since Part 2 operates on specific denominator selections, attach the baseline to each denominator series
+       $$\text{cumulative delta}_t = \sum_{\tau = \text{baseline year} + 1}^{t} \Delta C_\tau$$
 
-3. **Compute Cumulative Deltas**: For years after the baseline year, calculate cumulative sum of deltas:
+    4. **Calculate Projection**: Add cumulative delta to baseline value:
 
-   $$\text{cumulative delta}_t = \sum_{\tau = \text{baseline year} + 1}^{t} \Delta C_\tau$$
+       $$\text{Projected coverage}_t = \text{Baseline coverage} + \text{cumulative delta}_t$$
 
-4. **Calculate Projection**: Add cumulative delta to baseline value:
+    **Mathematical Formulation**:
 
-   $$\text{Projected coverage}_t = \text{Baseline coverage} + \text{cumulative delta}_t$$
+    For each indicator $i$, denominator $d$, and geography $g$:
 
-**Mathematical Formulation**:
+    1. Find baseline:
 
-For each indicator $i$, denominator $d$, and geography $g$:
+    $$
+    y_{\text{baseline}} = \max\{t : S_{i,g,t} \text{ exists}\}
+    $$
 
-1. Find baseline:
+    $$
+    S_{\text{baseline}} = S_{i,g,y_{\text{baseline}}}
+    $$
 
-$$
-y_{\text{baseline}} = \max\{t : S_{i,g,t} \text{ exists}\}
-$$
+    2. For $t > y_{\text{baseline}}$:
 
-$$
-S_{\text{baseline}} = S_{i,g,y_{\text{baseline}}}
-$$
+    $$
+    \hat{S}_{i,d,g,t} = S_{\text{baseline}} + \sum_{\tau = y_{\text{baseline}} + 1}^{t} \Delta C_{i,d,g,\tau}
+    $$
 
-2. For $t > y_{\text{baseline}}$:
+    where:
 
-$$
-\hat{S}_{i,d,g,t} = S_{\text{baseline}} + \sum_{\tau = y_{\text{baseline}} + 1}^{t} \Delta C_{i,d,g,\tau}
-$$
+    - $S$ = survey-based coverage estimate
+    - $\hat{S}$ = projected survey coverage
+    - $\Delta C$ = year-over-year change in administrative coverage
 
-where:
+    **Assumptions**:
 
-- $S$ = survey-based coverage estimate
-- $\hat{S}$ = projected survey coverage
-- $\Delta C$ = year-over-year change in administrative coverage
+    - Trends observed in administrative data reflect true changes in service coverage
+    - The baseline survey provides an accurate reference point
+    - Administrative data trends can be applied to survey estimates
 
-**Assumptions**:
+    **Input**:
 
-- Trends observed in administrative data reflect true changes in service coverage
-- The baseline survey provides an accurate reference point
-- Administrative data trends can be applied to survey estimates
+    - `deltas_df`: Output from `coverage_deltas()` containing coverage changes
+    - `survey_raw_long`: Raw survey data with years and values
 
-**Input**:
+    **Output**:
 
-- `deltas_df`: Output from `coverage_deltas()` containing coverage changes
-- `survey_raw_long`: Raw survey data with years and values
+    Data frame with projected coverage for each year, indicator, denominator, and geography combination.
 
-**Output**:
+    **Example Output**:
 
-Data frame with projected coverage for each year, indicator, denominator, and geography combination.
+    | admin_area_1 | indicator_common_id | denominator | year | baseline_year | projected |
+    |--------------|---------------------|-------------|------|---------------|-----------|
+    | Country A | penta3 | dpenta1_dpt | 2018 | 2018 | 75.0 |
+    | Country A | penta3 | dpenta1_dpt | 2019 | 2018 | 78.3 |
+    | Country A | penta3 | dpenta1_dpt | 2020 | 2018 | 79.9 |
 
-**Example Output**:
+??? "Function 3: `build_final_results()`"
 
-| admin_area_1 | indicator_common_id | denominator | year | baseline_year | projected |
-|--------------|---------------------|-------------|------|---------------|-----------|
-| Country A | penta3 | dpenta1_dpt | 2018 | 2018 | 75.0 |
-| Country A | penta3 | dpenta1_dpt | 2019 | 2018 | 78.3 |
-| Country A | penta3 | dpenta1_dpt | 2020 | 2018 | 79.9 |
+    **Purpose**: Combines HMIS coverage, projected survey estimates, and original survey values into a unified output dataset.
 
-#### Function 3: `build_final_results()`
+    **Algorithm**:
 
-**Purpose**:
+    ```r
+    build_final_results <- function(coverage_df, proj_df, survey_raw_df = NULL)
+    ```
 
-Combines HMIS coverage, projected survey estimates, and original survey values into a unified output dataset.
+    **Process**:
 
-**Algorithm**:
+    1. **Prepare HMIS Coverage**: Extract coverage estimates from administrative data
+       - Rename coverage column to `coverage_cov` for clarity
 
-```r
-build_final_results <- function(coverage_df, proj_df, survey_raw_df = NULL)
-```
+    2. **Merge Projections**: Join projected survey estimates
+       - Match by geography, year, indicator, and denominator
+       - Create `coverage_avgsurveyprojection` column
 
-**Process**:
+    3. **Process Original Survey Data** (if available):
+       - Collapse multiple survey sources by taking mean value
+       - Preserve source metadata (source, source_detail)
+       - Expand survey values across all denominators for that indicator
 
-1. **Prepare HMIS Coverage**: Extract coverage estimates from administrative data
-   - Rename coverage column to `coverage_cov` for clarity
+    4. **Calculate Final Projections**: Use an improved projection formula that anchors to the last survey value:
 
-2. **Merge Projections**: Join projected survey estimates
-   - Match by geography, year, indicator, and denominator
-   - Create `coverage_avgsurveyprojection` column
+       For years after the last survey year:
 
-3. **Process Original Survey Data** (if available):
-   - Collapse multiple survey sources by taking mean value
-   - Preserve source metadata (source, source_detail)
-   - Expand survey values across all denominators for that indicator
+       $$
+       \text{Projected coverage}_t = \text{Last survey value} + (C_{\text{HMIS},t} - C_{\text{HMIS, last survey year}})
+       $$
 
-4. **Calculate Final Projections**: Use an improved projection formula that anchors to the last survey value:
+       This additive approach:
+       - Preserves the calibration to survey data
+       - Applies the HMIS trend (delta) to extend the estimate forward
+       - Avoids compounding errors from year-to-year deltas
 
-   For years after the last survey year:
+    5. **Combine Results**: Merge all components using full outer join to preserve:
+       - Years with only HMIS data
+       - Years with only survey data
+       - Years with both data sources
 
-   $$
-   \text{Projected coverage}_t = \text{Last survey value} + (C_{\text{HMIS},t} - C_{\text{HMIS, last survey year}})
-   $$
+    **Mathematical Formulation**:
 
-   This additive approach:
-   - Preserves the calibration to survey data
-   - Applies the HMIS trend (delta) to extend the estimate forward
-   - Avoids compounding errors from year-to-year deltas
+    Let:
 
-5. **Combine Results**: Merge all components using full outer join to preserve:
-   - Years with only HMIS data
-   - Years with only survey data
-   - Years with both data sources
+    - $t_s$ = year of last survey
+    - $S_{t_s}$ = survey coverage at year $t_s$
+    - $C_{\text{HMIS},t}$ = HMIS-based coverage at year $t$
 
-**Mathematical Formulation**:
+    For $t > t_s$:
 
-Let:
+    $$
+    \hat{C}_t = S_{t_s} + (C_{\text{HMIS},t} - C_{\text{HMIS},t_s})
+    $$
 
-- $t_s$ = year of last survey
-- $S_{t_s}$ = survey coverage at year $t_s$
-- $C_{\text{HMIS},t}$ = HMIS-based coverage at year $t$
+    **Input**:
 
-For $t > t_s$:
+    - `coverage_df`: HMIS-based coverage estimates from selected denominators
+    - `proj_df`: Projected survey estimates from `project_survey_from_deltas()`
+    - `survey_raw_df`: Original survey data (optional)
 
-$$
-\hat{C}_t = S_{t_s} + (C_{\text{HMIS},t} - C_{\text{HMIS},t_s})
-$$
+    **Output**:
 
-**Input**:
+    Comprehensive data frame with columns:
 
-- `coverage_df`: HMIS-based coverage estimates from selected denominators
-- `proj_df`: Projected survey estimates from `project_survey_from_deltas()`
-- `survey_raw_df`: Original survey data (optional)
-
-**Output**:
-
-Comprehensive data frame with columns:
-
-- Geographic identifiers (admin_area_1, admin_area_2, admin_area_3)
-- year, indicator_common_id, denominator
-- `coverage_cov`: HMIS-based coverage
-- `coverage_original_estimate`: Original survey values
-- `coverage_avgsurveyprojection`: Projected survey coverage
-- `survey_raw_source`: Survey data source (e.g., "DHS", "MICS")
-- `survey_raw_source_detail`: Detailed source information
+    - Geographic identifiers (admin_area_1, admin_area_2, admin_area_3)
+    - year, indicator_common_id, denominator
+    - `coverage_cov`: HMIS-based coverage
+    - `coverage_original_estimate`: Original survey values
+    - `coverage_avgsurveyprojection`: Projected survey coverage
+    - `survey_raw_source`: Survey data source (e.g., "DHS", "MICS")
+    - `survey_raw_source_detail`: Detailed source information
 
 #### Helper Functions
 
-#### `filter_by_denominator_selection()`
+??? "Helper Function: `filter_by_denominator_selection()`"
 
-**Purpose**:
+    **Purpose**: Filters the combined results from Part 1 based on user's denominator selection.
 
-Filters the combined results from Part 1 based on user's denominator selection.
+    **Algorithm**:
 
-**Algorithm**:
+    1. Iterate through each indicator in `DENOMINATOR_SELECTION`
+    2. For each indicator:
+       - If selection is "best": Keep rows where `denominator_best_or_survey == "best"`
+       - If selection is a specific denominator: Keep rows where `denominator_best_or_survey == selected_denominator`
+    3. Convert selected rows to coverage format (rename columns, filter out survey entries)
+    4. Combine results across all indicators
 
-1. Iterate through each indicator in `DENOMINATOR_SELECTION`
-2. For each indicator:
-   - If selection is "best": Keep rows where `denominator_best_or_survey == "best"`
-   - If selection is a specific denominator: Keep rows where `denominator_best_or_survey == selected_denominator`
-3. Convert selected rows to coverage format (rename columns, filter out survey entries)
-4. Combine results across all indicators
+    **Input**:
 
-**Input**:
+    - `combined_results_df`: Output from Part 1 with all denominator options
+    - `selection_list`: The DENOMINATOR_SELECTION configuration list
 
-- `combined_results_df`: Output from Part 1 with all denominator options
-- `selection_list`: The DENOMINATOR_SELECTION configuration list
+    **Output**:
 
-**Output**:
+    Filtered data frame containing only the user-selected denominators.
 
-Filtered data frame containing only the user-selected denominators.
+??? "Helper Function: `extract_survey_from_combined()`"
 
-#### `extract_survey_from_combined()`
+    **Purpose**: Extracts raw survey values from Part 1 combined results.
 
-**Purpose**:
+    **Algorithm**:
 
-Extracts raw survey values from Part 1 combined results.
+    1. Filter for rows where `denominator_best_or_survey == "survey"`
+    2. Rename `value` column to `survey_value`
+    3. Select relevant columns dynamically based on admin levels present
 
-**Algorithm**:
+    **Input**:
 
-1. Filter for rows where `denominator_best_or_survey == "survey"`
-2. Rename `value` column to `survey_value`
-3. Select relevant columns dynamically based on admin levels present
+    Combined results data frame from Part 1
 
-**Input**:
+    **Output**:
 
-Combined results data frame from Part 1
-
-**Output**:
-
-Survey data frame with columns: admin areas, year, indicator_common_id, survey_value
+    Survey data frame with columns: admin areas, year, indicator_common_id, survey_value
 
 #### Workflow Execution Steps
 
