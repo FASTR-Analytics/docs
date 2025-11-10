@@ -2,56 +2,53 @@
 
 ## FASTR RMNCAH-N Service Use Monitoring
 
-The FASTR Analytics Platform enables systematic monitoring of reproductive, maternal, newborn, child, and adolescent health and nutrition (RMNCAH-N) service delivery using routine health management information system (HMIS) data. By connecting directly to DHIS2 systems, the platform retrieves facility-level data, processes it through four analytical modules, and produces actionable insights on data quality, service utilization patterns, disruption impacts, and population coverage estimates.
+This document describes a four-module analytical approach for monitoring reproductive, maternal, newborn, child, and adolescent health and nutrition (RMNCAH-N) service delivery using routine health management information system (HMIS) data. The methodology connects to DHIS2 systems to retrieve facility-level data, applies statistical quality assessment and adjustment procedures, and generates data quality metrics, service utilization estimates, and population coverage indicators.
 
-## The Challenge
+## Background
 
-Health systems in low- and middle-income countries generate substantial routine data through HMIS, yet this data often goes underutilized due to quality concerns and analytical capacity constraints. Traditional household surveys provide validated coverage estimates but occur infrequently (every 3-5 years) and cannot support timely decision-making. Decision-makers need reliable, continuous monitoring of health service delivery to:
+Health management information systems in low- and middle-income countries generate routine facility-level service delivery data on a monthly basis. However, these data are frequently affected by reporting incompleteness, statistical outliers, and internal inconsistencies that limit their analytical utility. Traditional household surveys (DHS, MICS) provide validated coverage estimates but are conducted infrequently (typically every 3-5 years), creating gaps in the availability of timely data for monitoring service delivery trends, detecting disruptions, and tracking progress toward health system goals.
 
-- Identify and respond to service disruptions rapidly
-- Allocate resources based on current service delivery patterns
-- Track progress toward health targets between surveys
-- Distinguish genuine service changes from data quality artifacts
-
-## The Solution: Four-Module Analytical Pipeline
+## Analytical Approach
 
 ### Module 1: Data Quality Assessment
 
-Evaluates the reliability of facility reporting by identifying statistical outliers, tracking reporting completeness, and validating logical consistency between related indicators. Each facility receives quality scores highlighting outliers, reporting gaps, and inconsistencies, enabling targeted data quality improvements.
+Applies statistical methods to identify outliers using median absolute deviation, tracks reporting completeness at facility and indicator levels, and validates logical consistency between related indicators (e.g., ANC1 ≥ ANC4). Generates facility-level quality scores and flags for downstream use in data adjustment and analysis procedures.
 
 ### Module 2: Data Quality Adjustments
 
-Creates four parallel data scenarios to accommodate different analytical needs: (1) original unadjusted data, (2) outlier-adjusted data, (3) missing data filled, and (4) both adjustments applied. For outliers, abnormal values are replaced with 6-month rolling medians. For missing months, gaps are filled using hierarchical imputation methods. This multi-scenario approach allows analysts to assess result sensitivity to data quality assumptions.
+Generates four parallel versions of the dataset: (1) original unadjusted data, (2) outlier-adjusted data only, (3) missing data imputed only, and (4) both adjustments applied. Outlier adjustment replaces flagged values with 6-month rolling medians (with fallback to forward/backward fill or same-month-prior-year values). Missing data imputation follows the same hierarchical approach. All four versions are retained to support sensitivity analysis.
 
 ### Module 3: Service Utilization & Disruption Analysis
 
-Identifies disrupted service delivery periods using statistical control charts, then quantifies the magnitude of service shortfalls or surpluses. The module employs robust regression models accounting for seasonality and trends to establish normal service patterns, flags months with significant deviations, and calculates the precise number of missed (or excess) services during disruption periods. Analysis runs at national, regional, and district levels.
+Applies statistical process control methods (control charts with robust regression) to identify months where service volumes deviate significantly from expected patterns after accounting for seasonality and trends. Uses panel regression models at national, regional, and district levels to quantify the magnitude of service shortfalls or surpluses during flagged disruption periods. Outliers identified in Module 1 are excluded from the analysis.
 
 ### Module 4: Coverage Estimation & Projection
 
-**Part 1 - Denominators**: Estimates target populations by working backward from HMIS service counts using survey-reported coverage rates. Multiple denominator options are calculated from different HMIS indicators (ANC1-derived, delivery-derived, BCG-derived, Penta1-derived) plus UN population estimates. Each denominator is adjusted for biological factors including pregnancy loss, stillbirths, and mortality. The module identifies the optimal denominator per indicator by comparing which produces coverage closest to survey benchmarks.
+**Part 1 - Denominators**: Calculates target population denominators by combining HMIS service counts with survey-reported coverage rates. Multiple denominator options are derived from different HMIS indicators (ANC1, deliveries, BCG, Penta1) and UN population estimates. Denominators are adjusted for biological factors including pregnancy loss, stillbirths, twin births, and mortality rates. Optimal denominators are selected per indicator by minimizing squared error between calculated coverage and survey benchmarks.
 
-**Part 2 - Projections**: Projects future survey estimates by anchoring to the most recent survey value and applying year-specific changes observed in HMIS trends. This enables annual monitoring between infrequent surveys while maintaining survey validity as the baseline. Outputs include actual survey values when available, projected survey estimates, and direct HMIS-based coverage.
+**Part 2 - Projections**: Generates coverage projections for years beyond the most recent survey by applying annual percent changes observed in HMIS data to the survey baseline. For each indicator-year-location, three values are produced: actual survey estimates where available, HMIS-anchored projections, and direct HMIS-based coverage. Analysis is conducted at national, admin area 2, and admin area 3 levels where survey data permits.
 
-## How Modules Connect
+## Module Integration
 
-The four modules form an integrated pipeline where outputs from earlier modules inform downstream analysis:
+The four modules operate sequentially with outputs from each module serving as inputs to subsequent stages:
 
-- Module 2 uses quality flags from Module 1 to determine which values require adjustment
-- Module 3 loads all four adjustment scenarios from Module 2; users select which scenario to use for disruption modeling
-- Module 4 Part 1 loads all four scenarios from Module 2; users select which scenario serves as the numerator for coverage calculations
-- Module 4 Part 2 loads all coverage estimates from Part 1; users select the preferred denominator per indicator for projections
+- Module 2 applies quality flags generated by Module 1 to determine which observations require adjustment
+- Module 3 accepts all four adjustment scenarios from Module 2 as input; users specify which scenario to apply in disruption analysis
+- Module 4 Part 1 loads all four scenarios from Module 2; users specify which scenario to use as the numerator in coverage calculations
+- Module 4 Part 2 loads all denominator options and coverage estimates from Part 1; users specify the preferred denominator per indicator for projection calculations
 
-## Key Capabilities
+## Methodological Characteristics
 
-**Flexible Analysis**: Multiple data quality scenarios and denominator options allow analysts to understand how methodological choices affect results, increasing confidence in findings.
+The analytical approach exhibits several characteristics relevant to implementation and interpretation:
 
-**Geographic Granularity**: Analysis operates at national, regional (admin area 2), and district (admin area 3) levels where data permits, enabling both high-level monitoring and local action.
+**Multiple Scenarios**: The retention of four parallel data adjustment scenarios (none, outliers only, missing data only, both) supports sensitivity analysis and assessment of how data quality assumptions affect results.
 
-**Continuous Monitoring**: By leveraging timely HMIS data calibrated against periodic survey benchmarks, the platform enables annual or more frequent monitoring without waiting years between surveys.
+**Geographic Disaggregation**: Analyses are conducted at national, admin area 2, and admin area 3 levels where data quality and sample sizes permit, subject to minimum thresholds for statistical reliability.
 
-**Transparent Methodology**: All calculations are fully documented with clear parameter configurations, allowing replication, customization to country contexts, and integration with existing monitoring systems.
+**Temporal Resolution**: Monthly HMIS data enables higher-frequency monitoring than periodic household surveys, while survey anchoring maintains comparability with established benchmarks and accounts for systematic biases in routine reporting.
 
-## Value Proposition
+**Parameter Configuration**: All statistical thresholds, window sizes, and adjustment methods are configurable parameters documented in technical specifications, allowing adaptation to country-specific contexts and data characteristics.
 
-The FASTR platform transforms routine HMIS data from an underutilized resource into a cornerstone of evidence-based health system management. By systematically addressing data quality issues, detecting service disruptions early, and producing reliable coverage estimates between surveys, the platform empowers health system managers and policymakers to make informed decisions based on current, validated data rather than relying solely on infrequent surveys or accepting questionable routine data at face value.
+## Applications
+
+This methodology addresses analytical requirements in health system monitoring where routine data quality issues have historically limited the use of HMIS data for coverage estimation and trend analysis. The approach is applicable in settings where: (1) facility-level HMIS data are available with sufficient completeness and temporal coverage, (2) household survey estimates are available for calibration and validation, and (3) computational resources exist for statistical modeling at subnational geographic levels.
