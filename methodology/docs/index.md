@@ -46,9 +46,9 @@ Poor-quality data impact various levels of the health system in different ways. 
 
 ### What This Documentation Covers
 
-This methodology documentation focuses on the FASTR approach to routine HMIS data analysis. The modules below provide comprehensive guidance for each step of the process:
+This methodology documentation describes the FASTR approach to routine HMIS data analysis. The FASTR toolkit includes four automated code modules, each designed to streamline a specific component of the analytical process:
 
-- [**Module 1 · Data Quality Assessment**](01_module_data_quality_assessment_documentation.md) - Methods for assessing HMIS data quality through completeness, timeliness, consistency, and accuracy metrics
-- [**Module 2 · Data Quality Adjustments**](02_module_data_quality_adjustments_documentation.md) - Techniques for improving data accuracy by identifying and adjusting for data quality issues
-- [**Module 3 · Service Utilization**](03_module_service_utilization_documentation.md) - Analysis of health service usage patterns to identify changes in priority service volumes
-- [**Module 4 · Coverage Estimates**](04_module_coverage_estimates_documentation.md) - Methods for estimating service coverage and comparing trends to country targets
+- [**Module 1 · Data Quality Assessment**](01_module_data_quality_assessment_documentation.md) - Automated assessment of HMIS data quality through completeness, timeliness, consistency, and accuracy metrics
+- [**Module 2 · Data Quality Adjustments**](02_module_data_quality_adjustments_documentation.md) - Automated techniques for improving data accuracy by identifying and adjusting for data quality issues
+- [**Module 3 · Service Utilization**](03_module_service_utilization_documentation.md) - Automated analysis of health service usage patterns to identify changes in priority service volumes
+- [**Module 4 · Coverage Estimates**](04_module_coverage_estimates_documentation.md) - Automated methods for estimating service coverage and comparing trends to country targets
