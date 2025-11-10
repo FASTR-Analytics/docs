@@ -1,0 +1,353 @@
+═══════════════════════════════════════════════════════════════════════════════
+    FASTR WORKFLOW DIAGRAMS - COMPLETE CODE REFERENCE
+    For Future Maintenance, Updates, and Customization
+═══════════════════════════════════════════════════════════════════════════════
+
+DOCUMENT PURPOSE:
+This document contains complete HTML/CSS source code for all four FASTR workflow 
+diagrams. Use this as a reference for maintenance, updates, and customization.
+
+CREATED: November 2025
+VERSION: 1.0
+TOTAL WORKFLOWS: 4
+
+═══════════════════════════════════════════════════════════════════════════════
+QUICK REFERENCE - FILE LOCATIONS & OUTPUTS
+═══════════════════════════════════════════════════════════════════════════════
+
+WORKFLOW 1: DENOMINATOR CALCULATION & COVERAGE ESTIMATION
+├─ File: fastr_denominator_workflow.html
+├─ Key Outputs:
+│  ├─ Part 1: M4_denominators, M4_combined_results
+│  └─ Part 2: M5_coverage_estimation_national.csv
+│             M5_coverage_estimation_admin2.csv
+│             M5_coverage_estimation_admin3.csv
+└─ Last Updated: November 2025
+
+WORKFLOW 2: DATA QUALITY ASSESSMENT (DQA)
+├─ File: fastr_dqa_workflow.html
+├─ Key Outputs: DQA scores by facility, outlier flags, completeness status
+└─ Last Updated: November 2025
+
+WORKFLOW 3: DATA ADJUSTMENT & SCENARIO CREATION
+├─ File: fastr_data_adjustment_workflow.html
+├─ Key Outputs:
+│  ├─ M2_adjusted_data.csv (facility level)
+│  ├─ M2_adjusted_data_admin_area.csv (subnational)
+│  ├─ M2_adjusted_data_national.csv (national)
+│  └─ M2_low_volume_exclusions.csv (metadata)
+└─ Last Updated: November 2025
+
+WORKFLOW 4: DISRUPTION DETECTION & ANALYSIS
+├─ File: fastr_disruption_workflow.html
+├─ Key Outputs:
+│  ├─ Stage 1: M3_chartout.csv
+│  └─ Stage 2: M3_disruptions_analysis_admin_area_[1-4].csv
+│             M3_all_indicators_shortfalls_admin_area_[1-4].csv
+│             M3_service_utilization.csv
+└─ Last Updated: November 2025
+
+═══════════════════════════════════════════════════════════════════════════════
+COMMON CSS CLASSES & STYLING REFERENCE
+═══════════════════════════════════════════════════════════════════════════════
+
+PRIMARY COLOR SCHEME:
+- Header gradient: #1e3a5f to #2d5a8c (dark blue)
+- Input section: #e3f2fd to #bbdefb (light blue)
+- Process box: #fafbfc (near white)
+- Output section: #f3e5f5 to #e1bee7 (light purple)
+- Process accent: #7b1fa2 (purple)
+- Step numbers: #2d5a8c (dark blue)
+
+KEY CSS CLASSES:
+- .container: Main wrapper, max-width 900-1200px, white background
+- .step-box: Individual process steps
+- .step-number-circle: Circular numbered badges
+- .output-section: Final deliverables section (purple)
+- .arrow-connector: Vertical flow arrows (↓)
+- .stage-header: Section headers with colored background
+- .process-box: Processing logic containers
+- .regression-box: Special analysis boxes
+- .output-list: Bulleted output lists with checkmarks
+- .output-filename: Monospace filename styling
+
+RESPONSIVE BREAKPOINT:
+- Mobile: max-width 768px (single column layout)
+
+═══════════════════════════════════════════════════════════════════════════════
+COMMON CUSTOMIZATION TASKS
+═══════════════════════════════════════════════════════════════════════════════
+
+TASK 1: CHANGE COLORS
+─────────────────────
+Find in CSS <style> section:
+  background: #1e3a5f;  (primary dark blue)
+  border: 3px solid #7b1fa2;  (purple)
+  color: #0d47a1;  (light blue text)
+
+Replace with your colors globally or per-element.
+
+TASK 2: UPDATE OUTPUT FILE NAMES
+─────────────────────────────────
+Look for: <span class="output-filename">M3_disruptions_analysis...</span>
+Update the filename in the text content.
+Keep the <span class="output-filename"> tag structure.
+
+TASK 3: ADD NEW PROCESS STEPS
+──────────────────────────────
+Copy and paste this template:
+
+    <div class="step-box">
+        <div class="step-header">
+            <div class="step-number-circle">X</div>
+            <h4>Step Title</h4>
+        </div>
+        <ul class="step-list">
+            <li>Bullet point 1</li>
+            <li>Bullet point 2</li>
+        </ul>
+    </div>
+
+    <div class="arrow-connector">↓</div>
+
+Then update X with the step number.
+
+TASK 4: MODIFY HEADER TEXT
+───────────────────────────
+Find: <h1>HMIS Data Quality Assessment Workflow</h1>
+      <p>Systematic evaluation of facility-level monthly health data quality</p>
+Update the h1 and p content as needed.
+
+TASK 5: CHANGE FONT
+────────────────────
+Find in <style> section:
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+Replace with your preferred font stack.
+
+═══════════════════════════════════════════════════════════════════════════════
+WORKFLOW-SPECIFIC UPDATE NOTES
+═══════════════════════════════════════════════════════════════════════════════
+
+DENOMINATOR WORKFLOW (fastr_denominator_workflow.html)
+───────────────────────────────────────────────────────
+Structure: Two-part workflow (Part 1 & Part 2)
+Key Elements:
+  - Input sources: HMIS, Survey, Population data
+  - Decision points: Error minimization, denominator selection
+  - Output files: M4_* for Part 1, M5_* for Part 2
+
+To update Part 1 outputs:
+  Find line ~431: M4_denominators and M4_combined_results
+
+To update Part 2 outputs:
+  Find line ~586: M5_coverage_estimation_national/admin2/admin3.csv
+
+DQA WORKFLOW (fastr_dqa_workflow.html)
+──────────────────────────────────────
+Structure: Linear 5-step process
+Key Elements:
+  - 5 sequential steps with circular numbering
+  - Input/Output sections with colored backgrounds
+  - No footer (removed)
+
+To add/modify steps:
+  Update step numbers and content in respective .step-box divs
+  Ensure circular numbers increment correctly
+
+DATA ADJUSTMENT WORKFLOW (fastr_data_adjustment_workflow.html)
+───────────────────────────────────────────────────────────────
+Structure: Linear pipeline with scenario branching
+Key Elements:
+  - Rolling average calculations
+  - Dual hierarchy (outliers vs. completeness)
+  - 4-scenario branching
+  - Geographic aggregation (facility → admin → national)
+
+To update scenarios:
+  Find .scenario-grid section (~line 350)
+  Modify .scenario-item divs (4 total, 1 spans full width)
+
+To update aggregation levels:
+  Find .aggregation-flow and .aggregation-level sections
+
+DISRUPTION WORKFLOW (fastr_disruption_workflow.html)
+────────────────────────────────────────────────────
+Structure: Two-stage analysis (Detection → Quantification)
+Key Elements:
+  - Stage 1: Control chart analysis
+  - Stage 2: Panel regressions at 4 admin levels
+  - Multiple output files organized by admin area
+
+CRITICAL: Admin Area Naming Convention
+  Use only: Admin Area Level 1, 2, 3, 4
+  NEVER use: Province, State, District, Ward
+  Output format: M3_disruptions_analysis_admin_area_[1-4].csv
+                M3_all_indicators_shortfalls_admin_area_[1-4].csv
+
+To update regression levels:
+  Find .regression-box section
+  Modify the four .regression-item divs
+
+To update admin area outputs:
+  Find .output-section in Stage 2
+  Update file names keeping admin_area_[1-4] format
+
+═══════════════════════════════════════════════════════════════════════════════
+IMPORTANT NAMING CONVENTIONS - DO NOT CHANGE
+═══════════════════════════════════════════════════════════════════════════════
+
+ADMIN AREA STANDARDIZATION:
+- Level 1 = National/Country level
+- Level 2 = First subnational division (regions/provinces)
+- Level 3 = Second subnational division (districts)
+- Level 4 = Third subnational division (wards/municipalities)
+
+FILE NAMING PATTERNS:
+- Denominator outputs: M4_* and M5_*
+- DQA outputs: Module 1 deliverables (described in workflow)
+- Adjustment outputs: M2_* (facility/admin/national levels)
+- Disruption outputs: M3_* (chartout, disruptions_analysis, shortfalls)
+
+CSS CLASS NAMING:
+- .step-box: Individual workflow steps
+- .stage-section: Major workflow sections
+- .process-box: Processing logic visualization
+- .output-section: Final outputs section (always purple)
+- .output-filename: Monospace filenames
+
+═══════════════════════════════════════════════════════════════════════════════
+MAINTENANCE CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+BEFORE MAKING UPDATES:
+☐ Create a backup of the original HTML file
+☐ Document what change you're making and why
+☐ Test in multiple browsers (Chrome, Firefox, Safari, Edge)
+☐ Test on mobile view (max-width: 768px breakpoint)
+
+WHEN UPDATING FILE NAMES:
+☐ Search entire HTML for old filename
+☐ Replace consistently throughout document
+☐ Check that filename appears in descriptions AND in code
+☐ Verify naming follows standard patterns (admin_area_1, _2, etc.)
+
+WHEN MODIFYING STEPS/OUTPUTS:
+☐ Keep circular numbering consistent
+☐ Maintain color consistency (blue for inputs, purple for outputs)
+☐ Update related arrows if changing step order
+☐ Test that layout doesn't break on mobile
+
+WHEN CHANGING COLORS:
+☐ Update header gradient (background: linear-gradient...)
+☐ Update input sections (light blue)
+☐ Update output sections (light purple)
+☐ Ensure text color contrast meets accessibility standards
+
+═══════════════════════════════════════════════════════════════════════════════
+PRINTING & EXPORT
+═══════════════════════════════════════════════════════════════════════════════
+
+All diagrams support:
+- Browser print function (Ctrl+P / Cmd+P)
+- Print to PDF for reports
+- Screenshot capture
+- Export as image
+
+Recommended for reports:
+1. Open HTML in browser
+2. Use Print function
+3. Choose "Print to PDF"
+4. Select "More settings" → Margins: None, Background graphics: On
+5. Save as PDF
+
+═══════════════════════════════════════════════════════════════════════════════
+VERSION HISTORY & CHANGELOG
+═══════════════════════════════════════════════════════════════════════════════
+
+VERSION 1.0 (November 2025)
+- Initial creation of all 4 workflows
+- Denominator: Updated outputs to M5_coverage_estimation_[national/admin2/admin3].csv
+- DQA: Removed footer styling
+- Adjustment: No footer
+- Disruption: Updated to use admin_area_1-4 naming, fixed output files
+
+═══════════════════════════════════════════════════════════════════════════════
+KNOWN ISSUES & SOLUTIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+Issue 1: Footer still visible after CSS removal
+Solution: Check that footer { display: none; } or footer styling is completely removed
+         Clear browser cache (Ctrl+Shift+Delete)
+
+Issue 2: Layout broken on mobile
+Solution: Check @media (max-width: 768px) section in CSS
+         Ensure grid-template-columns collapses to 1 column
+
+Issue 3: Colors look different in different browsers
+Solution: Use hex color codes (#RRGGBB format) consistently
+         Test in Chrome, Firefox, Safari for rendering differences
+
+Issue 4: Arrows misaligned in flowchart
+Solution: Check line-height and margin-bottom in .arrow-connector
+         Ensure consistent spacing (15px or 20px throughout)
+
+═══════════════════════════════════════════════════════════════════════════════
+QUICK COPY-PASTE BLOCKS
+═══════════════════════════════════════════════════════════════════════════════
+
+NEW PROCESS STEP TEMPLATE:
+────────────────────────
+            <div class="step-box">
+                <div class="step-header">
+                    <div class="step-number-circle">6</div>
+                    <h4>New Step Title</h4>
+                </div>
+                <ul class="step-list">
+                    <li>Action 1</li>
+                    <li>Action 2</li>
+                </ul>
+            </div>
+
+            <div class="arrow-connector">↓</div>
+
+NEW OUTPUT ITEM TEMPLATE:
+────────────────────────
+                    <li>
+                        <span class="output-filename">M5_filename.csv</span>
+                        Description of what this output contains
+                    </li>
+
+NEW COLOR SCHEME (to apply globally):
+────────────────────────────────────
+Find and replace:
+  #1e3a5f → [new-primary-dark]
+  #2d5a8c → [new-primary-medium]
+  #7b1fa2 → [new-accent]
+  #bbdefb → [new-light-input]
+  #e1bee7 → [new-light-output]
+
+═══════════════════════════════════════════════════════════════════════════════
+CONTACT & SUPPORT
+═══════════════════════════════════════════════════════════════════════════════
+
+These diagrams are part of the FASTR (Frequent Assessments and System Tools 
+for Resilience) initiative for rapid-cycle analytics.
+
+For workflow-related questions:
+  Visit: https://data.gffportal.org/key-theme/FASTR
+
+For technical HTML/CSS questions:
+  - Check browser developer tools (F12)
+  - Inspect element to see applied styles
+  - Validate HTML at https://validator.w3.org/
+
+═══════════════════════════════════════════════════════════════════════════════
+
+END OF CODE REFERENCE DOCUMENT
+
+Save this file as: FASTR_WORKFLOW_MAINTENANCE_GUIDE.txt
+Location: Same folder as HTML workflow files
+Use for: Future reference, updates, and customization
+
+═══════════════════════════════════════════════════════════════════════════════
