@@ -523,8 +523,11 @@ $$
 $$
 
 Where:
+
 - $C_{d,t}$ = Coverage using denominator $d$ in year $t$
+
 - $S_t$ = Survey coverage in year $t$
+
 - Summation is across all years with survey data
 
 #### Adjustment Factor Cascading
