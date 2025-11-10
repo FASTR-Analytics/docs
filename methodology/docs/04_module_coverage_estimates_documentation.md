@@ -15,9 +15,13 @@ Together, these parts transform raw service counts into meaningful coverage esti
 Understanding coverage is essential for monitoring health system performance and equity. While Module 2 provides adjusted service volumes, these numbers alone don't tell us whether services are reaching their intended populations. Coverage estimates provide context by comparing service delivery to population need.
 
 This module addresses key challenges in coverage estimation:
+
 - **Multiple data sources**: Integrates HMIS data (continuous but may have quality issues) with survey data (high quality but infrequent)
+
 - **Denominator uncertainty**: Different methods for estimating target populations may yield different results; the module systematically evaluates options
+
 - **Temporal gaps**: Surveys occur every 3-5 years; the module projects estimates for intervening years using administrative trends
+
 - **Subnational analysis**: Enables coverage monitoring at national, provincial, and district levels
 
 ### Quick Summary
@@ -31,15 +35,23 @@ This module addresses key challenges in coverage estimation:
 ### Part 1 and Part 2 Explained
 
 **Part 1: Denominator Calculation and Selection**
+
 - Calculates target populations (denominators) using multiple approaches: HMIS-based (from ANC1, delivery, BCG, Penta1) and population-based (UN WPP)
+
 - Compares coverage estimates from each denominator against survey data
+
 - Automatically selects the "best" denominator for each indicator by minimizing error
+
 - Outputs: Denominator datasets and combined results showing all options
 
 **Part 2: Denominator Selection and Survey Projection**
+
 - Allows users to override automatic selections and choose specific denominators
+
 - Calculates year-over-year coverage trends from administrative data
+
 - Projects survey estimates forward using HMIS trends to fill temporal gaps
+
 - Outputs: Final coverage estimates combining HMIS, survey, and projected values
 
 ---
@@ -55,8 +67,11 @@ The module begins by loading three data sources and ensuring they're compatible.
 
 **Step 2: Calculate Multiple Denominator Options**
 For each health indicator, the module calculates several possible target populations:
+
 - **Service-based denominators**: Using HMIS volumes divided by survey coverage (e.g., if 10,000 women received ANC1 and survey says coverage is 80%, estimated pregnancies = 10,000/0.80 = 12,500)
+
 - **Population-based denominators**: Using UN population projections and birth rates
+
 - Each denominator is adjusted for demographic factors (pregnancy loss, stillbirths, mortality rates) to match the indicator's target age group
 
 **Step 3: Calculate Coverage for Each Denominator**
@@ -93,8 +108,11 @@ The module extends survey coverage estimates into years without surveys by apply
 
 **Step 6: Combine All Estimates**
 The final output merges three types of estimates:
+
 - **HMIS-based coverage**: Direct calculation from service volumes and selected denominators
+
 - **Original survey values**: Actual household survey observations
+
 - **Projected survey coverage**: Survey estimates extended using HMIS trends
 
 **Step 7: Save Final Outputs**
