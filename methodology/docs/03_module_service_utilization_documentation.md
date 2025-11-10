@@ -805,25 +805,25 @@ The FASTR analysis generates four main visual outputs for disruption analysis:
 
 Time series showing percentage change in service volumes over time, identifying periods of significant increases or decreases across indicators.
 
-![Change in service volume over time.](images/_Visualization_par_défaut_4._Change_in_service_volume.png)
+![Change in service volume over time.](images/Module3_1_Change_in_service_volume.png)
 
 **2. Actual vs Expected Services (National)**
 
 Line charts comparing actual service delivery to expected volumes at the national level, with disrupted periods highlighted.
 
-![Actual vs expected number of services at national level.](images/_Visualization_par_défaut_5._Actual_vs_expected_number_of_services_%28National%29_.png)
+![Actual vs expected number of services at national level.](images/Module3_2_Actual_vs_expected_national.png)
 
 **3. Actual vs Expected Services (Subnational)**
 
 Line charts comparing actual service delivery to expected volumes at admin area 2 level, enabling identification of geographic variation in disruptions.
 
-![Actual vs expected number of services at subnational level.](images/_Visualization_par_défaut_6._Actual_vs_expected_number_of_services_%28Admin_area_2%29_.png)
+![Actual vs expected number of services at subnational level.](images/Module3_3_Actual_vs_expected_subnational.png)
 
 **4. Volume Change Due to Data Quality Adjustments**
 
 Comparison showing the impact of data quality adjustments from Module 2 on disruption detection and volume estimates.
 
-![Volume change due to data quality adjustments.](images/_Visualization_par_défaut_7._Volume_change_due_to_data_quality_adjustments_.png)
+![Volume change due to data quality adjustments.](images/Module3_4_Volume_change_adjustments.png)
 
 **Interpretation Guide:**
 - **Disrupted periods**: Indicated by shaded regions or highlighting where actual volumes deviate significantly from expected
