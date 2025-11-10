@@ -1,5 +1,5 @@
-site_name: FASTR Methodology
-site_description: Documentation for the Background chapter and four FASTR modules.
+site_name: FASTR RMNCAH-N Service Use Monitoring
+site_description: Methodology documentation for RMNCAH-N service use monitoring using routine HMIS data.
 site_url: https://FASTR-Analytics.github.io/docs/
 docs_dir: docs
 repo_url: https://github.com/FASTR-Analytics/docs
