@@ -811,13 +811,13 @@ Time series showing percentage change in service volumes over time, identifying 
 
 Line charts comparing actual service delivery to expected volumes at the national level, with disrupted periods highlighted.
 
-![Actual vs expected number of services at national level.](images/_Visualization_par_défaut_5._Actual_vs_expected_number_of_services_(National)_.png)
+![Actual vs expected number of services at national level.](images/_Visualization_par_défaut_5._Actual_vs_expected_number_of_services_%28National%29_.png)
 
 **3. Actual vs Expected Services (Subnational)**
 
 Line charts comparing actual service delivery to expected volumes at admin area 2 level, enabling identification of geographic variation in disruptions.
 
-![Actual vs expected number of services at subnational level.](images/_Visualization_par_défaut_6._Actual_vs_expected_number_of_services_(Admin_area_2)_.png)
+![Actual vs expected number of services at subnational level.](images/_Visualization_par_défaut_6._Actual_vs_expected_number_of_services_%28Admin_area_2%29_.png)
 
 **4. Volume Change Due to Data Quality Adjustments**
 
