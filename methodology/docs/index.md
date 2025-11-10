@@ -1,3 +1,7 @@
+<div style="text-align: center; margin-bottom: 2em;">
+  <img src="images/FASTR_Primary_01_FullName.png" alt="FASTR Logo" style="max-width: 600px; width: 100%;">
+</div>
+
 # FASTR Methodology Documentation
 
 ## Introduction to FASTR
