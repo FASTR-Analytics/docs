@@ -243,23 +243,13 @@ Each health indicator targets a specific population (e.g., pregnant women for AN
 
 ### What Happens to the Data
 
-The transformation flow:
+**Input Integration**: The module combines three distinct data sources: facility-level service volumes from HMIS (aggregated annually by geographic area), household survey coverage estimates (harmonized across different survey years and forward-filled to create continuous time series), and population projections (filtered to extract age-specific target populations for each health indicator).
 
-**Input:** Monthly service counts by facility → **Aggregate** → Annual service volumes by area
+**Denominator Construction**: Using the relationship between HMIS service volumes and survey-based coverage estimates, the module calculates HMIS-implied denominators that represent the population that would need to exist for the observed service volumes to match survey coverage rates. These denominators are adjusted for indicator-specific target populations through sequential demographic corrections accounting for pregnancy loss, stillbirths, and mortality.
 
-**Input:** Survey observations (scattered years) → **Harmonize & forward-fill** → Continuous coverage time series
+**Coverage Calculation**: The module calculates multiple coverage estimates by dividing service volumes by different denominator options (population-based, HMIS-implied, hybrid approaches). Each coverage estimate is then compared against survey benchmarks to identify which denominator produces the most plausible results for each indicator, balancing between HMIS data quality and population estimate accuracy.
 
-**Input:** Population projections → **Filter & extract** → Target population estimates
-
-**Combine:** Service volumes ÷ Survey coverage → **Calculate** → HMIS-based denominators
-
-**Combine:** Service volumes ÷ Each denominator → **Calculate** → Multiple coverage estimates
-
-**Compare:** Coverage estimates vs. Survey benchmarks → **Select** → Best denominator per indicator
-
-**Project:** Last survey + HMIS trends → **Extend** → Coverage estimates for all years
-
-**Output:** Comprehensive dataset with HMIS coverage, survey values, projections, and metadata
+**Temporal Projection**: For years beyond the most recent survey, the module projects coverage estimates forward by combining the last observed survey value with HMIS-based trends. This produces complete coverage time series that leverage both the validity of survey data and the timeliness of routine HMIS reporting, with all estimates accompanied by metadata indicating data source and projection methodology.
 
 ---
 
