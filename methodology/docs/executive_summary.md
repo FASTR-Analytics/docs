@@ -8,6 +8,8 @@ This document describes a four-module analytical approach for monitoring reprodu
 
 Health management information systems in low- and middle-income countries generate routine facility-level service delivery data on a monthly basis. However, these data are frequently affected by reporting incompleteness, statistical outliers, and internal inconsistencies that limit their analytical utility. Traditional household surveys (DHS, MICS) provide validated coverage estimates but are conducted infrequently (typically every 3-5 years), creating gaps in the availability of timely data for monitoring service delivery trends, detecting disruptions, and tracking progress toward health system goals.
 
+This methodology addresses these constraints through a four-module analytical pipeline that systematically assesses and adjusts for data quality issues in routine HMIS data, then combines adjusted facility-level data with periodic survey benchmarks to generate continuous time series of coverage estimates at subnational geographic levels.
+
 ## Analytical Approach
 
 ### Module 1: Data Quality Assessment
