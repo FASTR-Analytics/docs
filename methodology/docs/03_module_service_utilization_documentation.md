@@ -57,67 +57,7 @@ The module operates in two sequential stages, each with a distinct purpose:
 
 ### Visual Workflow Diagram
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                      STAGE 1: CONTROL CHART ANALYSIS                    │
-│                     (Identifies WHEN disruptions occur)                 │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│  Load Data → Remove Outliers → Aggregate by Geography                   │
-│       │                                                                 │
-│       ▼                                                                 │
-│  Fill Missing Months → Filter Low-Volume Periods                        │
-│       │                                                                 │
-│       ▼                                                                 │
-│  For each indicator × geographic area:                                  │
-│   ┌──────────────────────────────────────────────────────────┐          │
-│   │ 1. Fit robust model: count ~ seasonality + time trend    │          │
-│   │ 2. Smooth predictions to reduce noise                    │          │
-│   │ 3. Calculate how far actual values deviate from expected │          │
-│   │ 4. Apply detection rules (sharp, sustained, missing)     │          │
-│   │ 5. Flag disrupted months                                 │          │
-│   └──────────────────────────────────────────────────────────┘          │
-│       │                                                                 │
-│       ▼                                                                 │
-│  OUTPUT: M3_chartout.csv (disruption flags by month/area/indicator)     │
-│                                                                         │
-└────────────────────┬────────────────────────────────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                     STAGE 2: DISRUPTION ANALYSIS                        │
-│                    (Quantifies HOW MUCH impact occurred)                │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│  Join disruption flags to facility-level data                           │
-│       │                                                                 │
-│       ▼                                                                 │
-│  Run panel regressions at multiple levels:                              │
-│   ┌──────────────────────────────────────────────────────────┐          │
-│   │ National Level: Overall country impact                   │          │
-│   │ Province Level: Regional variation in impacts            │          │
-│   │ District Level: Local hotspots (optional)                │          │
-│   │ Ward Level: Finest geographic detail (optional)          │          │
-│   │                                                          │          │
-│   │ Each model estimates:                                    │          │
-│   │  • Expected service volume (adjusting for trends)        │          │
-│   │  • Effect of disruption periods                          │          │
-│   │  • Statistical significance                              │          │
-│   └──────────────────────────────────────────────────────────┘          │
-│       │                                                                 │
-│       ▼                                                                 │
-│  Calculate shortfalls and surpluses:                                    │
-│   • Absolute difference (number of services)                            │
-│   • Percentage difference (% change from expected)                      │
-│       │                                                                 │
-│       ▼                                                                 │
-│  OUTPUTS:                                                               │
-│   • M3_disruptions_analysis_*.csv (4 geographic levels)                 │
-│   • M3_all_indicators_shortfalls_*.csv (summary statistics)             │
-│   • M3_service_utilization.csv (data for visualization)                 │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+<iframe src="../images/mod3_workflow.html" width="100%" height="800" style="border: 1px solid #ccc; border-radius: 4px;" title="Module 3 Interactive Workflow"></iframe>
 
 ### Key Decision Points
 

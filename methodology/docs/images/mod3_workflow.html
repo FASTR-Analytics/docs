@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FASTR Disruption Detection and Analysis Workflow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a8c 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        header p {
+            font-size: 14px;
+            opacity: 0.95;
+            letter-spacing: 0.5px;
+        }
+
+        .workflow {
+            padding: 40px;
+        }
+
+        .stage-section {
+            margin-bottom: 40px;
+        }
+
+        .stage-header {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 5px solid #1e3a5f;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+
+        .stage-header h2 {
+            color: #1e3a5f;
+            font-size: 18px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .stage-header p {
+            color: #0d47a1;
+            font-size: 13px;
+        }
+
+        .flow-box {
+            background: #fafbfc;
+            border: 2px solid #4a7ba7;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .flow-box h4 {
+            color: #1e3a5f;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .flow-box p {
+            color: #555;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .arrow-connector {
+            text-align: center;
+            color: #2d5a8c;
+            font-size: 24px;
+            margin: 15px 0;
+            font-weight: 300;
+        }
+
+        .process-box {
+            background: white;
+            border: 2px solid #7b1fa2;
+            border-radius: 6px;
+            padding: 25px;
+            margin: 15px 0;
+        }
+
+        .process-box h4 {
+            color: #4a148c;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .process-list {
+            list-style: none;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .process-list li {
+            color: #555;
+            margin-bottom: 10px;
+            padding-left: 18px;
+            position: relative;
+        }
+
+        .process-list li:before {
+            content: "•";
+            color: #7b1fa2;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .regression-box {
+            background: #f5e6ff;
+            border: 2px solid #7b1fa2;
+            border-radius: 6px;
+            padding: 25px;
+            margin: 15px 0;
+        }
+
+        .regression-box h5 {
+            color: #4a148c;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .regression-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .regression-item {
+            background: white;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 3px solid #7b1fa2;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .regression-estimates {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .calculation-box {
+            background: white;
+            border: 2px solid #2d5a8c;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .calculation-box h5 {
+            color: #1e3a5f;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .calculation-list {
+            list-style: none;
+            font-size: 13px;
+        }
+
+        .calculation-list li {
+            color: #555;
+            margin-bottom: 8px;
+            padding-left: 18px;
+            position: relative;
+        }
+
+        .calculation-list li:before {
+            content: "•";
+            color: #2d5a8c;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .output-section {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border: 3px solid #7b1fa2;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 15px;
+        }
+
+        .output-section h4 {
+            color: #4a148c;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .output-list {
+            list-style: none;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .output-list li {
+            background: white;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 4px solid #7b1fa2;
+            color: #555;
+        }
+
+        .output-list li:before {
+            content: "✓";
+            color: #7b1fa2;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .output-filename {
+            font-family: 'Courier New', monospace;
+            color: #4a148c;
+            font-weight: 600;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(to right, transparent, #ccc, transparent);
+            margin: 35px 0;
+        }
+
+        @media (max-width: 768px) {
+            .workflow {
+                padding: 20px;
+            }
+
+            .regression-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Disruption Detection and Analysis</h1>
+            <p>Identifying when service disruptions occur and quantifying their impact</p>
+        </header>
+
+        <div class="workflow">
+            <!-- STAGE 1 -->
+            <div class="stage-section">
+                <div class="stage-header">
+                    <h2>STAGE 1: Control Chart Analysis</h2>
+                    <p>Identifies WHEN disruptions occur across service indicators</p>
+                </div>
+
+                <div class="flow-box">
+                    <h4>Data Preparation Pipeline</h4>
+                    <p>Load Data → Remove Outliers → Aggregate by Geography → Fill Missing Months → Filter Low-Volume Periods</p>
+                </div>
+
+                <div class="arrow-connector">↓</div>
+
+                <div class="process-box">
+                    <h4>Control Chart Analysis for Each Indicator × Geographic Area</h4>
+                    <ul class="process-list">
+                        <li>Fit robust model: count ~ seasonality + time trend</li>
+                        <li>Smooth predictions to reduce noise and variability</li>
+                        <li>Calculate deviation of actual values from expected predictions</li>
+                        <li>Apply detection rules: sharp drops, sustained declines, missing reports</li>
+                        <li>Flag disrupted months for each indicator-area combination</li>
+                    </ul>
+                </div>
+
+                <div class="arrow-connector">↓</div>
+
+                <div class="output-section">
+                    <h4>Stage 1 Output</h4>
+                    <ul class="output-list">
+                        <li><span class="output-filename">M3_chartout.csv</span> — Disruption flags by month, geographic area, and indicator</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- STAGE 2 -->
+            <div class="stage-section">
+                <div class="stage-header">
+                    <h2>STAGE 2: Disruption Analysis</h2>
+                    <p>Quantifies HOW MUCH impact occurred during disrupted periods</p>
+                </div>
+
+                <div class="flow-box">
+                    <h4>Data Integration</h4>
+                    <p>Join disruption flags from Stage 1 to facility-level data for detailed impact analysis</p>
+                </div>
+
+                <div class="arrow-connector">↓</div>
+
+                <div class="regression-box">
+                    <h5>Panel Regressions at Multiple Geographic Levels</h5>
+                    <div class="regression-grid">
+                        <div class="regression-item">
+                            <strong>Admin Area Level 1:</strong> National impact
+                        </div>
+                        <div class="regression-item">
+                            <strong>Admin Area Level 2:</strong> Regional impacts
+                        </div>
+                        <div class="regression-item">
+                            <strong>Admin Area Level 3:</strong> Local impacts
+                        </div>
+                        <div class="regression-item">
+                            <strong>Admin Area Level 4:</strong> Detailed geographic analysis
+                        </div>
+                    </div>
+                    <div class="regression-estimates">
+                        <strong>Each model at each admin level estimates:</strong>
+                        <ul style="list-style: none; margin-top: 10px;">
+                            <li style="margin-bottom: 6px;">• Expected service volume (adjusting for existing trends)</li>
+                            <li style="margin-bottom: 6px;">• Effect of disruption periods on service delivery</li>
+                            <li>• Statistical significance of impacts</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="arrow-connector">↓</div>
+
+                <div class="calculation-box">
+                    <h5>Calculate Shortfalls and Surpluses</h5>
+                    <ul class="calculation-list">
+                        <li>Absolute difference: Number of services lost/gained</li>
+                        <li>Percentage difference: Percent change from expected volume</li>
+                        <li>Confidence intervals for impact estimates</li>
+                    </ul>
+                </div>
+
+                <div class="arrow-connector">↓</div>
+
+                <div class="output-section">
+                    <h4>Stage 2 Outputs</h4>
+                    <ul class="output-list">
+                        <li><span class="output-filename">M3_disruptions_analysis_admin_area_1.csv</span> — Admin area level 1 (national) impact estimates</li>
+                        <li><span class="output-filename">M3_disruptions_analysis_admin_area_2.csv</span> — Admin area level 2 impact estimates</li>
+                        <li><span class="output-filename">M3_disruptions_analysis_admin_area_3.csv</span> — Admin area level 3 impact estimates</li>
+                        <li><span class="output-filename">M3_disruptions_analysis_admin_area_4.csv</span> — Admin area level 4 impact estimates</li>
+                        <li><span class="output-filename">M3_all_indicators_shortfalls_admin_area_1.csv</span> — Summary statistics (admin area level 1)</li>
+                        <li><span class="output-filename">M3_all_indicators_shortfalls_admin_area_2.csv</span> — Summary statistics (admin area level 2)</li>
+                        <li><span class="output-filename">M3_all_indicators_shortfalls_admin_area_3.csv</span> — Summary statistics (admin area level 3)</li>
+                        <li><span class="output-filename">M3_all_indicators_shortfalls_admin_area_4.csv</span> — Summary statistics (admin area level 4)</li>
+                        <li><span class="output-filename">M3_service_utilization.csv</span> — Data formatted for visualization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

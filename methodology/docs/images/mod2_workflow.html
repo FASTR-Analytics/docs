@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FASTR HMIS Data Adjustment Workflow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a8c 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        header p {
+            font-size: 14px;
+            opacity: 0.95;
+            letter-spacing: 0.5px;
+        }
+
+        .workflow {
+            padding: 40px;
+        }
+
+        .input-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 3px solid #1e3a5f;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .input-section h3 {
+            color: #1e3a5f;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .input-item {
+            background: white;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 4px solid #0d47a1;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .input-item strong {
+            display: block;
+            color: #1e3a5f;
+            margin-bottom: 4px;
+            font-size: 12px;
+        }
+
+        .arrow-connector {
+            text-align: center;
+            color: #2d5a8c;
+            font-size: 28px;
+            margin: 20px 0;
+            font-weight: 300;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step-box {
+            background: #fafbfc;
+            border: 2px solid #4a7ba7;
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .step-number-circle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #2d5a8c;
+            color: white;
+            border-radius: 50%;
+            font-weight: 600;
+            font-size: 16px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-header h4 {
+            color: #1e3a5f;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .step-list {
+            list-style: none;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .step-list li {
+            color: #555;
+            margin-bottom: 8px;
+            padding-left: 18px;
+            position: relative;
+        }
+
+        .step-list li:before {
+            content: "•";
+            color: #2d5a8c;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .hierarchy-box {
+            background: #fafbfc;
+            border: 2px solid #4a7ba7;
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .hierarchy-box h4 {
+            color: #1e3a5f;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .hierarchy-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .hierarchy-column h5 {
+            color: #2d5a8c;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .hierarchy-list {
+            list-style: none;
+            font-size: 13px;
+        }
+
+        .hierarchy-list li {
+            background: white;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-left: 4px solid #2d5a8c;
+            border-radius: 3px;
+            color: #555;
+        }
+
+        .hierarchy-list li:before {
+            content: attr(data-number);
+            display: inline-block;
+            background: #2d5a8c;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 22px;
+            font-weight: 600;
+            font-size: 11px;
+            margin-right: 8px;
+        }
+
+        .scenarios-box {
+            background: #fafbfc;
+            border: 2px solid #4a7ba7;
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .scenarios-box h4 {
+            color: #1e3a5f;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .scenario-item {
+            background: white;
+            border: 2px solid #b39ddb;
+            border-radius: 6px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .scenario-item.large {
+            grid-column: 1 / -1;
+        }
+
+        .scenario-label {
+            color: #4a148c;
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .scenario-description {
+            color: #666;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .aggregation-box {
+            background: #fafbfc;
+            border: 2px solid #4a7ba7;
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .aggregation-box h4 {
+            color: #1e3a5f;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .aggregation-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .aggregation-level {
+            background: white;
+            border: 2px solid #2d5a8c;
+            border-radius: 6px;
+            padding: 15px 20px;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .aggregation-level-title {
+            color: #2d5a8c;
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .aggregation-level-desc {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .aggregation-arrow {
+            color: #2d5a8c;
+            font-size: 24px;
+            font-weight: 300;
+        }
+
+        .aggregation-note {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #2e7d32;
+            margin-top: 15px;
+        }
+
+        .output-section {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border: 3px solid #7b1fa2;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .output-section h3 {
+            color: #4a148c;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .output-list {
+            list-style: none;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .output-list li {
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #7b1fa2;
+            color: #555;
+        }
+
+        .output-list li:before {
+            content: "✓";
+            color: #7b1fa2;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .output-filename {
+            font-family: 'Courier New', monospace;
+            color: #4a148c;
+            font-weight: 600;
+        }
+
+        footer {
+            background: #f0f4f8;
+            padding: 20px 40px;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .workflow {
+                padding: 20px;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hierarchy-columns {
+                grid-template-columns: 1fr;
+            }
+
+            .scenario-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .aggregation-flow {
+                flex-direction: column;
+            }
+
+            .aggregation-arrow {
+                transform: rotate(90deg);
+            }
+
+            header h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>HMIS Data Adjustment and Scenario Creation</h1>
+            <p>Handling outliers and incompleteness through multi-scenario analysis</p>
+        </header>
+
+        <div class="workflow">
+            <!-- Input Section -->
+            <div class="input-section">
+                <h3>INPUTS</h3>
+                <div class="input-grid">
+                    <div class="input-item">
+                        <strong>Raw HMIS Data</strong>
+                        Service volumes by facility, indicator, month
+                    </div>
+                    <div class="input-item">
+                        <strong>Outlier Flags</strong>
+                        From Module 1 (DQA)
+                    </div>
+                    <div class="input-item">
+                        <strong>Completeness Flags</strong>
+                        From Module 1 (DQA)
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-connector">↓</div>
+
+            <!-- Step 1: Data Preparation -->
+            <div class="step-box">
+                <div class="step-header">
+                    <div class="step-number-circle">1</div>
+                    <h4>Data Preparation</h4>
+                </div>
+                <ul class="step-list">
+                    <li>Merge datasets by facility, indicator, and month</li>
+                    <li>Identify excluded indicators (e.g., deaths)</li>
+                    <li>Check for low-volume indicators requiring filtering</li>
+                    <li>Validate facility-indicator combinations</li>
+                </ul>
+            </div>
+
+            <div class="arrow-connector">↓</div>
+
+            <!-- Step 2: Rolling Averages -->
+            <div class="step-box">
+                <div class="step-header">
+                    <div class="step-number-circle">2</div>
+                    <h4>Calculate Rolling Averages</h4>
+                </div>
+                <ul class="step-list">
+                    <li>Centered 6-month average (3 months before + 3 months after)</li>
+                    <li>Forward 6-month average (next 6 months)</li>
+                    <li>Backward 6-month average (previous 6 months)</li>
+                    <li>Facility-specific historical mean (across all available data)</li>
+                </ul>
+            </div>
+
+            <div class="arrow-connector">↓</div>
+
+            <!-- Step 3: Adjustment Hierarchy -->
+            <div class="hierarchy-box">
+                <h4>Apply Adjustment Hierarchy</h4>
+                <div class="hierarchy-columns">
+                    <div>
+                        <h5>For Outliers</h5>
+                        <ul class="hierarchy-list">
+                            <li data-number="1">Use centered average</li>
+                            <li data-number="2">Use forward average</li>
+                            <li data-number="3">Use backward average</li>
+                            <li data-number="4">Use same month last year</li>
+                            <li data-number="5">Use historical mean</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5>For Missing/Incomplete</h5>
+                        <ul class="hierarchy-list">
+                            <li data-number="1">Use centered average</li>
+                            <li data-number="2">Use forward average</li>
+                            <li data-number="3">Use backward average</li>
+                            <li data-number="4">Use historical mean</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-connector">↓</div>
+
+            <!-- Step 4: Scenarios -->
+            <div class="scenarios-box">
+                <h4>Create Four Scenarios</h4>
+                <div class="scenario-grid">
+                    <div class="scenario-item">
+                        <span class="scenario-label">Scenario 1: None</span>
+                        <span class="scenario-description">Original data (no adjustments)</span>
+                    </div>
+                    <div class="scenario-item">
+                        <span class="scenario-label">Scenario 2: Outliers Only</span>
+                        <span class="scenario-description">Adjust flagged outliers only</span>
+                    </div>
+                    <div class="scenario-item">
+                        <span class="scenario-label">Scenario 3: Completeness Only</span>
+                        <span class="scenario-description">Adjust missing/incomplete data only</span>
+                    </div>
+                    <div class="scenario-item large">
+                        <span class="scenario-label">Scenario 4: Both Adjustments</span>
+                        <span class="scenario-description">Apply both outlier and completeness adjustments</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-connector">↓</div>
+
+            <!-- Step 5: Geographic Aggregation -->
+            <div class="aggregation-box">
+                <h4>Geographic Aggregation</h4>
+                <div class="aggregation-flow">
+                    <div class="aggregation-level">
+                        <div class="aggregation-level-title">Facility Level</div>
+                        <div class="aggregation-level-desc">Individual facilities</div>
+                    </div>
+                    <div class="aggregation-arrow">→</div>
+                    <div class="aggregation-level">
+                        <div class="aggregation-level-title">Subnational Level</div>
+                        <div class="aggregation-level-desc">Provinces, districts</div>
+                    </div>
+                    <div class="aggregation-arrow">→</div>
+                    <div class="aggregation-level">
+                        <div class="aggregation-level-title">National Level</div>
+                        <div class="aggregation-level-desc">Country total</div>
+                    </div>
+                </div>
+                <div class="aggregation-note">
+                    Each geographic level maintains all 4 scenarios
+                </div>
+            </div>
+
+            <div class="arrow-connector">↓</div>
+
+            <!-- Output Section -->
+            <div class="output-section">
+                <h3>OUTPUTS</h3>
+                <ul class="output-list">
+                    <li>
+                        <span class="output-filename">M2_adjusted_data.csv</span>
+                        Facility-level data with all 4 scenarios
+                    </li>
+                    <li>
+                        <span class="output-filename">M2_adjusted_data_admin_area.csv</span>
+                        Subnational aggregated data with all 4 scenarios
+                    </li>
+                    <li>
+                        <span class="output-filename">M2_adjusted_data_national.csv</span>
+                        National-level aggregated data with all 4 scenarios
+                    </li>
+                    <li>
+                        <span class="output-filename">M2_low_volume_exclusions.csv</span>
+                        Metadata on excluded indicators and facilities
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+    </div>
+</body>
+</html>
