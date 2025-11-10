@@ -662,9 +662,13 @@ admin_area_1, [admin_area_2/3], year, denominator, source_indicator, target_popu
 ```
 
 **Fields**:
+
 - `denominator`: Full denominator name (e.g., `danc1_livebirth`)
+
 - `source_indicator`: Service used (e.g., `source_anc1`, `source_wpp`)
+
 - `target_population`: Target group (e.g., `target_livebirth`, `target_dpt`)
+
 - `value`: Calculated denominator size
 
 #### Combined Results Files
@@ -682,8 +686,11 @@ admin_area_1, [admin_area_2/3], year, indicator_common_id, denominator_best_or_s
 ```
 
 **Fields**:
+
 - `indicator_common_id`: Health indicator (e.g., `anc1`, `penta3`)
+
 - `denominator_best_or_survey`: Either `best`, `survey`, or specific denominator name
+
 - `value`: Coverage percentage (0-100+)
 
 **Special "best" Entry**: Duplicates the selected optimal denominator for easy filtering
