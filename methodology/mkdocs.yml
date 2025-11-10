@@ -8,7 +8,6 @@ repo_name: FASTR-Analytics/docs
 # Navigation
 nav:
   - Overview: index.md
-  - Background: 00_background_documentation.md
   - Module 1 · Data Quality Assessment: 01_module_data_quality_assessment_documentation.md
   - Module 2 · Data Quality Adjustments: 02_module_data_quality_adjustments_documentation.md
   - Module 3 · Service Utilization: 03_module_service_utilization_documentation.md

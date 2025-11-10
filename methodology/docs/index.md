@@ -42,7 +42,6 @@ Illustrative capacity-building activities include support to automate the extrac
 
 This documentation provides comprehensive guidance for each FASTR module:
 
-- [**Background**](00_background_documentation.md) - Overview and context for FASTR methodology
 - [**Module 1 · Data Quality Assessment**](01_module_data_quality_assessment_documentation.md) - Methods for assessing HMIS data quality
 - [**Module 2 · Data Quality Adjustments**](02_module_data_quality_adjustments_documentation.md) - Techniques for improving data accuracy
 - [**Module 3 · Service Utilization**](03_module_service_utilization_documentation.md) - Analysis of health service usage patterns
