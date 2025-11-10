@@ -13,6 +13,7 @@ nav:
   - Module 2 · Data Quality Adjustments: 02_module_data_quality_adjustments_documentation.md
   - Module 3 · Service Utilization: 03_module_service_utilization_documentation.md
   - Module 4 · Coverage Estimates: 04_module_coverage_estimates_documentation.md
+  - Disclaimer: disclaimer.md
 
 # Theme Configuration
 theme:
