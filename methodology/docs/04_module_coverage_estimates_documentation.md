@@ -6,7 +6,11 @@
 
 This module estimates health service coverage by integrating three key data sources: adjusted health service volumes from HMIS (Module 2), population projections from the United Nations, and household survey data from MICS/DHS. It answers the fundamental question: "What percentage of the target population received this health service?"
 
-The module operates in two distinct parts. **Part 1** calculates target population sizes (denominators) using multiple methods and automatically selects the best option for each health indicator by comparing results against survey benchmarks. **Part 2** allows users to refine these selections, choose specific denominators based on programmatic knowledge, and project survey estimates forward in time using administrative data trends to fill gaps where surveys are unavailable.
+The module operates in two distinct parts.
+
+**Part 1** calculates target population sizes (denominators) using multiple methods and automatically selects the best option for each health indicator by comparing results against survey benchmarks.
+
+**Part 2** allows users to refine these selections, choose specific denominators based on programmatic knowledge, and project survey estimates forward in time using administrative data trends to fill gaps where surveys are unavailable.
 
 Together, these parts transform raw service counts into meaningful coverage estimates that can be analyzed for trends, compared across regions, and used for policy decisions.
 
