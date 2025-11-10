@@ -869,45 +869,54 @@ The script automatically checks data availability and disables admin levels with
 
 #### Core Functions and Methods
 
-??? "coverage_deltas(coverage_df, lag_n = 1, complete_years = TRUE)"
+#### Function 1: `coverage_deltas()`
 
-**Purpose**  
+**Purpose**:
+
 Calculates year-over-year changes in coverage for each indicator-denominator-geography combination.
 
-**Process**  
-1. Groups data by geography (admin areas), indicator, and denominator  
-2. Optionally fills in missing years to create a complete time series  
-3. Sorts data chronologically within each group  
-4. Calculates delta as: Δcoverage_t = coverage_t - coverage_{t-1}
+**Algorithm**:
 
-**Mathematical Formulation**  
-ΔC_{i,d,g,t} = C_{i,d,g,t} - C_{i,d,g,t-1}  
+```r
+coverage_deltas <- function(coverage_df, lag_n = 1, complete_years = TRUE)
+```
 
-where:  
-- C = coverage estimate  
-- i = indicator  
-- d = denominator  
-- g = geographic area  
-- t = time (year)  
+**Process**:
 
-**Input**  
-- coverage_df: Data frame with coverage estimates  
-- lag_n: Number of years to lag (default = 1 for year-over-year)  
-- complete_years: Whether to fill missing years (default = TRUE)  
+1. Groups data by geography (admin areas), indicator, and denominator
+2. Optionally fills in missing years to create a complete time series
+3. Sorts data chronologically within each group
+4. Calculates delta as: $\Delta\text{coverage}_t = \text{coverage}_t - \text{coverage}_{t-1}$
 
-**Output**  
-Data frame with original coverage values plus a delta column showing year-over-year change.
+**Mathematical Formulation**:
+$$
+\Delta C_{i,d,g,t} = C_{i,d,g,t} - C_{i,d,g,t-1}
+$$
 
-**Example Output**
+where:
+- $C$ = coverage estimate
+- $i$ = indicator
+- $d$ = denominator
+- $g$ = geographic area
+- $t$ = time (year)
+
+**Input**:
+
+- `coverage_df`: Data frame with coverage estimates
+- `lag_n`: Number of years to lag (default = 1 for year-over-year)
+- `complete_years`: Whether to fill missing years (default = TRUE)
+
+**Output**:
+
+Data frame with original coverage values plus a `delta` column showing year-over-year change.
+
+**Example Output**:
 
 | admin_area_1 | indicator_common_id | denominator | year | coverage | delta |
 |--------------|---------------------|-------------|------|----------|-------|
 | Country A | penta3 | dpenta1_dpt | 2018 | 75.2 | NA |
 | Country A | penta3 | dpenta1_dpt | 2019 | 78.5 | 3.3 |
 | Country A | penta3 | dpenta1_dpt | 2020 | 80.1 | 1.6 |
-
----
-
 
 #### Function 2: `project_survey_from_deltas()`
 
