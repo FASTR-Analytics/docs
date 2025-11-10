@@ -254,7 +254,7 @@ The Demographic and Health Surveys (DHS), conducted by USAID, provide survey dat
 
 #### Core Functions Documentation
 
-??? "Function 1: `process_hmis_adjusted_volume()`"
+??? "`process_hmis_adjusted_volume()`"
 
     **Purpose**: Prepares HMIS data for denominator calculation
 
@@ -283,7 +283,7 @@ The Demographic and Health Surveys (DHS), conducted by USAID, provide survey dat
     Country_Name  Province_A    2021  13000      10500          ...  11
     ```
 
-??? "Function 2: `process_survey_data()`"
+??? "`process_survey_data()`"
 
     **Purpose**: Harmonizes and extends survey data for use as coverage benchmarks
 
@@ -321,7 +321,7 @@ The Demographic and Health Surveys (DHS), conducted by USAID, provide survey dat
     - `raw`: Raw survey observations (wide format)
     - `raw_long`: Raw survey observations (long format) with source details
 
-??? "Function 3: `process_national_population_data()`"
+??? "`process_national_population_data()`"
 
     **Purpose**: Prepares UN WPP population estimates for denominator calculation
 
@@ -343,7 +343,7 @@ The Demographic and Health Surveys (DHS), conducted by USAID, provide survey dat
     - `wide`: Population indicators in wide format
     - `raw_long`: Population data in long format with source tracking
 
-??? "Function 4: `calculate_denominators()`"
+??? "`calculate_denominators()`"
 
     **Purpose**: Calculates all possible denominators from HMIS and population data. This is the core function that generates multiple denominator estimates.
 
@@ -408,7 +408,7 @@ The Demographic and Health Surveys (DHS), conducted by USAID, provide survey dat
 
     Data frame with all calculated denominators plus original HMIS and survey data
 
-??? "Function 5: `classify_source_type()`"
+??? "`classify_source_type()`"
 
     **Purpose**: Categorizes denominators to prevent circular references
 
@@ -422,7 +422,7 @@ The Demographic and Health Surveys (DHS), conducted by USAID, provide survey dat
 
     This classification ensures that when selecting "best" denominators, we avoid using reference-based denominators (which would artificially show 100% coverage equal to the survey value).
 
-??? "Function 6: `compare_coverage_to_survey()`"
+??? "`compare_coverage_to_survey()`"
 
     **Purpose**: Selects the best-performing denominator for each indicator
 
@@ -468,7 +468,7 @@ The Demographic and Health Surveys (DHS), conducted by USAID, provide survey dat
     - Ensures HMIS data drives coverage when available
     - UNWPP used only when no HMIS-based options exist
 
-??? "Function 7: `create_combined_results_table()`"
+??? "`create_combined_results_table()`"
 
     **Purpose**: Merges coverage estimates and survey observations into unified output
 
