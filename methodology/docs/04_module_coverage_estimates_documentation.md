@@ -548,16 +548,6 @@ Each adjustment reduces the denominator to reflect population losses at differen
 
 #### HMIS-based Denominator Calculations
 
-**General Formula:**
-
-$$
-\text{Denominator} = \frac{\text{Service volume} \times 100}{\text{Survey-based coverage}}
-$$
-
-Where survey-based coverage is expressed as a percentage (0-100).
-
----
-
 **Denominators Derived from ANC1**
 
 Starting from ANC1 service counts and survey coverage, we calculate:
@@ -789,6 +779,39 @@ d_{\text{adjusted}} = d_{\text{wpp}} \times \frac{\text{months reported}}{12}
 $$
 
 This adjustment ensures denominators are comparable to service volumes that may only represent partial-year reporting.
+
+---
+
+**Denominators Derived from Live Birth Estimates (Secondary Calculations)**
+
+After all primary live birth denominators are calculated (from ANC1, Delivery, BCG, Penta1, Live Birth Counts, and WPP), the module generates additional denominators for specific interventions by applying age-specific mortality adjustments:
+
+**Vitamin A Supplementation**
+
+For each live birth denominator source, a corresponding Vitamin A denominator is calculated:
+
+$$
+d_{\text{source-vitaminA}} = d_{\text{source-livebirth}} \times (1 - \text{under-5 mortality rate}) \times 4.5
+$$
+
+Where:
+- `source` represents any of: anc1, delivery, bcg, penta1, livebirths, or wpp
+- The factor **4.5** represents the approximate age range for Vitamin A supplementation (6-59 months ≈ 4.5 years)
+- Under-5 mortality rate accounts for child survival to the supplementation age range
+
+**Fully Immunized Child (FIC)**
+
+For each live birth denominator source, a corresponding FIC denominator is calculated:
+
+$$
+d_{\text{source-fully-immunized}} = d_{\text{source-livebirth}} \times (1 - \text{infant mortality rate})
+$$
+
+Where:
+- `source` represents any of: anc1, delivery, bcg, penta1, livebirths, or wpp
+- Infant mortality rate adjusts for survival to the age when full immunization status is assessed (typically 12 months)
+
+These secondary denominators are calculated automatically for **all available live birth denominators**, ensuring consistent methodology across different source indicators.
 
 #### Output Files Specification
 
