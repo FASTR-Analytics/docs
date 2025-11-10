@@ -721,24 +721,39 @@ Part 1 includes multiple validation checks:
 Part 1 processes the following health indicators:
 
 **Maternal Health**:
+
 - `anc1`: Antenatal care 1st visit
+
 - `anc4`: Antenatal care 4+ visits
+
 - `delivery`: Institutional delivery
+
 - `sba`: Skilled birth attendance
+
 - `pnc1`: Postnatal care (child)
+
 - `pnc1_mother`: Postnatal care (mother)
 
 **Immunization**:
+
 - `bcg`: BCG vaccine
+
 - `penta1`, `penta2`, `penta3`: Pentavalent vaccine
+
 - `measles1`, `measles2`: Measles-containing vaccine
+
 - `rota1`, `rota2`: Rotavirus vaccine
+
 - `opv1`, `opv2`, `opv3`: Oral polio vaccine
+
 - `fully_immunized`: Full immunization status
 
 **Child Health**:
+
 - `nmr`: Neonatal mortality rate (survey only)
+
 - `imr`: Infant mortality rate (survey only)
+
 - `vitaminA`: Vitamin A supplementation
 
 #### Usage Notes and Best Practices
