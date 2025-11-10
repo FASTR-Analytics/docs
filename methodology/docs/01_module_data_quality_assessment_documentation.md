@@ -101,13 +101,14 @@ The module produces several output files containing outlier lists, completeness 
          └───────────┬───────────────────┘
                      │
                      ▼
-┌────────────────────────────────────────────────────────────────┐
+┌─────────────────────────────────────────────────────────────────┐
 │                         OUTPUTS                                │
 │  • Outlier flags & lists                                       │
 │  • Completeness status                                         │
 │  • Consistency results                                         │
 │  • DQA scores                                                  │
-└────────────────────────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────────────┘
+
 ```
 
 ### Key Decision Points
