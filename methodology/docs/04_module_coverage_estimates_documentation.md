@@ -1432,4 +1432,5 @@ Part 2: User selects denominators → Calculate trends → Project surveys → F
 
 ---
 
-Last edit: 2025 November 8
+**Last updated**: 10-11-2025
+**Contact**: FASTR Project Team

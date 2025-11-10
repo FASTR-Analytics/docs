@@ -887,18 +887,7 @@ The adjusted data maintains realistic values that fit the facility's typical pat
 
     5. **NA treatment in aggregation**: Missing values are treated as zero when summing to higher geographic levels, which may underestimate totals if missingness is high.
 
-??? "Best Practices"
-
-    1. **Always produce all four scenarios**: Even if you plan to use only one, having all scenarios allows for sensitivity analysis and validation
-
-    2. **Document your scenario choice**: When using adjusted data for analysis, clearly document which scenario was used and why
-
-    3. **Cross-validate with program data**: Compare adjusted trends with known programmatic events (campaigns, stockouts, facility closures)
-
-    4. **Consider data recency**: Be cautious with adjustments for the most recent months, which have less surrounding data for rolling averages
-
-    5. **Monitor excluded indicators**: Review the exclusion files to ensure appropriate indicators are being adjusted
-
 ---
 
-Last edit 2025 November 8
+**Last updated**: 10-11-2025
+**Contact**: FASTR Project Team

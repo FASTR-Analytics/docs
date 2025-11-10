@@ -947,6 +947,5 @@ The module operates in two sequential stages, each with a distinct purpose:
 
 ---
 
-**Last updated**: 2025 January
-**Module version**: 3.0
+**Last updated**: 10-11-2025
 **Contact**: FASTR Project Team

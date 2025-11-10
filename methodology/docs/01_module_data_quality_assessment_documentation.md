@@ -1513,16 +1513,6 @@ The module follows this sequence:
 
 ---
 
-## Version History
+**Last updated**: 10-11-2025
+**Contact**: FASTR Project Team
 
-- **2025-11-08**: Restructured documentation for user-friendliness; separated overview/workflow from technical reference
-- **2025-09-03**: Updated methodology descriptions and statistical formulas
-- **Previous**: Initial module development and documentation
-
----
-
-**Module Author**: CB - FASTR PROJECT
-
-**Last Code Edit**: 2025-11-08
-
-**Last Documentation Edit**: 2025-11-08
