@@ -87,6 +87,51 @@ The module transforms raw facility reports into quality-flagged datasets:
 
 The data flows through the module in long format (one row per facility-indicator-period combination) and emerges with quality dimensions that subsequent modules use to weight, adjust, or exclude observations.
 
+### Analysis Outputs and Visualization
+
+The FASTR analysis generates six main visual outputs:
+
+**1. Outliers Heatmap**
+
+Heatmap table with zones as rows and health indicators as columns, color-coded by outlier percentage.
+
+![Percentage of facility-months that are outliers.](images/Default_1._Proportion_of_outliers.png)
+
+**2. Indicator Completeness**
+
+Heatmap table with zones as rows and health indicators as columns, color-coded by completeness percentage.
+
+![Percentage of facility-months with complete data.](images/Default_2._Proportion_of_completed_records.png)
+
+**3. Indicator Completeness Over Time**
+
+Horizontal timeline charts showing completeness trends for each indicator over the analysis period.
+
+![Percentage of facility-months with complete data over time.](images/Default_3._Proportion_of_completed_records_over_time.png)
+
+**4. Internal Consistency**
+
+Heatmap table with zones as rows and consistency benchmark categories as columns, color-coded by performance.
+
+![Percentage of sub-national areas meeting consistency benchmarks.](images/Default_4._Proportion_of_sub-national_areas_meeting_consistency_criteria.png)
+
+**5. Overall DQA Score**
+
+Heatmap table with zones as rows and time periods as columns, color-coded by DQA score percentage.
+
+![Percentage of facility-months with adequate data quality over time.](images/Default_5._Overall_DQA_score.png)
+
+**6. Mean DQA Score**
+
+Heatmap table with zones as rows and time periods as columns, color-coded by average DQA score.
+
+![Average data quality score across facility-months.](images/Default_6._Mean_DQA_score.png)
+
+**Color Coding System:**
+- **Green**: 90% or above (completeness/consistency), Below 1% (outliers)
+- **Yellow**: 80% to 89% (completeness), 1% to 2% (outliers)
+- **Red**: Below 80% (completeness/consistency), 3% or above (outliers)
+
 ---
 
 ## 3. Detailed Reference
@@ -1355,50 +1400,6 @@ FAC001,202402,penta1,52,Country_A,Province_A,District_A
 | dqa_mean                      | Continuous  | 0 to 1     | Average of component scores (overall quality measure)                     |
 | dqa_score                     | Binary      | 0 or 1     | 1 = All checks passed (high quality), 0 = Any check failed               |
 
-### Analysis Outputs and Visualization
-
-The FASTR analysis generates six main visual outputs:
-
-**1. Outliers Heatmap**
-
-Heatmap table with zones as rows and health indicators as columns, color-coded by outlier percentage.
-
-![Percentage of facility-months that are outliers.](images/Default_1._Proportion_of_outliers.png)
-
-**2. Indicator Completeness**
-
-Heatmap table with zones as rows and health indicators as columns, color-coded by completeness percentage.
-
-![Percentage of facility-months with complete data.](images/Default_2._Proportion_of_completed_records.png)
-
-**3. Indicator Completeness Over Time**
-
-Horizontal timeline charts showing completeness trends for each indicator over the analysis period.
-
-![Percentage of facility-months with complete data over time.](images/Default_3._Proportion_of_completed_records_over_time.png)
-
-**4. Internal Consistency**
-
-Heatmap table with zones as rows and consistency benchmark categories as columns, color-coded by performance.
-
-![Percentage of sub-national areas meeting consistency benchmarks.](images/Default_4._Proportion_of_sub-national_areas_meeting_consistency_criteria.png)
-
-**5. Overall DQA Score**
-
-Heatmap table with zones as rows and time periods as columns, color-coded by DQA score percentage.
-
-![Percentage of facility-months with adequate data quality over time.](images/Default_5._Overall_DQA_score.png)
-
-**6. Mean DQA Score**
-
-Heatmap table with zones as rows and time periods as columns, color-coded by average DQA score.
-
-![Average data quality score across facility-months.](images/Default_6._Mean_DQA_score.png)
-
-**Color Coding System:**
-- **Green**: 90% or above (completeness/consistency), Below 1% (outliers)
-- **Yellow**: 80% to 89% (completeness), 1% to 2% (outliers)
-- **Red**: Below 80% (completeness/consistency), 3% or above (outliers)
 
 ### Execution Workflow
 
