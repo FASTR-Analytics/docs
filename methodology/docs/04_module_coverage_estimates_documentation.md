@@ -556,95 +556,208 @@ $$
 
 Where survey-based coverage is expressed as a percentage (0-100).
 
-**ANC1 Denominator**
+---
 
-$$
-d_{\text{anc1, pregnancy}} = \frac{\text{count}_{\text{anc1}} \times 100}{\text{coverage}_{\text{anc1}}}
-$$
+**Denominators Derived from ANC1**
 
-$$
-d_{\text{anc1, livebirth}} = d_{\text{anc1, pregnancy}} \times (1 - \text{pregnancy loss rate}) \times (1 - \frac{\text{twin rate}}{2}) \times (1 - \text{stillbirth rate})
-$$
+Starting from ANC1 service counts and survey coverage, we calculate:
 
-$$
-d_{\text{anc1, dpt}} = d_{\text{anc1, pregnancy}} \times (1 - \text{pregnancy loss rate}) \times (1 - \frac{\text{twin rate}}{2}) \times (1 - \text{stillbirth rate}) \times (1 - \text{neonatal mortality rate})
-$$
+1. **Estimated pregnancies** (base calculation):
+   $$
+   d_{\text{anc1, pregnancy}} = \frac{\text{count}_{\text{anc1}} \times 100}{\text{coverage}_{\text{anc1}}}
+   $$
 
-$$
-d_{\text{anc1, mcv}} = d_{\text{anc1, pregnancy}} \times (1 - \text{pregnancy loss rate}) \times (1 - \frac{\text{twin rate}}{2}) \times (1 - \text{stillbirth rate}) \times (1 - \text{infant mortality rate})
-$$
+2. **Estimated deliveries** (adjusted for pregnancy loss):
+   $$
+   d_{\text{anc1, delivery}} = d_{\text{anc1, pregnancy}} \times (1 - \text{pregnancy loss rate})
+   $$
 
-**Delivery Denominator**
+3. **Estimated births** (adjusted for twin births):
+   $$
+   d_{\text{anc1, birth}} = d_{\text{anc1, delivery}} / (1 - 0.5 \times \text{twin rate})
+   $$
 
-$$
-d_{\text{delivery, pregnancy}} = \frac{\text{count}_{\text{delivery}} \times 100}{\text{coverage}_{\text{delivery}}} \times (1 - \text{pregnancy loss rate})
-$$
+4. **Estimated live births** (adjusted for stillbirths):
+   $$
+   d_{\text{anc1, livebirth}} = d_{\text{anc1, birth}} \times (1 - \text{stillbirth rate})
+   $$
 
-$$
-d_{\text{delivery, dpt}} = d_{\text{delivery, pregnancy}} \times (1 + \text{twin rate}) \times (1 - \text{stillbirth rate}) \times (1 - \text{neonatal mortality rate})
-$$
+5. **Population eligible for DPT/Penta vaccines** (adjusted for neonatal mortality):
+   $$
+   d_{\text{anc1, dpt}} = d_{\text{anc1, livebirth}} \times (1 - \text{neonatal mortality rate})
+   $$
 
-$$
-d_{\text{delivery, mcv}} = d_{\text{delivery, pregnancy}} \times (1 + \text{twin rate}) \times (1 - \text{stillbirth rate}) \times (1 - \text{infant mortality rate})
-$$
+6. **Population eligible for MCV1** (adjusted for post-neonatal mortality):
+   $$
+   d_{\text{anc1, measles1}} = d_{\text{anc1, dpt}} \times (1 - \text{post-neonatal mortality rate})
+   $$
 
-**BCG Denominator**
+7. **Population eligible for MCV2** (adjusted for additional post-neonatal mortality):
+   $$
+   d_{\text{anc1, measles2}} = d_{\text{anc1, dpt}} \times (1 - 2 \times \text{post-neonatal mortality rate})
+   $$
 
-$$
-d_{\text{bcg, pregnancy}} = \frac{\text{count}_{\text{bcg}} \times 100}{\text{coverage}_{\text{bcg}}} \times (1 - \text{pregnancy loss rate}) \times (1 + \text{twin rate}) \times (1 - \text{stillbirth rate})
-$$
+---
 
-$$
-d_{\text{bcg, dpt}} = d_{\text{bcg, pregnancy}} \times (1 - \text{neonatal mortality rate})
-$$
+**Denominators Derived from Delivery**
 
-$$
-d_{\text{bcg, mcv}} = d_{\text{bcg, pregnancy}} \times (1 - \text{neonatal mortality rate}) \times (1 - \text{post-neonatal mortality rate})
-$$
+Starting from institutional delivery counts and survey coverage:
 
-**Penta1 Denominator**
+1. **Estimated live births** (base calculation):
+   $$
+   d_{\text{delivery, livebirth}} = \frac{\text{count}_{\text{delivery}} \times 100}{\text{coverage}_{\text{delivery}}}
+   $$
 
-$$
-d_{\text{penta1, pregnancy}} = \frac{\text{count}_{\text{penta1}} \times 100}{\text{coverage}_{\text{penta1}}} \times (1 - \text{pregnancy loss rate}) \times (1 + \text{twin rate}) \times (1 - \text{stillbirth rate}) \times (1 - \text{neonatal mortality rate})
-$$
+2. **Estimated births** (adjusted for stillbirths):
+   $$
+   d_{\text{delivery, birth}} = d_{\text{delivery, livebirth}} / (1 - \text{stillbirth rate})
+   $$
 
-$$
-d_{\text{penta1, livebirth}} = d_{\text{penta1, pregnancy}} \times (1 - \text{stillbirth rate}) \times (1 - \text{neonatal mortality rate})
-$$
+3. **Estimated pregnancies** (adjusted for twin births and pregnancy loss):
+   $$
+   d_{\text{delivery, pregnancy}} = d_{\text{delivery, birth}} \times (1 - 0.5 \times \text{twin rate}) / (1 - \text{pregnancy loss rate})
+   $$
 
-$$
-d_{\text{penta1, mcv}} = d_{\text{penta1, pregnancy}} \times (1 - \text{post-neonatal mortality rate})
-$$
+4. **Population eligible for DPT/Penta vaccines**:
+   $$
+   d_{\text{delivery, dpt}} = d_{\text{delivery, livebirth}} \times (1 - \text{neonatal mortality rate})
+   $$
+
+5. **Population eligible for MCV1**:
+   $$
+   d_{\text{delivery, measles1}} = d_{\text{delivery, dpt}} \times (1 - \text{post-neonatal mortality rate})
+   $$
+
+6. **Population eligible for MCV2**:
+   $$
+   d_{\text{delivery, measles2}} = d_{\text{delivery, dpt}} \times (1 - 2 \times \text{post-neonatal mortality rate})
+   $$
+
+*Note: Denominators derived from Skilled Birth Attendance (SBA) follow the same formulas as delivery denominators.*
+
+---
+
+**Denominators Derived from BCG** *(National analysis only)*
+
+Starting from BCG vaccination counts and survey coverage:
+
+1. **Estimated live births** (base calculation):
+   $$
+   d_{\text{bcg, livebirth}} = \frac{\text{count}_{\text{bcg}} \times 100}{\text{coverage}_{\text{bcg}}}
+   $$
+
+2. **Estimated pregnancies** (working backwards through demographic adjustments):
+   $$
+   d_{\text{bcg, pregnancy}} = \frac{d_{\text{bcg, livebirth}}}{(1 - \text{pregnancy loss rate}) \times (1 + \text{twin rate}) \times (1 - \text{stillbirth rate})}
+   $$
+
+3. **Population eligible for DPT/Penta vaccines**:
+   $$
+   d_{\text{bcg, dpt}} = d_{\text{bcg, livebirth}} \times (1 - \text{neonatal mortality rate})
+   $$
+
+---
+
+**Denominators Derived from Penta1**
+
+Starting from Penta1 vaccination counts and survey coverage:
+
+1. **Population eligible for DPT/Penta vaccines** (base calculation):
+   $$
+   d_{\text{penta1, dpt}} = \frac{\text{count}_{\text{penta1}} \times 100}{\text{coverage}_{\text{penta1}}}
+   $$
+
+2. **Population eligible for MCV1**:
+   $$
+   d_{\text{penta1, measles1}} = d_{\text{penta1, dpt}} \times (1 - \text{post-neonatal mortality rate})
+   $$
+
+3. **Population eligible for MCV2**:
+   $$
+   d_{\text{penta1, measles2}} = d_{\text{penta1, dpt}} \times (1 - 2 \times \text{post-neonatal mortality rate})
+   $$
+
+---
+
+**Denominators Derived from Live Birth Counts**
+
+When live birth data is directly reported in HMIS:
+
+1. **Estimated live births** (base calculation):
+   $$
+   d_{\text{livebirths, livebirth}} = \frac{\text{count}_{\text{livebirth}} \times 100}{\text{coverage}_{\text{livebirth}}}
+   $$
+
+2. **Estimated pregnancies** (working backwards):
+   $$
+   d_{\text{livebirths, pregnancy}} = \frac{d_{\text{livebirths, livebirth}} \times (1 - 0.5 \times \text{twin rate})}{(1 - \text{stillbirth rate}) \times (1 - \text{pregnancy loss rate})}
+   $$
+
+3. **Estimated deliveries**:
+   $$
+   d_{\text{livebirths, delivery}} = d_{\text{livebirths, pregnancy}} \times (1 - \text{pregnancy loss rate})
+   $$
+
+4. **Estimated births**:
+   $$
+   d_{\text{livebirths, birth}} = d_{\text{livebirths, livebirth}} / (1 - \text{stillbirth rate})
+   $$
+
+5. **Population eligible for DPT/Penta vaccines**:
+   $$
+   d_{\text{livebirths, dpt}} = d_{\text{livebirths, livebirth}} \times (1 - \text{neonatal mortality rate})
+   $$
+
+6. **Population eligible for MCV1**:
+   $$
+   d_{\text{livebirths, measles1}} = d_{\text{livebirths, dpt}} \times (1 - \text{post-neonatal mortality rate})
+   $$
+
+7. **Population eligible for MCV2**:
+   $$
+   d_{\text{livebirths, measles2}} = d_{\text{livebirths, dpt}} \times (1 - 2 \times \text{post-neonatal mortality rate})
+   $$
 
 #### UNWPP-based Denominator Calculations
 
-Some denominators can also be derived from World Population Prospects (WPP) projections instead of service volumes.
+**Denominators Derived from UN World Population Prospects (WPP)** *(National analysis only)*
 
-**Estimated Pregnancies Based on Crude Birth Rate (CBR) and Total Population**
+Instead of using service volumes, these denominators are calculated directly from population projections and demographic rates:
+
+1. **Estimated pregnancies** (from crude birth rate and total population):
+   $$
+   d_{\text{wpp, pregnancy}} = \frac{\text{Crude birth rate}}{1000} \times \text{Total population} \times \frac{1}{1 + \text{twin rate}}
+   $$
+
+2. **Estimated live births** (from crude birth rate):
+   $$
+   d_{\text{wpp, livebirth}} = \frac{\text{Crude birth rate}}{1000} \times \text{Total population}
+   $$
+
+3. **Population eligible for DPT/Penta vaccines** (under-1 population):
+   $$
+   d_{\text{wpp, dpt}} = \text{Total under-1 population from WPP}
+   $$
+
+4. **Population eligible for MCV1** (adjusted for neonatal mortality):
+   $$
+   d_{\text{wpp, measles1}} = d_{\text{wpp, dpt}} \times (1 - \text{neonatal mortality rate})
+   $$
+
+5. **Population eligible for MCV2** (adjusted for post-neonatal mortality):
+   $$
+   d_{\text{wpp, measles2}} = d_{\text{wpp, dpt}} \times (1 - \text{neonatal mortality rate}) \times (1 - 2 \times \text{post-neonatal mortality rate})
+   $$
+
+**Adjustment for Incomplete Reporting:**
+
+When HMIS data contains fewer than 12 months of reported data in a year, all UNWPP denominators are scaled to match the reporting period:
 
 $$
-d_{\text{wpp, pregnancy}} = \left( \frac{\text{CBR}}{1000} \right) \times \text{Total population} \times \frac{12}{\text{months reported}}
+d_{\text{adjusted}} = d_{\text{wpp}} \times \frac{\text{months reported}}{12}
 $$
 
-**Estimated Live Births**
-
-$$
-d_{\text{wpp, livebirth}} = \text{Total live births from WPP} \times \frac{12}{\text{months reported}}
-$$
-
-**Estimated Population Eligible for DPT1 (Under 1 Year)**
-
-$$
-d_{\text{wpp, dpt}} = \text{Total under-1 population from WPP} \times \frac{12}{\text{months reported}}
-$$
-
-**Estimated Population Eligible for MCV (Under 5 Years)**
-
-$$
-d_{\text{wpp, mcv}} = \text{Total under-5 population from WPP} \times \frac{12}{\text{months reported}}
-$$
-
-HMIS data can contain incomplete or partial reporting, where service volumes are only available for a subset of months in a given year. If fewer than 12 months of data are reported, directly using the raw count would underestimate the total number of pregnancies. To adjust for this, we scale the reported number up to a full year equivalent by applying the factor $\frac{12}{\text{months reported}}$.
+This adjustment ensures denominators are comparable to service volumes that may only represent partial-year reporting.
 
 #### Output Files Specification
 
