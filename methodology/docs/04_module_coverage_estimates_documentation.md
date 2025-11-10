@@ -4,7 +4,7 @@
 
 ### What does this module do?
 
-This module estimates health service coverage by integrating three key data sources: adjusted health service volumes from HMIS (Module 2), population projections from the United Nations, and household survey data from MICS/DHS. It answers the fundamental question: "What percentage of the target population received this health service?"
+This module estimates health service coverage by integrating three key data sources: adjusted health service volumes from HMIS (Module 2), population projections from the United Nations, and household survey data from MICS/DHS. It helps answer the question: "What percentage of the target population received this health service?"
 
 The module operates in two distinct parts.
 
@@ -18,9 +18,9 @@ Together, these parts transform raw service counts into meaningful coverage esti
 
 Understanding coverage is essential for monitoring health system performance and equity. While Module 2 provides adjusted service volumes, these numbers alone don't tell us whether services are reaching their intended populations. Coverage estimates provide context by comparing service delivery to population need.
 
-This module addresses key challenges in coverage estimation:
+This module addresses some challenges in coverage estimation:
 
-- **Multiple data sources**: Integrates HMIS data (continuous but may have quality issues) with survey data (high quality but infrequent)
+- **Multiple data sources**: Integrates HMIS data with survey data
 
 - **Denominator uncertainty**: Different methods for estimating target populations may yield different results; the module systematically evaluates options
 
