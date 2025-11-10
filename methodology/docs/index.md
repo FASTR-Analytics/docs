@@ -28,13 +28,13 @@ FASTR's four technical approaches, underpinned by capacity strengthening and dat
 
 3. **High-frequency household phone surveys** provide a snapshot of care seeking behavior, foregone care, financial protection, service coverage, and patient experience of care. Household surveys are currently done in partnership with the World Bank's Living Standards Measurement Study.
 
-4. **Rapid qualitative implementation research** approaches provide a deeper understanding of prioritized HMIS and phone survey trends (e.g., by explaining district-level performance variation or contextualizing the impact of health systems reforms).
+4. **Follow-on analyses** employ root cause analysis and implementation research approaches to provide deeper understanding of issues uncovered by rapid-cycle analytics (e.g., explaining district-level performance variation, contextualizing the impact of health systems reforms, or investigating underlying causes of data quality issues and service delivery disruptions).
 
 Illustrative capacity-building activities include support to automate the extraction, cleaning, and analysis of routine data and support to institutionalize rapid phone survey data collection and analysis approaches. Data use support prioritizes the integration of rapid-cycle analytics into existing data review and feedback mechanisms at national and subnational levels to strengthen the systematic use of data for decision making.
 
-![Rapid-cycle analytics under the Frequent Assessments and Systems Tools for Resilience (FASTR) initiative.](images/Technical-Rapid-cycle-analytics--V3.svg)
+![Rapid-cycle analytics under the Frequent Assessments and System Tools for Resilience (FASTR) initiative.](images/Technical-Rapid-cycle-analytics--V3.svg)
 
-*Figure 2. Rapid-cycle analytics under the Frequent Assessments and Systems Tools for Resilience (FASTR) initiative*
+*Figure 2. Rapid-cycle analytics under the Frequent Assessments and System Tools for Resilience (FASTR) initiative*
 
 ## Acronyms and Abbreviations
 
