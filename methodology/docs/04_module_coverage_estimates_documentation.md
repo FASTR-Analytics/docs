@@ -549,14 +549,17 @@ Each adjustment reduces the denominator to reflect population losses at differen
 #### HMIS-based Denominator Calculations
 
 **General Formula:**
+
 $$
-\text{Denominator} = \frac{\text{Service volume}}{\text{Survey-based coverage} / 100}
+\text{Denominator} = \frac{\text{Service volume} \times 100}{\text{Survey-based coverage}}
 $$
+
+Where survey-based coverage is expressed as a percentage (0-100).
 
 **ANC1 Denominator**
 
 $$
-d_{\text{anc1, pregnancy}} = \frac{\text{count}_{\text{anc1}}}{\text{coverage}_{\text{anc1}} / 100}
+d_{\text{anc1, pregnancy}} = \frac{\text{count}_{\text{anc1}} \times 100}{\text{coverage}_{\text{anc1}}}
 $$
 
 $$
@@ -574,7 +577,7 @@ $$
 **Delivery Denominator (Live Births)**
 
 $$
-d_{\text{delivery, pregnancy}} = \frac{\text{count}_{\text{delivery}}}{\text{coverage}_{\text{delivery}} / 100} \times (1 - \text{pregnancy loss rate})
+d_{\text{delivery, pregnancy}} = \frac{\text{count}_{\text{delivery}} \times 100}{\text{coverage}_{\text{delivery}}} \times (1 - \text{pregnancy loss rate})
 $$
 
 $$
@@ -588,7 +591,7 @@ $$
 **BCG Denominator**
 
 $$
-d_{\text{bcg, pregnancy}} = \frac{\text{count}_{\text{bcg}}}{\text{coverage}_{\text{bcg}} / 100} \times (1 - \text{pregnancy loss rate}) \times (1 + \text{twin rate}) \times (1 - \text{stillbirth rate})
+d_{\text{bcg, pregnancy}} = \frac{\text{count}_{\text{bcg}} \times 100}{\text{coverage}_{\text{bcg}}} \times (1 - \text{pregnancy loss rate}) \times (1 + \text{twin rate}) \times (1 - \text{stillbirth rate})
 $$
 
 $$
@@ -602,7 +605,7 @@ $$
 **Penta1 Denominator**
 
 $$
-d_{\text{penta1, pregnancy}} = \frac{\text{count}_{\text{penta1}}}{\text{coverage}_{\text{penta1}} / 100} \times (1 - \text{pregnancy loss rate}) \times (1 + \text{twin rate}) \times (1 - \text{stillbirth rate}) \times (1 - \text{neonatal mortality rate})
+d_{\text{penta1, pregnancy}} = \frac{\text{count}_{\text{penta1}} \times 100}{\text{coverage}_{\text{penta1}}} \times (1 - \text{pregnancy loss rate}) \times (1 + \text{twin rate}) \times (1 - \text{stillbirth rate}) \times (1 - \text{neonatal mortality rate})
 $$
 
 $$
