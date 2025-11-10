@@ -19,6 +19,8 @@ nav:
 theme:
   name: material
   language: en
+  logo: images/FASTR_Primary_01_FullName.png
+  favicon: images/FASTR_Primary_01_FullName.png
 
   # Color Palette
   palette:
