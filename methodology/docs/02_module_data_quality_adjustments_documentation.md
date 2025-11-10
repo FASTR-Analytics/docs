@@ -845,6 +845,34 @@ By producing four scenarios, the module allows different use cases:
          Fallback mean: 45
     ```
 
+### Analysis Outputs and Visualization
+
+The FASTR analysis generates three main visual outputs comparing service volumes before and after adjustments:
+
+**1. Outlier Adjustment Impact**
+
+Heatmap showing percent change in service volumes due to outlier replacement, with geographic areas as rows and indicators as columns.
+
+![Percent change in volume due to outlier adjustment.](images/Default_1._Percent_change_in_volume_due_to_outlier_adjustment.png)
+
+**2. Completeness Adjustment Impact**
+
+Heatmap showing percent change in service volumes due to missing data imputation, with geographic areas as rows and indicators as columns.
+
+![Percent change in volume due to completeness adjustment.](images/Default_2._Percent_change_in_volume_due_to_completeness_adjustment.png)
+
+**3. Combined Adjustment Impact**
+
+Heatmap showing percent change in service volumes when both outlier and completeness adjustments are applied, with geographic areas as rows and indicators as columns.
+
+![Percent change in volume due to both outlier and completeness adjustment.](images/Default_3._Percent_change_in_volume_due_to_both_outlier_and_completeness_adjustment.png)
+
+**Interpretation Guide:**
+- **Positive values (red)**: Adjustments increased reported service volumes
+- **Negative values (blue)**: Adjustments decreased reported service volumes
+- **Near zero (white)**: Minimal impact from adjustments
+- **Larger absolute values**: Indicate greater data quality issues requiring substantial adjustment
+
 ### Usage Notes & Recommendations
 
 ??? "Choosing the Right Scenario"
