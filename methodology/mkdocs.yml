@@ -182,4 +182,7 @@ extra_javascript:
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 
 # Copyright
-copyright: Copyright &copy; 2025 FASTR Methodology Documentation
+copyright: |
+  Copyright &copy; 2025 FASTR Methodology Documentation<br>
+  <a href="https://www.globalfinancingfacility.org" target="_blank">www.globalfinancingfacility.org</a> |
+  <a href="https://twitter.com/thegff" target="_blank">@thegff</a>
