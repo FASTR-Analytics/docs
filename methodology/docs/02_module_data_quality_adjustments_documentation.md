@@ -81,16 +81,6 @@ However, certain indicators are NEVER adjusted:
 
 - Low-volume indicators (those that never exceed 100) where outlier detection isn't meaningful
 
-**How are replacement values calculated?**
-The module follows a hierarchy from most to least reliable:
-
-1. **Best option**: Use the average of surrounding months (3 before and 3 after) if available
-2. **Good option**: If surrounding months aren't available, use either future months or past months
-3. **Acceptable option**: For seasonal indicators, use the same month from last year (e.g., June 2022 to replace June 2023)
-4. **Fallback option**: Use the facility's overall average for that indicator if nothing else works
-
-This hierarchy ensures that replacements are as contextually relevant as possible, using the most recent and similar data available.
-
 **Which scenario should analysts use?**
 By producing four scenarios, the module allows different use cases:
 
