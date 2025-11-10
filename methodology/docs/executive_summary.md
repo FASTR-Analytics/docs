@@ -50,7 +50,3 @@ The analytical approach exhibits several characteristics relevant to implementat
 **Temporal Resolution**: Monthly HMIS data enables higher-frequency monitoring than periodic household surveys, while survey anchoring maintains comparability with established benchmarks and accounts for systematic biases in routine reporting.
 
 **Parameter Configuration**: All statistical thresholds, window sizes, and adjustment methods are configurable parameters documented in technical specifications, allowing adaptation to country-specific contexts and data characteristics.
-
-## Applications
-
-This methodology addresses analytical requirements in health system monitoring where routine data quality issues have historically limited the use of HMIS data for coverage estimation and trend analysis. The approach is applicable in settings where: (1) facility-level HMIS data are available with sufficient completeness and temporal coverage, (2) household survey estimates are available for calibration and validation, and (3) computational resources exist for statistical modeling at subnational geographic levels.
