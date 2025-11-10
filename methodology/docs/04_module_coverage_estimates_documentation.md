@@ -562,40 +562,47 @@ Where survey-based coverage is expressed as a percentage (0-100).
 
 Starting from ANC1 service counts and survey coverage, we calculate:
 
-1. **Estimated pregnancies** (base calculation):
-   $$
-   d_{\text{anc1, pregnancy}} = \frac{\text{count}_{\text{anc1}} \times 100}{\text{coverage}_{\text{anc1}}}
-   $$
+**Estimated pregnancies** (base calculation):
 
-2. **Estimated deliveries** (adjusted for pregnancy loss):
-   $$
-   d_{\text{anc1, delivery}} = d_{\text{anc1, pregnancy}} \times (1 - \text{pregnancy loss rate})
-   $$
+$$
+d_{\text{anc1-pregnancy}} = \frac{\text{count}_{\text{anc1}} \times 100}{\text{coverage}_{\text{anc1}}}
+$$
 
-3. **Estimated births** (adjusted for twin births):
-   $$
-   d_{\text{anc1, birth}} = d_{\text{anc1, delivery}} / (1 - 0.5 \times \text{twin rate})
-   $$
+**Estimated deliveries** (adjusted for pregnancy loss):
 
-4. **Estimated live births** (adjusted for stillbirths):
-   $$
-   d_{\text{anc1, livebirth}} = d_{\text{anc1, birth}} \times (1 - \text{stillbirth rate})
-   $$
+$$
+d_{\text{anc1-delivery}} = d_{\text{anc1-pregnancy}} \times (1 - \text{pregnancy loss rate})
+$$
 
-5. **Population eligible for DPT/Penta vaccines** (adjusted for neonatal mortality):
-   $$
-   d_{\text{anc1, dpt}} = d_{\text{anc1, livebirth}} \times (1 - \text{neonatal mortality rate})
-   $$
+**Estimated births** (adjusted for twin births):
 
-6. **Population eligible for MCV1** (adjusted for post-neonatal mortality):
-   $$
-   d_{\text{anc1, measles1}} = d_{\text{anc1, dpt}} \times (1 - \text{post-neonatal mortality rate})
-   $$
+$$
+d_{\text{anc1-birth}} = d_{\text{anc1-delivery}} / (1 - 0.5 \times \text{twin rate})
+$$
 
-7. **Population eligible for MCV2** (adjusted for additional post-neonatal mortality):
-   $$
-   d_{\text{anc1, measles2}} = d_{\text{anc1, dpt}} \times (1 - 2 \times \text{post-neonatal mortality rate})
-   $$
+**Estimated live births** (adjusted for stillbirths):
+
+$$
+d_{\text{anc1-livebirth}} = d_{\text{anc1-birth}} \times (1 - \text{stillbirth rate})
+$$
+
+**Population eligible for DPT/Penta vaccines** (adjusted for neonatal mortality):
+
+$$
+d_{\text{anc1-dpt}} = d_{\text{anc1-livebirth}} \times (1 - \text{neonatal mortality rate})
+$$
+
+**Population eligible for MCV1** (adjusted for post-neonatal mortality):
+
+$$
+d_{\text{anc1-measles1}} = d_{\text{anc1-dpt}} \times (1 - \text{post-neonatal mortality rate})
+$$
+
+**Population eligible for MCV2** (adjusted for additional post-neonatal mortality):
+
+$$
+d_{\text{anc1-measles2}} = d_{\text{anc1-dpt}} \times (1 - 2 \times \text{post-neonatal mortality rate})
+$$
 
 ---
 
@@ -603,35 +610,41 @@ Starting from ANC1 service counts and survey coverage, we calculate:
 
 Starting from institutional delivery counts and survey coverage:
 
-1. **Estimated live births** (base calculation):
-   $$
-   d_{\text{delivery, livebirth}} = \frac{\text{count}_{\text{delivery}} \times 100}{\text{coverage}_{\text{delivery}}}
-   $$
+**Estimated live births** (base calculation):
 
-2. **Estimated births** (adjusted for stillbirths):
-   $$
-   d_{\text{delivery, birth}} = d_{\text{delivery, livebirth}} / (1 - \text{stillbirth rate})
-   $$
+$$
+d_{\text{delivery-livebirth}} = \frac{\text{count}_{\text{delivery}} \times 100}{\text{coverage}_{\text{delivery}}}
+$$
 
-3. **Estimated pregnancies** (adjusted for twin births and pregnancy loss):
-   $$
-   d_{\text{delivery, pregnancy}} = d_{\text{delivery, birth}} \times (1 - 0.5 \times \text{twin rate}) / (1 - \text{pregnancy loss rate})
-   $$
+**Estimated births** (adjusted for stillbirths):
 
-4. **Population eligible for DPT/Penta vaccines**:
-   $$
-   d_{\text{delivery, dpt}} = d_{\text{delivery, livebirth}} \times (1 - \text{neonatal mortality rate})
-   $$
+$$
+d_{\text{delivery-birth}} = d_{\text{delivery-livebirth}} / (1 - \text{stillbirth rate})
+$$
 
-5. **Population eligible for MCV1**:
-   $$
-   d_{\text{delivery, measles1}} = d_{\text{delivery, dpt}} \times (1 - \text{post-neonatal mortality rate})
-   $$
+**Estimated pregnancies** (adjusted for twin births and pregnancy loss):
 
-6. **Population eligible for MCV2**:
-   $$
-   d_{\text{delivery, measles2}} = d_{\text{delivery, dpt}} \times (1 - 2 \times \text{post-neonatal mortality rate})
-   $$
+$$
+d_{\text{delivery-pregnancy}} = d_{\text{delivery-birth}} \times (1 - 0.5 \times \text{twin rate}) / (1 - \text{pregnancy loss rate})
+$$
+
+**Population eligible for DPT/Penta vaccines**:
+
+$$
+d_{\text{delivery-dpt}} = d_{\text{delivery-livebirth}} \times (1 - \text{neonatal mortality rate})
+$$
+
+**Population eligible for MCV1**:
+
+$$
+d_{\text{delivery-measles1}} = d_{\text{delivery-dpt}} \times (1 - \text{post-neonatal mortality rate})
+$$
+
+**Population eligible for MCV2**:
+
+$$
+d_{\text{delivery-measles2}} = d_{\text{delivery-dpt}} \times (1 - 2 \times \text{post-neonatal mortality rate})
+$$
 
 *Note: Denominators derived from Skilled Birth Attendance (SBA) follow the same formulas as delivery denominators.*
 
@@ -641,20 +654,23 @@ Starting from institutional delivery counts and survey coverage:
 
 Starting from BCG vaccination counts and survey coverage:
 
-1. **Estimated live births** (base calculation):
-   $$
-   d_{\text{bcg, livebirth}} = \frac{\text{count}_{\text{bcg}} \times 100}{\text{coverage}_{\text{bcg}}}
-   $$
+**Estimated live births** (base calculation):
 
-2. **Estimated pregnancies** (working backwards through demographic adjustments):
-   $$
-   d_{\text{bcg, pregnancy}} = \frac{d_{\text{bcg, livebirth}}}{(1 - \text{pregnancy loss rate}) \times (1 + \text{twin rate}) \times (1 - \text{stillbirth rate})}
-   $$
+$$
+d_{\text{bcg-livebirth}} = \frac{\text{count}_{\text{bcg}} \times 100}{\text{coverage}_{\text{bcg}}}
+$$
 
-3. **Population eligible for DPT/Penta vaccines**:
-   $$
-   d_{\text{bcg, dpt}} = d_{\text{bcg, livebirth}} \times (1 - \text{neonatal mortality rate})
-   $$
+**Estimated pregnancies** (working backwards through demographic adjustments):
+
+$$
+d_{\text{bcg-pregnancy}} = \frac{d_{\text{bcg-livebirth}}}{(1 - \text{pregnancy loss rate}) \times (1 + \text{twin rate}) \times (1 - \text{stillbirth rate})}
+$$
+
+**Population eligible for DPT/Penta vaccines**:
+
+$$
+d_{\text{bcg-dpt}} = d_{\text{bcg-livebirth}} \times (1 - \text{neonatal mortality rate})
+$$
 
 ---
 
@@ -662,20 +678,23 @@ Starting from BCG vaccination counts and survey coverage:
 
 Starting from Penta1 vaccination counts and survey coverage:
 
-1. **Population eligible for DPT/Penta vaccines** (base calculation):
-   $$
-   d_{\text{penta1, dpt}} = \frac{\text{count}_{\text{penta1}} \times 100}{\text{coverage}_{\text{penta1}}}
-   $$
+**Population eligible for DPT/Penta vaccines** (base calculation):
 
-2. **Population eligible for MCV1**:
-   $$
-   d_{\text{penta1, measles1}} = d_{\text{penta1, dpt}} \times (1 - \text{post-neonatal mortality rate})
-   $$
+$$
+d_{\text{penta1-dpt}} = \frac{\text{count}_{\text{penta1}} \times 100}{\text{coverage}_{\text{penta1}}}
+$$
 
-3. **Population eligible for MCV2**:
-   $$
-   d_{\text{penta1, measles2}} = d_{\text{penta1, dpt}} \times (1 - 2 \times \text{post-neonatal mortality rate})
-   $$
+**Population eligible for MCV1**:
+
+$$
+d_{\text{penta1-measles1}} = d_{\text{penta1-dpt}} \times (1 - \text{post-neonatal mortality rate})
+$$
+
+**Population eligible for MCV2**:
+
+$$
+d_{\text{penta1-measles2}} = d_{\text{penta1-dpt}} \times (1 - 2 \times \text{post-neonatal mortality rate})
+$$
 
 ---
 
@@ -683,40 +702,47 @@ Starting from Penta1 vaccination counts and survey coverage:
 
 When live birth data is directly reported in HMIS:
 
-1. **Estimated live births** (base calculation):
-   $$
-   d_{\text{livebirths, livebirth}} = \frac{\text{count}_{\text{livebirth}} \times 100}{\text{coverage}_{\text{livebirth}}}
-   $$
+**Estimated live births** (base calculation):
 
-2. **Estimated pregnancies** (working backwards):
-   $$
-   d_{\text{livebirths, pregnancy}} = \frac{d_{\text{livebirths, livebirth}} \times (1 - 0.5 \times \text{twin rate})}{(1 - \text{stillbirth rate}) \times (1 - \text{pregnancy loss rate})}
-   $$
+$$
+d_{\text{livebirths-livebirth}} = \frac{\text{count}_{\text{livebirth}} \times 100}{\text{coverage}_{\text{livebirth}}}
+$$
 
-3. **Estimated deliveries**:
-   $$
-   d_{\text{livebirths, delivery}} = d_{\text{livebirths, pregnancy}} \times (1 - \text{pregnancy loss rate})
-   $$
+**Estimated pregnancies** (working backwards):
 
-4. **Estimated births**:
-   $$
-   d_{\text{livebirths, birth}} = d_{\text{livebirths, livebirth}} / (1 - \text{stillbirth rate})
-   $$
+$$
+d_{\text{livebirths-pregnancy}} = \frac{d_{\text{livebirths-livebirth}} \times (1 - 0.5 \times \text{twin rate})}{(1 - \text{stillbirth rate}) \times (1 - \text{pregnancy loss rate})}
+$$
 
-5. **Population eligible for DPT/Penta vaccines**:
-   $$
-   d_{\text{livebirths, dpt}} = d_{\text{livebirths, livebirth}} \times (1 - \text{neonatal mortality rate})
-   $$
+**Estimated deliveries**:
 
-6. **Population eligible for MCV1**:
-   $$
-   d_{\text{livebirths, measles1}} = d_{\text{livebirths, dpt}} \times (1 - \text{post-neonatal mortality rate})
-   $$
+$$
+d_{\text{livebirths-delivery}} = d_{\text{livebirths-pregnancy}} \times (1 - \text{pregnancy loss rate})
+$$
 
-7. **Population eligible for MCV2**:
-   $$
-   d_{\text{livebirths, measles2}} = d_{\text{livebirths, dpt}} \times (1 - 2 \times \text{post-neonatal mortality rate})
-   $$
+**Estimated births**:
+
+$$
+d_{\text{livebirths-birth}} = d_{\text{livebirths-livebirth}} / (1 - \text{stillbirth rate})
+$$
+
+**Population eligible for DPT/Penta vaccines**:
+
+$$
+d_{\text{livebirths-dpt}} = d_{\text{livebirths-livebirth}} \times (1 - \text{neonatal mortality rate})
+$$
+
+**Population eligible for MCV1**:
+
+$$
+d_{\text{livebirths-measles1}} = d_{\text{livebirths-dpt}} \times (1 - \text{post-neonatal mortality rate})
+$$
+
+**Population eligible for MCV2**:
+
+$$
+d_{\text{livebirths-measles2}} = d_{\text{livebirths-dpt}} \times (1 - 2 \times \text{post-neonatal mortality rate})
+$$
 
 #### UNWPP-based Denominator Calculations
 
@@ -724,30 +750,35 @@ When live birth data is directly reported in HMIS:
 
 Instead of using service volumes, these denominators are calculated directly from population projections and demographic rates:
 
-1. **Estimated pregnancies** (from crude birth rate and total population):
-   $$
-   d_{\text{wpp, pregnancy}} = \frac{\text{Crude birth rate}}{1000} \times \text{Total population} \times \frac{1}{1 + \text{twin rate}}
-   $$
+**Estimated pregnancies** (from crude birth rate and total population):
 
-2. **Estimated live births** (from crude birth rate):
-   $$
-   d_{\text{wpp, livebirth}} = \frac{\text{Crude birth rate}}{1000} \times \text{Total population}
-   $$
+$$
+d_{\text{wpp-pregnancy}} = \frac{\text{Crude birth rate}}{1000} \times \text{Total population} \times \frac{1}{1 + \text{twin rate}}
+$$
 
-3. **Population eligible for DPT/Penta vaccines** (under-1 population):
-   $$
-   d_{\text{wpp, dpt}} = \text{Total under-1 population from WPP}
-   $$
+**Estimated live births** (from crude birth rate):
 
-4. **Population eligible for MCV1** (adjusted for neonatal mortality):
-   $$
-   d_{\text{wpp, measles1}} = d_{\text{wpp, dpt}} \times (1 - \text{neonatal mortality rate})
-   $$
+$$
+d_{\text{wpp-livebirth}} = \frac{\text{Crude birth rate}}{1000} \times \text{Total population}
+$$
 
-5. **Population eligible for MCV2** (adjusted for post-neonatal mortality):
-   $$
-   d_{\text{wpp, measles2}} = d_{\text{wpp, dpt}} \times (1 - \text{neonatal mortality rate}) \times (1 - 2 \times \text{post-neonatal mortality rate})
-   $$
+**Population eligible for DPT/Penta vaccines** (under-1 population):
+
+$$
+d_{\text{wpp-dpt}} = \text{Total under-1 population from WPP}
+$$
+
+**Population eligible for MCV1** (adjusted for neonatal mortality):
+
+$$
+d_{\text{wpp-measles1}} = d_{\text{wpp-dpt}} \times (1 - \text{neonatal mortality rate})
+$$
+
+**Population eligible for MCV2** (adjusted for post-neonatal mortality):
+
+$$
+d_{\text{wpp-measles2}} = d_{\text{wpp-dpt}} \times (1 - \text{neonatal mortality rate}) \times (1 - 2 \times \text{post-neonatal mortality rate})
+$$
 
 **Adjustment for Incomplete Reporting:**
 
