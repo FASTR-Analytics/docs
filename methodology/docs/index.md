@@ -103,6 +103,17 @@ The FASTR approach to routine data analysis focuses on a core set of RMNCAH-N in
 
 The FASTR approach to routine data analysis focuses on a core set of data quality metrics which enables identification of the highest priority data quality issues for which data quality adjustments can be made. In addition to the core data quality measures, the FASTR approach generates an overall data quality score which combines the core metrics into a single summary measure.
 
+## Results Communication and Data Use
+
+During the COVID-19 pandemic, the GFF supported Ministries of Health in over 20 countries to monitor the impact of the pandemic on essential health services.
+
+- **Report**: [COVID-19: Impact on Essential Health Services](https://www.globalfinancingfacility.org/sites/gff_new/files/documents/GFF-IG13-2-COVID-19-Essential-Health-Services.pdf)
+- **Article**: [Healthcare utilization and maternal and child mortality during the COVID-19 pandemic in 18 low- and middle-income countries](https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1004070)
+- **Article**: [Vaccination utilization and subnational inequities during the COVID-19 pandemic](https://www.mdpi.com/2076-393X/11/9/1415)
+- **Article**: [Disruptions in maternal and child health service utilization during COVID-19: analysis from eight sub-Saharan African countries](https://academic.oup.com/heapol/article/36/7/1140/6306443)
+
+More results and reports can be found in the [FASTR Resource Repository](https://data.gffportal.org/key-theme/FASTR/resource-repository/index.php/home).
+
 ## What This Documentation Covers
 
 This methodology documentation describes the FASTR approach to routine HMIS data analysis. FASTR uses four code modules to automate different parts of the analysis:
