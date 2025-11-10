@@ -53,63 +53,7 @@ The module produces several output files containing outlier lists, completeness 
 
 ### Workflow Diagram
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│              INPUT: Monthly Facility Data                       │
-│            (facility_id, period_id, indicator, count)           │
-└────────────────────────┬────────────────────────────────────────┘
-                         │
-                         ▼
-             ┌───────────────────────────────┐
-             │    Data Loading & Preparation │
-             │  • Convert dates              │
-             │  • Detect geography           │
-             │  • Create composite indicators│
-             └───────────┬───────────────────┘
-                         │
-                         ▼
-             ┌───────────────────────────────┐
-             │    Outlier Detection          │
-             │  • Calculate median & MAD     │
-             │  • Flag statistical outliers  │
-             │  • Flag proportional outliers │
-             └───────────┬───────────────────┘
-                         │
-                         ▼
-             ┌───────────────────────────────┐
-             │    Completeness Assessment    │
-             │  • Generate full time series  │
-             │  • Identify missing reports   │
-             │  • Flag inactive facilities   │
-             └───────────┬───────────────────┘
-                         │
-                         ▼
-             ┌───────────────────────────────┐
-             │    Consistency Analysis       │
-             │  • Aggregate to district level│
-             │  • Calculate indicator ratios │
-             │  • Apply benchmarks           │
-             │  • Assign to facilities       │
-             └───────────┬───────────────────┘
-                         │
-                         ▼
-             ┌───────────────────────────────┐
-             │       DQA Scoring             │
-             │  • Filter core indicators     │
-             │  • Combine quality dimensions │
-             │  • Calculate composite score  │
-             └───────────┬───────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                      OUTPUTS                                    │
-│  • Outlier flags & lists                                        │
-│  • Completeness status                                          │
-│  • Consistency results                                          │
-│  • DQA scores                                                   │
-└─────────────────────────────────────────────────────────────────┘
-
-```
+<iframe src="../images/mod1_workflow.html" width="100%" height="800" style="border: 1px solid #ccc; border-radius: 4px;" title="Module 1 Interactive Workflow"></iframe>
 
 ### Key Decision Points
 
