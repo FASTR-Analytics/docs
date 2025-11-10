@@ -796,7 +796,7 @@ $$
 
 Where:
 - `source` represents any of: anc1, delivery, bcg, penta1, livebirths, or wpp
-- The factor **4.5** represents the approximate age range for Vitamin A supplementation (6-59 months ≈ 4.5 years)
+- The factor **4.5** represents the approximate duration (in years) of the Vitamin A target age range, corresponding to children aged 6–59 months (≈ 4.5 years).
 - Under-5 mortality rate accounts for child survival to the supplementation age range
 
 **Fully Immunized Child (FIC)**
