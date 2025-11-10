@@ -141,12 +141,17 @@ The module saves four CSV files: one for facility-level data, one for subnationa
 ### Key Decision Points
 
 **Which values should be adjusted?**
+
 The module adjusts two types of problematic values:
+
 - Values flagged as outliers by Module 1's statistical detection algorithms
+
 - Values from months marked as incomplete or entirely missing
 
 However, certain indicators are NEVER adjusted:
+
 - Death counts (under-5 deaths, maternal deaths, neonatal deaths) because these represent discrete events that should not be smoothed
+
 - Low-volume indicators (those that never exceed 100) where outlier detection isn't meaningful
 
 **How are replacement values calculated?**
@@ -165,7 +170,7 @@ By producing four scenarios, the module allows different use cases:
 - **None**: Use for validation or when data quality is already excellent
 - **Outliers only**: Use when completeness is good but occasional extreme values are problematic
 - **Completeness only**: Use when you trust the reported values but reporting is sporadic
-- **Both**: Use when both data quality issues are prevalent (most common choice)
+- **Both**: Use when both data quality issues are prevalent
 
 ### What Happens to the Data
 
