@@ -15,8 +15,11 @@ To accommodate different analytical needs, the module produces four parallel ver
 Routine health management information system (HMIS) data often contains errors and gaps that can seriously distort trends, mask true patterns, and lead to incorrect conclusions. A single extreme outlier can make service volumes appear to spike dramatically, while missing data can make it seem like services stopped entirely. These issues are particularly problematic when:
 
 - Tracking progress toward health goals and targets
+
 - Comparing facilities or regions to identify high and low performers
+
 - Allocating resources based on service delivery patterns
+
 - Detecting genuine changes in health service utilization versus data quality issues
 
 By systematically addressing these data quality issues before analysis, this module ensures that downstream calculations and decisions are based on reliable, consistent data rather than artifacts of poor data quality.
@@ -166,29 +169,13 @@ By producing four scenarios, the module allows different use cases:
 
 ### What Happens to the Data
 
-**Before adjustment**, a facility's monthly service volume data might look like this:
+**Input Processing**: The module receives facility-level monthly service volumes along with quality flags from Module 1 (outlier indicators, completeness status). Each facility-indicator-period combination represents a single observation that may require adjustment.
 
-```
-Month      Deliveries   Issue
-Jan 2023   78           OK
-Feb 2023   450          OUTLIER (data entry error)
-Mar 2023   [missing]    INCOMPLETE REPORTING
-Apr 2023   82           OK
-May 2023   85           OK
-```
+**Adjustment Application**: Based on the selected scenario, the module creates adjusted versions of the service counts. For outliers, abnormally high values are replaced with mean values calculated from non-outlier months. For incomplete reporting periods, missing values are imputed using facility-specific averages from available data.
 
-**After adjustment** (using the "both" scenario), the same data becomes:
+**Multiple Scenario Generation**: The module generates four parallel versions of the dataset: `count_final_none` (no adjustments), `count_final_outliers` (outliers only), `count_final_completeness` (missing data only), and `count_final_both` (both adjustments applied). This allows downstream analysis to compare results across different data quality assumptions.
 
-```
-Month      Original   Adjusted   Method Used
-Jan 2023   78         78         No adjustment needed
-Feb 2023   450        82         Replaced using 6-month average
-Mar 2023   [missing]  80         Filled using 6-month average
-Apr 2023   82         82         No adjustment needed
-May 2023   85         85         No adjustment needed
-```
-
-The adjusted data maintains realistic values that fit the facility's typical pattern, making it suitable for trend analysis, comparison with other facilities, and resource planning.
+**Output Aggregation**: The adjusted data is aggregated to geographic levels (country, provinces, districts) while preserving all four adjustment scenarios. Each output row contains the geographic area identifier, indicator code, time period, and all four count versions, enabling flexible analysis depending on data quality tolerance and research questions.
 
 ---
 
