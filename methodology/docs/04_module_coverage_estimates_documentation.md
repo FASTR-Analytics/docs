@@ -135,7 +135,7 @@ Part 1 automatically selects based on alignment with survey data, but users can 
 Surveys occur infrequently (every 3-5 years). The module forward-fills survey values in Part 1 (assumes constant coverage until next survey) and uses projection in Part 2 (incorporates HMIS trends).
 
 **3. Should subnational analysis use local or national survey data?**
-When local survey data is unavailable, the module falls back to national values. This assumes national coverage rates apply locally, which may not hold in all contexts.
+For **immunization indicators only**, when local survey data is unavailable at the subnational level, the module imputes national survey values. This assumes national immunization coverage rates apply to subnational areas, which may not hold in all contexts. This fallback mechanism is **not applied** to other health indicators (maternal health, child health), which require local survey data for subnational analysis.
 
 **4. How to adjust denominators for different target populations?**
 Each health indicator targets a specific population (e.g., pregnant women for ANC, infants for vaccines). The module applies sequential demographic adjustments (pregnancy loss, stillbirths, mortality) to align denominators with target populations.
@@ -530,21 +530,28 @@ Where:
 
 - Summation is across all years with survey data
 
-#### Adjustment Factor Cascading
+#### Conceptual Framework: Demographic Cascades
 
-Denominators are adjusted through sequential application of demographic factors:
+Before diving into the specific formulas, it's important to understand the **conceptual flow** of denominator calculations. Denominators are derived through sequential demographic adjustments that reflect the biological cascade from pregnancy to specific health service target populations.
 
-**Example: ANC1 → DPT denominator**
+**Illustrative Example: From Pregnancy to DPT-eligible Population**
+
+Consider how an estimated 10,000 pregnancies translate to the population eligible for DPT vaccination:
 
 ```
-Base (pregnancies):     10,000
-After pregnancy loss:   10,000 × (1 - 0.03) = 9,700
-After twin adjustment:  9,700 × (1 - 0.015/2) = 9,627
-After stillbirths:      9,627 × (1 - 0.02) = 9,435
-After neonatal deaths:  9,435 × (1 - 0.039) = 9,067
+Starting point (pregnancies):           10,000
+→ After pregnancy loss (3%):            10,000 × (1 - 0.03) = 9,700 deliveries
+→ After twin adjustment (1.5% rate):    9,700 × (1 - 0.015/2) = 9,627 births
+→ After stillbirths (2%):               9,627 × (1 - 0.02) = 9,435 live births
+→ After neonatal deaths (3.9%):         9,435 × (1 - 0.039) = 9,067 DPT-eligible children
 ```
 
-Each adjustment reduces the denominator to reflect population losses at different life stages.
+This cascade demonstrates how each demographic factor sequentially reduces the population size as we move through life stages. The detailed mathematical formulas in the following sections follow this same logic, but work in **both directions**:
+
+- **Forward cascade**: Starting from earlier indicators (ANC1, Delivery) and adjusting toward later target populations
+- **Backward cascade**: Starting from later indicators (BCG, Penta1) and working backwards to estimate earlier populations
+
+The specific rates and formulas for each denominator source are provided in detail below.
 
 #### HMIS-based Denominator Calculations
 
@@ -813,159 +820,201 @@ Where:
 
 These secondary denominators are calculated automatically for **all available live birth denominators**, ensuring consistent methodology across different source indicators.
 
-#### Output Files Specification
+#### Workflow Execution Steps
 
-Part 1 generates six CSV files:
+Part 1 executes the following workflow for each administrative level (national, admin2, admin3):
 
-#### Denominator Files
+**Step 1: Load and Validate Input Data**
 
-**1. M4_denominators_national.csv**
+- Load HMIS adjusted data from Module 2 (national and subnational files)
+- Load survey data from GitHub repository
+- Load UN WPP population data
+- Validate ISO3 codes match across datasets
+- Aggregate monthly HMIS data to annual totals
+- Harmonize survey data (DHS prioritized over MICS)
+- Forward-fill survey values to create continuous time series
 
-**2. M4_denominators_admin2.csv**
+**Step 2: Calculate HMIS-based Denominators**
 
-**3. M4_denominators_admin3.csv**
+- For each health indicator with survey coverage data:
+  - Calculate base denominator: `count ÷ survey_coverage`
+  - Apply demographic cascades to derive related denominators
+  - Generate denominators from all available source indicators (ANC1, Delivery, BCG, Penta1, Live Births)
 
-**Structure**:
+**Step 3: Calculate WPP-based Denominators**
 
-```
-admin_area_1, [admin_area_2/3], year, denominator, source_indicator, target_population, value
-```
+- Extract population projections for target country
+- Calculate pregnancy estimates from crude birth rate
+- Calculate live birth estimates
+- Generate under-1 population denominators
+- Apply mortality adjustments for vaccine-eligible populations
+- Adjust for incomplete reporting periods (months reported < 12)
 
-**Fields**:
+**Step 4: Calculate Secondary Denominators**
 
-- `denominator`: Full denominator name (e.g., `danc1_livebirth`)
+- For each `*_livebirth` denominator:
+  - Calculate Vitamin A denominator: `livebirth × (1 - U5MR) × 4.5`
+  - Calculate Fully Immunized denominator: `livebirth × (1 - IMR)`
 
-- `source_indicator`: Service used (e.g., `source_anc1`, `source_wpp`)
+**Step 5: Calculate Coverage Estimates**
 
-- `target_population`: Target group (e.g., `target_livebirth`, `target_dpt`)
+- Divide HMIS service volume by each denominator option
+- Create coverage estimates for all indicator-denominator combinations
+- Preserve survey-based coverage as benchmark
 
-- `value`: Calculated denominator size
+**Step 6: Select Best Denominator**
 
-#### Combined Results Files
+- For each indicator, compare all denominator-based coverage estimates to survey data
+- Calculate squared error: `Σ(coverage_d,t - survey_t)²`
+- Select denominator with minimum error as "best"
+- Apply preference rules (HMIS-based preferred over WPP)
+- Flag denominators as "reference" if from same service
 
-**4. M4_combined_results_national.csv**
+**Step 7: Format and Save Outputs**
 
-**5. M4_combined_results_admin2.csv**
+- Save denominator files with source and target metadata
+- Save combined results with all coverage estimates
+- Mark best denominator for easy filtering
+- Include survey values in output
+- Create separate files for national, admin2, and admin3 levels
+- Generate empty files with correct structure for unavailable admin levels
 
-**6. M4_combined_results_admin3.csv**
+??? "Output Files Specification"
 
-**Structure**:
+    Part 1 generates six CSV files:
 
-```
-admin_area_1, [admin_area_2/3], year, indicator_common_id, denominator_best_or_survey, value
-```
+    **Denominator Files**
 
-**Fields**:
+    **1. M4_denominators_national.csv**
 
-- `indicator_common_id`: Health indicator (e.g., `anc1`, `penta3`)
+    **2. M4_denominators_admin2.csv**
 
-- `denominator_best_or_survey`: Either `best`, `survey`, or specific denominator name
+    **3. M4_denominators_admin3.csv**
 
-- `value`: Coverage percentage (0-100+)
+    **Structure**:
 
-**Special "best" Entry**: Duplicates the selected optimal denominator for easy filtering
+    ```
+    admin_area_1, [admin_area_2/3], year, denominator, source_indicator, target_population, value
+    ```
 
-#### Data Safeguards and Validation
+    **Fields**:
 
-Part 1 includes multiple validation checks:
+    - `denominator`: Full denominator name (e.g., `danc1_livebirth`)
+    - `source_indicator`: Service used (e.g., `source_anc1`, `source_wpp`)
+    - `target_population`: Target group (e.g., `target_livebirth`, `target_dpt`)
+    - `value`: Calculated denominator size
 
-1. **ISO3 Validation**: Ensures survey and population data match HMIS country
+    **Combined Results Files**
 
-2. **Geographic Matching**: Validates admin area names between HMIS and survey
-   - Reports match rate (e.g., "15/20 regions match")
-   - Falls back to higher geographic level if mismatch detected
+    **4. M4_combined_results_national.csv**
 
-3. **Fallback Mechanisms**:
-   - Subnational → National if no local survey data
-   - SBA → Delivery if SBA missing
-   - PNC1_mother → PNC1 if missing
+    **5. M4_combined_results_admin2.csv**
 
-4. **Edge Case Handling**: Detects when admin_area_3 should be used as admin_area_2 in certain country contexts
+    **6. M4_combined_results_admin3.csv**
 
-5. **Empty Data Handling**: Creates empty CSVs with correct structure when data unavailable
+    **Structure**:
 
-6. **Error Handling**: Wraps survey processing in `tryCatch` to handle mismatches gracefully
+    ```
+    admin_area_1, [admin_area_2/3], year, indicator_common_id, denominator_best_or_survey, value
+    ```
 
-#### Indicators Supported
+    **Fields**:
 
-Part 1 processes the following health indicators:
+    - `indicator_common_id`: Health indicator (e.g., `anc1`, `penta3`)
+    - `denominator_best_or_survey`: Either `best`, `survey`, or specific denominator name
+    - `value`: Coverage percentage (0-100+)
 
-**Maternal Health**:
+    **Special "best" Entry**: Duplicates the selected optimal denominator for easy filtering
 
-- `anc1`: Antenatal care 1st visit
+??? "Data Safeguards and Validation"
 
-- `anc4`: Antenatal care 4+ visits
+    Part 1 includes multiple validation checks:
 
-- `delivery`: Institutional delivery
+    1. **ISO3 Validation**: Ensures survey and population data match HMIS country
 
-- `sba`: Skilled birth attendance
+    2. **Geographic Matching**: Validates admin area names between HMIS and survey
+       - Reports match rate (e.g., "15/20 regions match")
+       - Falls back to higher geographic level if mismatch detected
 
-- `pnc1`: Postnatal care (child)
+    3. **Fallback Mechanisms**:
+       - Subnational → National if no local survey data
+       - SBA → Delivery if SBA missing
+       - PNC1_mother → PNC1 if missing
 
-- `pnc1_mother`: Postnatal care (mother)
+    4. **Edge Case Handling**: Detects when admin_area_3 should be used as admin_area_2 in certain country contexts
 
-**Immunization**:
+    5. **Empty Data Handling**: Creates empty CSVs with correct structure when data unavailable
 
-- `bcg`: BCG vaccine
+    6. **Error Handling**: Wraps survey processing in `tryCatch` to handle mismatches gracefully
 
-- `penta1`, `penta2`, `penta3`: Pentavalent vaccine
+??? "Indicators Supported"
 
-- `measles1`, `measles2`: Measles-containing vaccine
+    Part 1 processes the following health indicators:
 
-- `rota1`, `rota2`: Rotavirus vaccine
+    **Maternal Health**:
 
-- `opv1`, `opv2`, `opv3`: Oral polio vaccine
+    - `anc1`: Antenatal care 1st visit
+    - `anc4`: Antenatal care 4+ visits
+    - `delivery`: Institutional delivery
+    - `sba`: Skilled birth attendance
+    - `pnc1`: Postnatal care (child)
+    - `pnc1_mother`: Postnatal care (mother)
 
-- `fully_immunized`: Full immunization status
+    **Immunization**:
 
-**Child Health**:
+    - `bcg`: BCG vaccine
+    - `penta1`, `penta2`, `penta3`: Pentavalent vaccine
+    - `measles1`, `measles2`: Measles-containing vaccine
+    - `rota1`, `rota2`: Rotavirus vaccine
+    - `opv1`, `opv2`, `opv3`: Oral polio vaccine
+    - `fully_immunized`: Full immunization status
 
-- `nmr`: Neonatal mortality rate (survey only)
+    **Child Health**:
 
-- `imr`: Infant mortality rate (survey only)
+    - `nmr`: Neonatal mortality rate (survey only)
+    - `imr`: Infant mortality rate (survey only)
+    - `vitaminA`: Vitamin A supplementation
 
-- `vitaminA`: Vitamin A supplementation
+??? "Usage Notes and Best Practices"
 
-#### Usage Notes and Best Practices
+    **When to Use Which Count Variable**
 
-#### When to Use Which Count Variable
+    - `count_final_none`: No adjustments (raw reported data)
+    - `count_final_outlier`: Outlier adjustment only
+    - `count_final_completeness`: Completeness adjustment only
+    - `count_final_both`: Both adjustments **(recommended)**
 
-- `count_final_none`: No adjustments (raw reported data)
-- `count_final_outlier`: Outlier adjustment only
-- `count_final_completeness`: Completeness adjustment only
-- `count_final_both`: Both adjustments **(recommended)**
+    **Interpreting "best" Denominators**
 
-#### Interpreting "best" Denominators
+    The "best" denominator may vary by indicator and area based on:
 
-The "best" denominator may vary by indicator and area based on:
+    - Data availability (some services not universally reported)
+    - Reporting completeness (affects HMIS-based denominators)
+    - Population projection quality (affects WPP denominators)
+    - Survey coverage levels (extreme values reduce denominator options)
 
-- Data availability (some services not universally reported)
-- Reporting completeness (affects HMIS-based denominators)
-- Population projection quality (affects WPP denominators)
-- Survey coverage levels (extreme values reduce denominator options)
+    **Why Multiple Denominators?**
 
-#### Why Multiple Denominators?
+    Different denominators serve different purposes:
 
-Different denominators serve different purposes:
+    - **Independent denominators**: Provide cross-validation between services
+    - **Reference denominators**: Show internal HMIS consistency (but excluded from "best" by default)
+    - **WPP denominators**: Offer population-based benchmarks
+    - Comparing multiple options reveals data quality issues
 
-- **Independent denominators**: Provide cross-validation between services
-- **Reference denominators**: Show internal HMIS consistency (but excluded from "best" by default)
-- **WPP denominators**: Offer population-based benchmarks
-- Comparing multiple options reveals data quality issues
+??? "Troubleshooting Common Issues"
 
-#### Troubleshooting Common Issues
+    **Issue**: No matching admin areas between HMIS and survey
 
-**Issue**: No matching admin areas between HMIS and survey
+    - **Solution**: Check ISO3 code is correct; verify admin area naming conventions; module will fall back to national analysis
 
-- **Solution**: Check ISO3 code is correct; verify admin area naming conventions; module will fall back to national analysis
+    **Issue**: All denominators show >100% coverage
 
-**Issue**: All denominators show >100% coverage
+    - **Solution**: May indicate under-reporting in survey or over-reporting in HMIS; check data quality from Module 2
 
-- **Solution**: May indicate under-reporting in survey or over-reporting in HMIS; check data quality from Module 2
+    **Issue**: UNWPP selected as "best" for most indicators
 
-**Issue**: UNWPP selected as "best" for most indicators
-
-- **Solution**: May indicate poor HMIS data quality or completeness; review Module 2 adjustments
+    - **Solution**: May indicate poor HMIS data quality or completeness; review Module 2 adjustments
 
 ---
 
@@ -985,61 +1034,61 @@ Part 2 serves three key purposes:
 
 Users configure Part 2 through two key parameter sets:
 
-#### 1. Denominator Selection Configuration
+??? "1. Denominator Selection Configuration"
 
-At the top of the script, users specify which denominator to use for each indicator:
+    At the top of the script, users specify which denominator to use for each indicator:
 
-```r
-DENOMINATOR_SELECTION <- list(
-  # PREGNANCY-RELATED INDICATORS
-  anc1 = "best",                    # Options: "best", "danc1_pregnancy", "ddelivery_pregnancy", "dbcg_pregnancy", "dlivebirths_pregnancy", "dwpp_pregnancy"
-  anc4 = "best",
+    ```r
+    DENOMINATOR_SELECTION <- list(
+      # PREGNANCY-RELATED INDICATORS
+      anc1 = "best",                    # Options: "best", "danc1_pregnancy", "ddelivery_pregnancy", "dbcg_pregnancy", "dlivebirths_pregnancy", "dwpp_pregnancy"
+      anc4 = "best",
 
-  # LIVE BIRTH-RELATED INDICATORS
-  delivery = "best",                # Options: "best", "danc1_livebirth", "ddelivery_livebirth", "dbcg_livebirth", "dlivebirths_livebirth", "dwpp_livebirth"
-  bcg = "best",
-  sba = "best",
-  pnc1_mother = "best",
-  pnc1 = "best",
+      # LIVE BIRTH-RELATED INDICATORS
+      delivery = "best",                # Options: "best", "danc1_livebirth", "ddelivery_livebirth", "dbcg_livebirth", "dlivebirths_livebirth", "dwpp_livebirth"
+      bcg = "best",
+      sba = "best",
+      pnc1_mother = "best",
+      pnc1 = "best",
 
-  # DPT-ELIGIBLE AGE GROUP INDICATORS
-  penta1 = "best",                  # Options: "best", "danc1_dpt", "ddelivery_dpt", "dpenta1_dpt", "dbcg_dpt", "dlivebirths_dpt", "dwpp_dpt"
-  penta2 = "best",
-  penta3 = "best",
-  opv1 = "best",
-  opv2 = "best",
-  opv3 = "best",
+      # DPT-ELIGIBLE AGE GROUP INDICATORS
+      penta1 = "best",                  # Options: "best", "danc1_dpt", "ddelivery_dpt", "dpenta1_dpt", "dbcg_dpt", "dlivebirths_dpt", "dwpp_dpt"
+      penta2 = "best",
+      penta3 = "best",
+      opv1 = "best",
+      opv2 = "best",
+      opv3 = "best",
 
-  # MEASLES-ELIGIBLE AGE GROUP INDICATORS
-  measles1 = "best",                # Options: "best", "danc1_measles1", "ddelivery_measles1", "dpenta1_measles1", "dbcg_measles1", "dlivebirths_measles1", "dwpp_measles1"
-  measles2 = "best",
+      # MEASLES-ELIGIBLE AGE GROUP INDICATORS
+      measles1 = "best",                # Options: "best", "danc1_measles1", "ddelivery_measles1", "dpenta1_measles1", "dbcg_measles1", "dlivebirths_measles1", "dwpp_measles1"
+      measles2 = "best",
 
-  # ADDITIONAL INDICATORS
-  vitaminA = "best",                # Options: "best", "danc1_vitaminA", "dbcg_vitaminA", "ddelivery_vitaminA", "dwpp_vitaminA"
-  fully_immunized = "best"          # Options: "best", "danc1_fully_immunized", "dbcg_fully_immunized", "ddelivery_fully_immunized", "dwpp_fully_immunized"
-)
-```
+      # ADDITIONAL INDICATORS
+      vitaminA = "best",                # Options: "best", "danc1_vitaminA", "dbcg_vitaminA", "ddelivery_vitaminA", "dwpp_vitaminA"
+      fully_immunized = "best"          # Options: "best", "danc1_fully_immunized", "dbcg_fully_immunized", "ddelivery_fully_immunized", "dwpp_fully_immunized"
+    )
+    ```
 
-**Denominator Options by Indicator Type:**
+    **Denominator Options by Indicator Type:**
 
-The available denominators vary by indicator type based on the appropriate target population:
+    The available denominators vary by indicator type based on the appropriate target population:
 
-- **Pregnancy-based indicators** (ANC1, ANC4): Use pregnancy-adjusted denominators
-- **Live birth-based indicators** (Delivery, BCG, SBA, PNC): Use live birth-adjusted denominators
-- **DPT-eligible age group** (Penta1-3, OPV1-3): Use DPT-adjusted denominators (children eligible for DPT)
-- **Measles-eligible age group** (Measles1, Measles2): Use measles-adjusted denominators (children eligible for measles vaccine)
+    - **Pregnancy-based indicators** (ANC1, ANC4): Use pregnancy-adjusted denominators
+    - **Live birth-based indicators** (Delivery, BCG, SBA, PNC): Use live birth-adjusted denominators
+    - **DPT-eligible age group** (Penta1-3, OPV1-3): Use DPT-adjusted denominators (children eligible for DPT)
+    - **Measles-eligible age group** (Measles1, Measles2): Use measles-adjusted denominators (children eligible for measles vaccine)
 
-Each denominator option combines a source (ANC1, Delivery, BCG, Penta1, or WPP) with an age-adjustment factor.
+    Each denominator option combines a source (ANC1, Delivery, BCG, Penta1, or WPP) with an age-adjustment factor.
 
-#### 2. Administrative Level Configuration
+??? "2. Administrative Level Configuration"
 
-```r
-RUN_NATIONAL <- TRUE  # Always TRUE - national analysis is mandatory
-RUN_ADMIN2 <- TRUE    # Enable/disable admin level 2 analysis
-RUN_ADMIN3 <- TRUE    # Enable/disable admin level 3 analysis
-```
+    ```r
+    RUN_NATIONAL <- TRUE  # Always TRUE - national analysis is mandatory
+    RUN_ADMIN2 <- TRUE    # Enable/disable admin level 2 analysis
+    RUN_ADMIN3 <- TRUE    # Enable/disable admin level 3 analysis
+    ```
 
-The script automatically checks data availability and disables admin levels with no data.
+    The script automatically checks data availability and disables admin levels with no data.
 
 #### Core Functions and Methods
 
@@ -1374,59 +1423,59 @@ Same as national, plus:
 
 #### Methodological Considerations
 
-#### 1. Denominator Selection Strategy
+??? "1. Denominator Selection Strategy"
 
-**When to use "best"**:
+    **When to use "best"**:
 
-- Uncertain about which denominator is most appropriate
-- Want to rely on data-driven selection from Part 1
-- Starting point for analysis
+    - Uncertain about which denominator is most appropriate
+    - Want to rely on data-driven selection from Part 1
+    - Starting point for analysis
 
-**When to specify a denominator**:
+    **When to specify a denominator**:
 
-- Programmatic knowledge suggests a specific denominator is most accurate
-- Policy requirements dictate use of specific population estimates
-- Conducting sensitivity analyses
-- Known issues with certain data sources
+    - Programmatic knowledge suggests a specific denominator is most accurate
+    - Policy requirements dictate use of specific population estimates
+    - Conducting sensitivity analyses
+    - Known issues with certain data sources
 
-#### 2. Projection Methodology
+??? "2. Projection Methodology"
 
-The projection approach in Part 2 uses an **additive delta method** rather than multiplicative or direct replacement:
+    The projection approach in Part 2 uses an **additive delta method** rather than multiplicative or direct replacement:
 
-**Advantages**:
+    **Advantages**:
 
-- Preserves the level calibration from survey data
-- Smoothly extends survey estimates using administrative trends
-- Avoids compounding errors from year-to-year changes
-- Maintains consistency when HMIS coverage is stable
+    - Preserves the level calibration from survey data
+    - Smoothly extends survey estimates using administrative trends
+    - Avoids compounding errors from year-to-year changes
+    - Maintains consistency when HMIS coverage is stable
 
-**Limitations**:
+    **Limitations**:
 
-- Assumes HMIS trends reflect true coverage changes
-- May diverge from reality if administrative data quality declines
-- Projections become less reliable further from baseline survey
-- Does not account for systematic biases in HMIS data
+    - Assumes HMIS trends reflect true coverage changes
+    - May diverge from reality if administrative data quality declines
+    - Projections become less reliable further from baseline survey
+    - Does not account for systematic biases in HMIS data
 
-**Best Practice**: Projections should be validated against new survey data when available, and the baseline should be updated with the most recent survey.
+    **Best Practice**: Projections should be validated against new survey data when available, and the baseline should be updated with the most recent survey.
 
-#### 3. Handling Missing Data
+??? "3. Handling Missing Data"
 
-Part 2 implements several strategies for missing data:
+    Part 2 implements several strategies for missing data:
 
-- **Complete time series**: The `coverage_deltas()` function can fill missing years, creating a continuous series
-- **Survey gaps**: Projections extend estimates forward, but years before the first survey remain NA
-- **Admin level gaps**: Script automatically detects and skips admin levels with no data
-- **Missing denominators**: If a selected denominator doesn't exist for an indicator, that indicator-denominator combination is omitted
+    - **Complete time series**: The `coverage_deltas()` function can fill missing years, creating a continuous series
+    - **Survey gaps**: Projections extend estimates forward, but years before the first survey remain NA
+    - **Admin level gaps**: Script automatically detects and skips admin levels with no data
+    - **Missing denominators**: If a selected denominator doesn't exist for an indicator, that indicator-denominator combination is omitted
 
-#### 4. Multi-Level Analysis Consistency
+??? "4. Multi-Level Analysis Consistency"
 
-Part 2 processes each administrative level independently:
+    Part 2 processes each administrative level independently:
 
-- **National**: Aggregated country-level estimates
-- **Admin 2**: Provincial/regional estimates (may not sum to national due to different denominators)
-- **Admin 3**: District-level estimates
+    - **National**: Aggregated country-level estimates
+    - **Admin 2**: Provincial/regional estimates (may not sum to national due to different denominators)
+    - **Admin 3**: District-level estimates
 
-**Important**: Estimates across levels may not be directly comparable if different denominators are selected or if data quality varies by level.
+    **Important**: Estimates across levels may not be directly comparable if different denominators are selected or if data quality varies by level.
 
 #### Example Use Case
 
@@ -1463,29 +1512,29 @@ DENOMINATOR_SELECTION <- list(
 - Year 2018: Survey value (75.0%) and HMIS coverage
 - Years 2019-2024: Projected coverage based on HMIS trends
 
-#### Validation and Quality Checks
+??? "Validation and Quality Checks"
 
-Users should validate Part 2 outputs by:
+    Users should validate Part 2 outputs by:
 
-1. **Checking projection reasonableness**:
-   - Are projected values within plausible ranges (0-100%)?
-   - Do trends make programmatic sense?
+    1. **Checking projection reasonableness**:
+       - Are projected values within plausible ranges (0-100%)?
+       - Do trends make programmatic sense?
 
-2. **Comparing denominators**:
-   - Run Part 2 with different denominator selections
-   - Assess sensitivity of results to denominator choice
+    2. **Comparing denominators**:
+       - Run Part 2 with different denominator selections
+       - Assess sensitivity of results to denominator choice
 
-3. **Validating against new surveys**:
-   - When new survey data becomes available, compare projections to actual values
-   - Update baseline and re-run if necessary
+    3. **Validating against new surveys**:
+       - When new survey data becomes available, compare projections to actual values
+       - Update baseline and re-run if necessary
 
-4. **Reviewing HMIS trends**:
-   - Large deltas may indicate data quality issues
-   - Sudden changes should be investigated
+    4. **Reviewing HMIS trends**:
+       - Large deltas may indicate data quality issues
+       - Sudden changes should be investigated
 
-5. **Admin level consistency**:
-   - Check if subnational trends align with national patterns
-   - Investigate large discrepancies
+    5. **Admin level consistency**:
+       - Check if subnational trends align with national patterns
+       - Investigate large discrepancies
 
 #### Integration with Part 1
 
@@ -1499,35 +1548,35 @@ Part 2 builds directly on Part 1 outputs:
 | Survey values | Baseline for projections |
 | Source metadata | Preserved in final output |
 
-**Workflow Connection**:
+??? "Workflow Connection"
 
-```
-Part 1: Calculate denominators → Select "best" → Output combined results
-                                                          ↓
-Part 2: User selects denominators → Calculate trends → Project surveys → Final estimates
-```
+    ```
+    Part 1: Calculate denominators → Select "best" → Output combined results
+                                                              ↓
+    Part 2: User selects denominators → Calculate trends → Project surveys → Final estimates
+    ```
 
-#### Troubleshooting Common Issues
+??? "Troubleshooting Common Issues"
 
-**Issue**: "No data in admin2 combined results"
+    **Issue**: "No data in admin2 combined results"
 
-- **Cause**: Part 1 didn't process admin level 2, or no subnational data exists
-- **Solution**: Set `RUN_ADMIN2 <- FALSE` or check Part 1 inputs
+    - **Cause**: Part 1 didn't process admin level 2, or no subnational data exists
+    - **Solution**: Set `RUN_ADMIN2 <- FALSE` or check Part 1 inputs
 
-**Issue**: Projections show implausible values (>100% or <0%)
+    **Issue**: Projections show implausible values (>100% or <0%)
 
-- **Cause**: Large errors in HMIS data or inappropriate denominator
-- **Solution**: Review denominator selection, check HMIS data quality, consider different denominator
+    - **Cause**: Large errors in HMIS data or inappropriate denominator
+    - **Solution**: Review denominator selection, check HMIS data quality, consider different denominator
 
-**Issue**: Missing denominators in output
+    **Issue**: Missing denominators in output
 
-- **Cause**: Selected denominator not calculated in Part 1 for that indicator
-- **Solution**: Check Part 1 denominator options, verify indicator-denominator compatibility
+    - **Cause**: Selected denominator not calculated in Part 1 for that indicator
+    - **Solution**: Check Part 1 denominator options, verify indicator-denominator compatibility
 
-**Issue**: Gaps in projected coverage
+    **Issue**: Gaps in projected coverage
 
-- **Cause**: Missing HMIS data for some years
-- **Solution**: Review Module 2 outputs, check data completeness adjustments
+    - **Cause**: Missing HMIS data for some years
+    - **Solution**: Review Module 2 outputs, check data completeness adjustments
 
 ---
 
