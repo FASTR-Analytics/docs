@@ -45,6 +45,4 @@ The four modules operate sequentially with outputs from each module serving as i
 
 **Geographic Flexibility**: Analysis works at national and sub-national levels—as long as you have enough data and the quality is good enough for reliable estimates.
 
-**Monthly Monitoring**: HMIS data provides monthly updates, much more frequent than household surveys. Survey data anchors these estimates to ensure they align with established benchmarks and correct for systematic biases in routine reporting.
-
 **Customizable Settings**: All thresholds, time windows, and adjustment methods can be modified to fit your country's data and context. These settings are documented in the technical specifications.
