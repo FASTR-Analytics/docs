@@ -672,7 +672,7 @@ Comparison showing the impact of data quality adjustments from Module 2 on disru
 
     - **Absolute and percentage difference** between predicted and actual values:
 
-    $$ \text{diff\_percent} = 100 \times \frac{\text{predicted} - \text{actual}}{\text{predicted}} $$
+    $$ \text{diff_percent} = 100 \times \frac{\text{predicted} - \text{actual}}{\text{predicted}} $$
 
     - A configurable threshold parameter `DIFFPERCENT` (default: `10`) is used to determine when a disruption is significant.
 
