@@ -63,6 +63,16 @@ The module operates in two sequential stages, each with a distinct purpose:
 
 **Geographic Level Selection**: The module can analyze disruptions at different geographic scales. You can choose to run analysis at national and provincial levels only (faster, suitable for routine monitoring) or include district and ward levels (slower, provides detailed local information for targeted interventions).
 
+**Control Chart Level Selection**: This determines at which geographic level the control charts are calculated. The module uses two configuration flags:
+
+- **Default (both flags FALSE)**: Control charts calculated at **provincial level (admin_area_2)** - data aggregated to provinces, control limits and disruption detection performed for each province-indicator combination. This is the fastest option suitable for routine monitoring.
+
+- **RUN_DISTRICT_MODEL = TRUE**: Control charts calculated at **district level (admin_area_3)** - data aggregated to districts, enabling detection of local disruptions that might be masked in provincial aggregates. Slower but provides more detailed local information.
+
+- **RUN_ADMIN_AREA_4_ANALYSIS = TRUE**: Control charts calculated at **ward/facility level (admin_area_4)** - finest level analysis detecting disruptions at individual health facilities or wards. Slowest option but identifies facility-specific issues for highly targeted interventions.
+
+The control chart level determines where the statistical modeling occurs (trend estimation, control limits, disruption flagging). Disruption analysis outputs are then aggregated and reported at all available geographic levels (national, admin2, admin3, admin4), regardless of which level the control charts were calculated at.
+
 **Sensitivity Settings**: The module uses configurable thresholds to determine what constitutes a "disruption." More sensitive settings (lower thresholds) will flag smaller deviations, useful for early warning systems. More conservative settings (higher thresholds) will only flag major disruptions, useful for focusing on critical issues.
 
 **Data Completeness Approach**: The module accepts different versions of service counts from Module 2, allowing you to choose whether to adjust for reporting completeness or use raw counts.
@@ -406,14 +416,14 @@ Comparison showing the impact of data quality adjustments from Module 2 on disru
 
     **Sustained Dips**: Flags periods where the actual volume falls consistently below a defined proportion of expected volume (smoothed prediction):
 
-    $$ \text{count\_original} < \text{DIP\_THRESHOLD} \times \text{count\_smooth} $$
+    $$ \text{count_original} < \text{DIP_THRESHOLD} \times \text{count_smooth} $$
 
     - **Parameter:** `DIP_THRESHOLD` (default: `0.90`)
     - Users can adjust this to detect deeper or shallower dips (e.g., `0.80` for a 20% drop).
 
     **Sustained Rises**: Symmetric to dips, flags periods of consistent overperformance:
 
-    $$ \text{count\_original} > \text{RISE\_THRESHOLD} \times \text{count\_smooth} $$
+    $$ \text{count_original} > \text{RISE_THRESHOLD} \times \text{count_smooth} $$
 
     - **Parameter:** `RISE_THRESHOLD` (default: `1 / DIP_THRESHOLD`, e.g., `1.11`)
     - Users can adjust this to detect upward surges in volume.
@@ -451,18 +461,18 @@ Comparison showing the impact of data quality adjustments from Module 2 on disru
 
     **Apply rolling median smoothing to predictions**:
 
-    $$ \text{count\_smooth}_{it} = \text{Median}(\text{count\_predict}_{t-k}, \dots, \text{count\_predict}_t, \dots, \text{count\_predict}_{t+k}) $$
+    $$ \text{count_smooth}_{it} = \text{Median}(\text{count_predict}_{t-k}, \dots, \text{count_predict}_t, \dots, \text{count\_predict}_{t+k}) $$
 
     - **Parameter:** `SMOOTH_K` (default: 7, must be odd)
     - Larger `SMOOTH_K` smooths more; smaller retains more variation.
 
     **Calculate residuals**:
 
-    $$ \text{residual}_{it} = \text{count\_original}_{it} - \text{count\_smooth}_{it} $$
+    $$ \text{residual}_{it} = \text{count_original}_{it} - \text{count_smooth}_{it} $$
 
     **Standardize residuals using MAD**:
 
-    $$ \text{robust\_control}_{it} = \text{residual}_{it} / \text{MAD}_i $$
+    $$ \text{robust_control}_{it} = \text{residual}_{it} / \text{MAD}_i $$
 
     ### Disruption Analysis Regression Models
 
@@ -536,7 +546,7 @@ Comparison showing the impact of data quality adjustments from Module 2 on disru
 
     **Disruption effect (`b_admin_area_*`)**: Estimated relative change during disruptions:
 
-    $$ b_{\text{admin\_area\_*}} = -\frac{\text{diff mean}}{\text{predict mean}} $$
+    $$ b_{\text{admin_area_*}} = -\frac{\text{diff mean}}{\text{predict mean}} $$
 
     **Trend coefficient (`b_trend_admin_area_*`)**: Reflects long-term trend.
 
