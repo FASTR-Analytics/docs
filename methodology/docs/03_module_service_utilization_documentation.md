@@ -590,7 +590,7 @@ Comparison showing the impact of data quality adjustments from Module 2 on disru
 
 ### Detailed Analysis Steps
 
-??? "PART 1 - Control Chart Analysis"
+??? "Part 1: Control Chart Analysis"
 
     #### Step 1: Prepare the Data
 
@@ -633,14 +633,14 @@ Comparison showing the impact of data quality adjustments from Module 2 on disru
 
     A month is assigned `tagged = 1` if any of the above conditions are met. Tagged records are saved in `M3_chartout.csv` and passed to the disruption analysis.
 
-    ### PART 2 - Disruption Analysis
+??? "Part 2: Disruption Analysis"
 
-    #### Step 1: Data preparation
+    #### Step 1: Data Preparation
 
     - The `M3_chartout` dataset is merged with the main dataset to integrate the `tagged` variable, which identifies flagged disruptions.
     - The lowest available geographic level (`lowest_geo_level`) is identified for clustering, based on the highest-resolution `admin_area_*` column available.
 
-    #### Step 2: Country-wide regression
+    #### Step 2: Country-Wide Regression
 
     For each `indicator_common_id`, estimate the national-level model with errors clustered at district level.
 
@@ -648,7 +648,7 @@ Comparison showing the impact of data quality adjustments from Module 2 on disru
     - The model adjusts for historical trends and seasonal variations.
     - If a disruption (`tagged` = 1) is detected, the predicted service volume is adjusted by subtracting the estimated effect of the disruption to isolate its impact.
 
-    #### Step 3: Province-level regression
+    #### Step 3: Province-Level Regression
 
     For each `indicator_common_id` × `admin_area_2` combination, estimate province-specific models with errors clustered at district level.
 
@@ -656,7 +656,7 @@ Comparison showing the impact of data quality adjustments from Module 2 on disru
     - The model adjusts for historical trends and seasonal variations.
     - If a disruption is detected, predicted volumes are adjusted to isolate the impact.
 
-    #### Step 4: District-level regression (if enabled)
+    #### Step 4: District-Level Regression (if enabled)
 
     For each `indicator_common_id` × `admin_area_3` combination, estimate district-specific models with errors clustered at ward level.
 
