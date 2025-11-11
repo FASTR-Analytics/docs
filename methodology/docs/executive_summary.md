@@ -39,14 +39,12 @@ The four modules operate sequentially with outputs from each module serving as i
 - Module 4 Part 1 loads all four scenarios from Module 2; users specify which scenario to use as the numerator in coverage calculations
 - Module 4 Part 2 loads all denominator options and coverage estimates from Part 1; users specify the preferred denominator per indicator for projection calculations
 
-## Methodological Characteristics
+## Key Features
 
-The analytical approach exhibits several characteristics relevant to implementation and interpretation:
+**Multiple Adjustment Options**: The methodology keeps four versions of adjusted data (no adjustments, outliers only, missing data only, or both). This lets you test how different data quality assumptions affect your results.
 
-**Multiple Scenarios**: The retention of four parallel data adjustment scenarios (none, outliers only, missing data only, both) supports sensitivity analysis and assessment of how data quality assumptions affect results.
+**Geographic Flexibility**: Analysis works at national and sub-national levels—as long as you have enough data and the quality is good enough for reliable estimates.
 
-**Geographic Disaggregation**: Analyses are conducted at national, admin area 2, and admin area 3 levels where data quality and sample sizes permit, subject to minimum thresholds for statistical reliability.
+**Monthly Monitoring**: HMIS data provides monthly updates, much more frequent than household surveys. Survey data anchors these estimates to ensure they align with established benchmarks and correct for systematic biases in routine reporting.
 
-**Temporal Resolution**: Monthly HMIS data enables higher-frequency monitoring than periodic household surveys, while survey anchoring maintains comparability with established benchmarks and accounts for systematic biases in routine reporting.
-
-**Parameter Configuration**: All statistical thresholds, window sizes, and adjustment methods are configurable parameters documented in technical specifications, allowing adaptation to country-specific contexts and data characteristics.
+**Customizable Settings**: All thresholds, time windows, and adjustment methods can be modified to fit your country's data and context. These settings are documented in the technical specifications.
