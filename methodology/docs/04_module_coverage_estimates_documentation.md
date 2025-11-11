@@ -173,9 +173,13 @@ Highly disaggregated coverage estimates at admin area 3 level for detailed geogr
 ![Coverage calculated from HMIS data at admin area 3 level.](images/Module4_3_Coverage_HMIS_Admin3.png)
 
 **Interpretation Guide:**
+
 - **Survey points**: Black line with black points representing validated household survey coverage estimates
+
 - **HMIS-based estimates**: Grey line with grey points showing coverage calculated from routine facility data
+
 - **Projected coverage**: Red line with red points showing forward projections combining survey benchmarks with HMIS trends
+
 - **Geographic disaggregation**: Lower administrative levels enable targeting of interventions to areas with coverage gaps
 
 ---
