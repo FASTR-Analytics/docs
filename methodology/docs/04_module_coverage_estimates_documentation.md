@@ -1392,8 +1392,6 @@ Part 2 produces three output files:
 - `survey_raw_source`: Survey source (e.g., "DHS 2018")
 - `survey_raw_source_detail`: Additional source details
 
-**Note**: Does NOT include admin_area_2 or admin_area_3 columns.
-
 #### 2. Admin Level 2 Output: `M5_coverage_estimation_admin2.csv`
 
 **Columns**:
@@ -1402,7 +1400,6 @@ Same as national, plus:
 
 - `admin_area_2`: Second-level administrative division name (e.g., province, region)
 
-**Note**: Does NOT include admin_area_3 column.
 
 #### 3. Admin Level 3 Output: `M5_coverage_estimation_admin3.csv`
 
@@ -1418,8 +1415,6 @@ Same as national, plus:
 - `coverage_cov`: HMIS-based coverage
 - `survey_raw_source`: Survey source
 - `survey_raw_source_detail`: Source details
-
-**Note**: Does NOT include admin_area_2 column (skips straight from admin_area_1 to admin_area_3).
 
 #### Methodological Considerations
 
@@ -1477,41 +1472,6 @@ Same as national, plus:
 
     **Important**: Estimates across levels may not be directly comparable if different denominators are selected or if data quality varies by level.
 
-#### Example Use Case
-
-**Scenario**: Analyst wants to estimate Penta3 coverage for 2015-2024 using Penta1-derived denominators.
-
-**Configuration**:
-
-```r
-DENOMINATOR_SELECTION <- list(
-  penta3 = "dpenta1_dpt"  # Override "best" to use Penta1-based denominator
-)
-```
-
-**Input Data**:
-
-- Part 1 combined results with multiple denominators calculated
-- Survey data available for 2018 (75.0% coverage)
-- HMIS data available for all years 2015-2024
-
-**Process**:
-
-1. **Filter**: Extract only Penta3 estimates using dpenta1_dpt denominator
-2. **Compute Deltas**: Calculate year-over-year changes in HMIS-based coverage
-3. **Project**:
-   - Baseline year: 2018 (last survey)
-   - Baseline value: 75.0%
-   - For 2019: 75.0% + (HMIS 2019 - HMIS 2018)
-   - For 2020: 75.0% + (HMIS 2020 - HMIS 2018)
-   - Continue through 2024
-
-**Output**:
-
-- Years 2015-2017: Only HMIS coverage available
-- Year 2018: Survey value (75.0%) and HMIS coverage
-- Years 2019-2024: Projected coverage based on HMIS trends
-
 ??? "Validation and Quality Checks"
 
     Users should validate Part 2 outputs by:
@@ -1536,25 +1496,6 @@ DENOMINATOR_SELECTION <- list(
        - Check if subnational trends align with national patterns
        - Investigate large discrepancies
 
-#### Integration with Part 1
-
-Part 2 builds directly on Part 1 outputs:
-
-| Part 1 Output | Part 2 Use |
-|---------------|------------|
-| Combined results with all denominators | Input for denominator filtering |
-| "Best" denominator selections | Default option if user doesn't specify |
-| Coverage estimates | Basis for delta calculations |
-| Survey values | Baseline for projections |
-| Source metadata | Preserved in final output |
-
-??? "Workflow Connection"
-
-    ```
-    Part 1: Calculate denominators → Select "best" → Output combined results
-                                                              ↓
-    Part 2: User selects denominators → Calculate trends → Project surveys → Final estimates
-    ```
 
 ??? "Troubleshooting Common Issues"
 
