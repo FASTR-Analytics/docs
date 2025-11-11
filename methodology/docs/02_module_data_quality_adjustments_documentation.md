@@ -6,7 +6,7 @@
 
 The Data Quality Adjustment module systematically corrects two common problems in routine health facility data: **outliers** (extreme values caused by reporting errors or data entry mistakes) and **missing data** (from incomplete reporting). Rather than simply deleting problematic data, this module replaces questionable values with statistically sound estimates based on each facility's own historical patterns.
 
-The module uses sophisticated temporal smoothing techniques that analyze trends over time. By calculating rolling averages and examining facility-specific historical patterns, it preserves the underlying trends in the data while correcting anomalous values. This approach ensures that adjusted data remains grounded in real service delivery patterns rather than arbitrary replacements.
+The module uses temporal smoothing techniques that analyze trends over time. By calculating rolling averages and examining facility-specific historical patterns, it preserves the underlying trends in the data while correcting anomalous values. This approach ensures that adjusted data remains grounded in real service delivery patterns rather than arbitrary replacements.
 
 To accommodate different analytical needs, the module produces four parallel versions of the data: one with no adjustments (the original data), one with only outlier corrections, one with only missing data filled in, and one with both types of corrections applied. This multi-scenario approach allows analysts to understand how sensitive their results are to different data quality assumptions and choose the most appropriate version for their analysis.
 
