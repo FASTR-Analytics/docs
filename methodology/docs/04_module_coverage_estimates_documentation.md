@@ -173,9 +173,9 @@ Highly disaggregated coverage estimates at admin area 3 level for detailed geogr
 ![Coverage calculated from HMIS data at admin area 3 level.](images/Module4_3_Coverage_HMIS_Admin3.png)
 
 **Interpretation Guide:**
-- **Survey points**: Shown as markers representing validated household survey coverage estimates
-- **HMIS-based estimates**: Line series showing coverage calculated from routine facility data
-- **Projected coverage**: Forward projections combining survey benchmarks with HMIS trends
+- **Survey points**: Black line with black points representing validated household survey coverage estimates
+- **HMIS-based estimates**: Grey line with grey points showing coverage calculated from routine facility data
+- **Projected coverage**: Red line with red points showing forward projections combining survey benchmarks with HMIS trends
 - **Geographic disaggregation**: Lower administrative levels enable targeting of interventions to areas with coverage gaps
 
 ---
@@ -496,39 +496,37 @@ The Demographic and Health Surveys (DHS), conducted by USAID, provide survey dat
 
 #### Statistical Methods & Algorithms
 
-#### Forward-Filling (Last Observation Carried Forward)
+??? "Forward-Filling (Last Observation Carried Forward)"
 
-Survey data typically has gaps (e.g., DHS every 5 years). To create continuous denominators:
+    Survey data typically has gaps (e.g., DHS every 5 years). To create continuous denominators:
 
-```r
-na.locf(survey_value, na.rm = FALSE)
-```
+    ```r
+    na.locf(survey_value, na.rm = FALSE)
+    ```
 
-**Example**:
+    **Example**:
 
-```
-Year:   2015  2016  2017  2018  2019  2020
-Raw:    85.3  NA    NA    NA    87.2  NA
-Filled: 85.3  85.3  85.3  85.3  87.2  87.2
-```
+    ```
+    Year:   2015  2016  2017  2018  2019  2020
+    Raw:    85.3  NA    NA    NA    87.2  NA
+    Filled: 85.3  85.3  85.3  85.3  87.2  87.2
+    ```
 
-This assumes coverage remains constant until next observation.
+    This assumes coverage remains constant until next observation.
 
-#### Squared Error Minimization
+??? "Squared Error Minimization"
 
-To select the best denominator:
+    To select the best denominator:
 
-$$
-\text{Best denominator} = \arg \min_d \sum_{t} (C_{d,t} - S_t)^2
-$$
+    $$
+    \text{Best denominator} = \arg \min_d \sum_{t} (C_{d,t} - S_t)^2
+    $$
 
-Where:
+    Where:
 
-- $C_{d,t}$ = Coverage using denominator $d$ in year $t$
-
-- $S_t$ = Survey coverage in year $t$
-
-- Summation is across all years with survey data
+    - $C_{d,t}$ = Coverage using denominator $d$ in year $t$
+    - $S_t$ = Survey coverage in year $t$
+    - Summation is across all years with survey data
 
 #### Conceptual Framework: Demographic Cascades
 
@@ -791,34 +789,38 @@ This adjustment ensures denominators are comparable to service volumes that may 
 
 **Denominators Derived from Live Birth Estimates (Secondary Calculations)**
 
-After all primary live birth denominators are calculated (from ANC1, Delivery, BCG, Penta1, Live Birth Counts, and WPP), the module generates additional denominators for specific interventions by applying age-specific mortality adjustments:
+After all primary live birth denominators are calculated (from ANC1, Delivery, BCG, Penta1, Live Birth Counts, and WPP), the module generates additional target population estimates for specific interventions by applying age-specific mortality adjustments:
 
-**Vitamin A Supplementation**
+**Children Aged 6-59 Months (Vitamin A Supplementation Target Population)**
 
-For each live birth denominator source, a corresponding Vitamin A denominator is calculated:
+For each live birth denominator source, the estimated number of children aged 6-59 months is calculated:
 
 $$
 d_{\text{source-vitaminA}} = d_{\text{source-livebirth}} \times (1 - \text{under-5 mortality rate}) \times 4.5
 $$
 
 Where:
+
 - `source` represents any of: anc1, delivery, bcg, penta1, livebirths, or wpp
-- The factor **4.5** represents the approximate duration (in years) of the Vitamin A target age range, corresponding to children aged 6–59 months (≈ 4.5 years).
-- Under-5 mortality rate accounts for child survival to the supplementation age range
+- The factor **4.5** represents the approximate duration (in years) of the Vitamin A target age range (6-59 months ≈ 4.5 years)
+- Under-5 mortality rate adjusts for child survival to reach the 6-59 month age range
+- Result: **Estimated population of children aged 6-59 months** eligible for Vitamin A supplementation
 
-**Fully Immunized Child (FIC)**
+**Infants Under 12 Months (Fully Immunized Child Target Population)**
 
-For each live birth denominator source, a corresponding FIC denominator is calculated:
+For each live birth denominator source, the estimated number of infants under 12 months is calculated:
 
 $$
 d_{\text{source-fully-immunized}} = d_{\text{source-livebirth}} \times (1 - \text{infant mortality rate})
 $$
 
 Where:
-- `source` represents any of: anc1, delivery, bcg, penta1, livebirths, or wpp
-- Infant mortality rate adjusts for survival to the age when full immunization status is assessed (typically 12 months)
 
-These secondary denominators are calculated automatically for **all available live birth denominators**, ensuring consistent methodology across different source indicators.
+- `source` represents any of: anc1, delivery, bcg, penta1, livebirths, or wpp
+- Infant mortality rate adjusts for survival to 12 months of age
+- Result: **Estimated population of infants under 1 year old** eligible for full immunization assessment
+
+These target population estimates are calculated automatically for **all available live birth denominators**, ensuring consistent methodology across different source indicators.
 
 #### Workflow Execution Steps
 
@@ -827,8 +829,8 @@ Part 1 executes the following workflow for each administrative level (national, 
 **Step 1: Load and Validate Input Data**
 
 - Load HMIS adjusted data from Module 2 (national and subnational files)
-- Load survey data from GitHub repository
-- Load UN WPP population data
+- Load survey data from GitHub repository (unified DHS/MICS dataset)
+- Load UN WPP population data from GitHub repository
 - Validate ISO3 codes match across datasets
 - Aggregate monthly HMIS data to annual totals
 - Harmonize survey data (DHS prioritized over MICS)
